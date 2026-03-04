@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDRides Bot Demo - Test the Conversation Flow</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { color: white; text-align: center; margin-bottom: 20px; font-size: 2rem; }
+        .demo-box { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .demo-box { grid-template-columns: 1fr; } }
+        .chat-area, .response-area {
+            background: white; border-radius: 15px; padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .chat-area h2, .response-area h2 { color: #333; margin-bottom: 15px; font-size: 1.2rem; }
+        .phone-input { display: flex; gap: 10px; margin-bottom: 15px; }
+        .phone-input input {
+            flex: 1; padding: 12px; border: 2px solid #ddd;
+            border-radius: 8px; font-size: 1rem;
+        }
+        .message-input {
+            width: 100%; padding: 15px; border: 2px solid #25D366;
+            border-radius: 25px; font-size: 1rem; outline: none; margin-bottom: 10px;
+        }
+        .message-input:focus { border-color: #128C7E; }
+        .quick-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .quick-btn {
+            padding: 8px 16px; background: #f0f0f0; border: none;
+            border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+        }
+        .quick-btn:hover { background: #25D366; color: white; }
+        .send-btn {
+            width: 100%; padding: 15px; background: #25D366; color: white;
+            border: none; border-radius: 25px; font-size: 1rem; font-weight: bold;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .send-btn:hover { background: #128C7E; }
+        .response-messages {
+            height: 450px; overflow-y: auto; border: 1px solid #eee;
+            border-radius: 10px; padding: 15px; background: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 15px; padding: 12px 16px; border-radius: 15px;
+            max-width: 80%; animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .bot-message { background: #e8f5e9; color: #333; margin-right: auto; border-bottom-left-radius: 2px; }
+        .user-message { background: #DCF8C6; color: #333; margin-left: auto; border-bottom-right-radius: 2px; }
+        .info-box {
+            background: #fff3e0; border-left: 4px solid #ff9800;
+            padding: 15px; margin-bottom: 20px; border-radius: 5px;
+        }
+        .status { text-align: center; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+        .status.connected { background: #c8e6c9; color: #2e7d32; }
+        .status.listening { background: #e3f2fd; color: #1565c0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 PDRides WhatsApp Bot Demo</h1>
+        
+        <div class="info-box">
+            <strong>💡 How to test the full conversation flow:</strong>
+            <p>Enter your simulated phone number and try the complete Uber-style flow:
+            <br>1. Say "Hi" → Get welcome menu
+            <br>2. Click "Find Ride" → Enter pickup location
+            <br>3. Enter destination → Get fare estimates
+            <br>4. Select ride type → Book ride
+            <br>5. Get driver details & booking confirmation</p>
+        </div>
+        
+        <div class="demo-box">
+            <div class="chat-area">
+                <h2>💬 Send Message</h2>
+                <div class="phone-input">
+                    <input type="text" id="phoneNumber" placeholder="Your phone (demo)" value="+14756556866">
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="sendMessage('Hi')">👋 Hi</button>
+                    <button class="quick-btn" onclick="sendMessage('Find ride')">🔍 Find Ride</button>
+                    <button class="quick-btn" onclick="sendMessage('Offer ride')">🚗 Offer Ride</button>
+                    <button class="quick-btn" onclick="sendMessage('My rides')">📋 My Rides</button>
+                    <button class="quick-btn" onclick="sendMessage('Help')">❓ Help</button>
+                </div>
+                
+                <input type="text" id="messageInput" class="message-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="sendUserMessage()">Send Message</button>
+            </div>
+            
+            <div class="response-area">
+                <h2>🤖 Bot Responses</h2>
+                <div class="status connected">✅ Bot Connected - Server Running</div>
+                <div class="status listening">👂 Simulating WhatsApp conversation...</div>
+                <div class="response-messages" id="responseMessages">
+                    <div class="message bot-message">
+                        👋 Welcome to <strong>PDRides</strong>!<br><br>
+                        This is a demo of our Uber-style WhatsApp carpool bot.<br><br>
+                        Try the flow: Click <strong>"Find Ride"</strong> and follow the conversation!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let conversationState = 'idle';
+        let tempData = {};
+        
+        const botResponses = {
+            welcome: `🚗 Welcome to *PDRides* - Community Carpooling!
+
+Find or offer rides in your neighborhood. Save money, reduce traffic, and connect with your community.`,
+
+            mainMenu: `What would you like to do?
+
+🚗 Offer a Ride - Share your ride with others
+🔍 Find a Ride - Search for available rides  
+📋 My Rides - View your rides`,
+
+            findRidePickup: `🔍 *Find a Ride*
+
+Where do you need to be picked up?
+
+Enter a street address (e.g., "104 Hana Rd, Edison, NJ")`,
+
+            findRideDestination: `✅ Found pickup location.
+
+Where are you going? (Enter destination address)`,
+
+            findRideDate: `✅ Found destination.
+
+When do you need a ride?
+
+• Today
+• Tomorrow  
+• This week`,
+
+            findRideSeats: `How many seats do you need? (1-3)`,
+
+            searching: `🔍 Searching for rides...`,
+
+            rideFound: `*Ride 1/3*
+
+📍 Edison, NJ
+🏁 New Brunswick, NJ
+📅 Tomorrow at 9:00 AM
+💺 3 seats available
+💰 $8.00
+👤 Driver: John S.
+
+✅ Join This Ride | ➡️ Next`,
+
+            fareOptions: `💰 *Select Ride Type*
+
+🚗 UberX - $12.50 (4 seats)
+🚙 UberXL - $18.00 (6 seats)  
+💺 Comfort - $15.00 (4 seats)
+🏎️ Premium - $25.00 (4 seats)
+
+Reply with your choice (UberX, UberXL, Comfort, Premium)`,
+
+            rideConfirmed: `🎉 *Ride Confirmed!*
+
+📍 Pickup: Edison, NJ
+🏁 Destination: New Brunswick, NJ
+📅 Tomorrow at 9:00 AM
+
+🚗 *Driver Details*
+👤 John Smith
+⭐ Rating: 4.8 ★
+🚙 Toyota Camry (Black)
+🔢 Plates: NJ-AB1234
+
+💰 Total Fare: $12.50
+⏱️ ETA: 8 minutes
+
+Your driver is on the way!`,
+
+            offerRidePickup: `🚗 *Offer a Ride*
+
+Where will you pick up passengers? (e.g., "Downtown Metuchen")`,
+
+            offerRideDestination: `✅ Found pickup location.
+
+Where are you going to? (Enter destination)`,
+
+            offerRideDate: `✅ Found destination.
+
+When is this ride?
+
+• Today
+• Tomorrow`,
+
+            offerRideTime: 'What time? (e.g., "8:00 AM")',
+
+            offerRideSeats: 'How many seats available? (1-7)',
+
+            offerRideContrib: `💡 Suggested price: $8.00 per person.
+
+Is there a contribution for gas/parking?
+
+Free | $8 (suggested) | $10 | Other`,
+
+            offerRideConfirm: `*Please confirm your ride:*
+
+📍 From: Edison, NJ
+🏁 To: New Brunswick, NJ
+📅 Tomorrow
+⏰ Time: 9:00 AM
+💺 Seats: 3
+💰 Contribution: $8.00
+
+Is this correct?`,
+
+            ridePosted: `✅ Ride posted successfully!
+
+Your ride from Edison, NJ to New Brunswick, NJ on Tomorrow at 9:00 AM is now live.
+
+You'll be notified when someone wants to join.`,
+
+            myRides: `📋 *Your Rides*
+
+You don't have any active rides.
+
+Offer a ride or find one to get started!`,
+
+            help: `📋 *PDRides Community Guidelines*
+
+1️⃣ Be respectful and punctual
+2️⃣ Share accurate ride details
+3️⃣ Confirm pickup location clearly
+4️⃣ Cancel in advance if plans change
+5️⃣ Drive safely and legally
+6️⃣ Report any issues`
+        };
+
+        function processMessage(text) {
+            const lowerText = text.toLowerCase();
+            
+            switch (conversationState) {
+                case 'idle':
+                    if (lowerText.includes('hi') || lowerText.includes('hello')) {
+                        return { state: 'idle', response: botResponses.mainMenu };
+                    }
+                    if (lowerText.includes('find') && lowerText.includes('ride')) {
+                        return { state: 'requesting_pickup', response: botResponses.findRidePickup };
+                    }
+                    if (lowerText.includes('offer') && lowerText.includes('ride')) {
+                        return { state: 'offering_pickup', response: botResponses.offerRidePickup };
+                    }
+                    if (lowerText.includes('my rides')) {
+                        return { state: 'idle', response: botResponses.myRides };
+                    }
+                    if (lowerText.includes('help')) {
+                        return { state: 'idle', response: botResponses.help + '\n\n' + botResponses.mainMenu };
+                    }
+                    return { state: 'idle', response: botResponses.mainMenu };
+
+                case 'requesting_pickup':
+                    conversationState = 'requesting_destination';
+                    return { state: conversationState, response: botResponses.findRideDestination };
+
+                case 'requesting_destination':
+                    conversationState = 'requesting_date';
+                    return { state: conversationState, response: botResponses.findRideDate };
+
+                case 'requesting_date':
+                    conversationState = 'requesting_seats';
+                    return { state: conversationState, response: botResponses.findRideSeats };
+
+                case 'requesting_seats':
+                    conversationState = 'showing_fares';
+                    return { state: conversationState, response: botResponses.fareOptions };
+
+                case 'showing_fares':
+                    conversationState = 'idle';
+                    return { state: conversationState, response: botResponses.rideConfirmed };
+
+                case 'offering_pickup':
+                    conversationState = 'offering_destination';
+                    return { state: conversationState, response: botResponses.offerRideDestination };
+
+                case 'offering_destination':
+                    conversationState = 'offering_date';
+                    return { state: conversationState, response: botResponses.offerRideDate };
+
+                case 'offering_date':
+                    conversationState = 'offering_time';
+                    return { state: conversationState, response: botResponses.offerRideTime };
+
+                case 'offering_time':
+                    conversationState = 'offering_seats';
+                    return { state: conversationState, response: botResponses.offerRideSeats };
+
+                case 'offering_seats':
+                    conversationState = 'offering_contribution';
+                    return { state: conversationState, response: botResponses.offerRideContrib };
+
+                case 'offering_contribution':
+                    conversationState = 'offering_confirm';
+                    return { state: conversationState, response: botResponses.offerRideConfirm };
+
+                case 'offering_confirm':
+                    conversationState = 'idle';
+                    if (lowerText.includes('yes') || text.includes('✅')) {
+                        return { state: conversationState, response: botResponses.ridePosted };
+                    }
+                    return { state: conversationState, response: 'Ride cancelled. No problem!' };
+
+                default:
+                    return { state: 'idle', response: botResponses.mainMenu };
+            }
+        }
+
+        function sendMessage(text) {
+            document.getElementById('messageInput').value = text;
+            sendUserMessage();
+        }
+
+        function sendUserMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            addMessage(text, 'user');
+            input.value = '';
+            
+            const result = processMessage(text);
+            conversationState = result.state;
+            
+            setTimeout(() => {
+                addMessage(result.response, 'bot');
+            }, 500);
+        }
+
+        function addMessage(text, type) {
+            const container = document.getElementById('responseMessages');
+            const div = document.createElement('div');
+            div.className = 'message ' + (type === 'bot' ? 'bot-message' : 'user-message');
+            
+            let formattedText = text
+                .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+                .replace(/📍/g, '📍 ')
+                .replace(/🏁/g, '🏁 ')
+                .replace(/📅/g, '📅 ')
+                .replace(/⏰/g, '⏰ ')
+                .replace(/💺/g, '💺 ')
+                .replace(/💰/g, '💰 ')
+                .replace(/👤/g, '👤 ')
+                .replace(/🚗/g, '🚗 ')
+                .replace(/🔍/g, '🔍 ')
+                .replace(/✅/g, '✅ ')
+                .replace(/❌/g, '❌ ')
+                .replace(/🚙/g, '🚙 ')
+                .replace(/🏎️/g, '🏎️ ');
+            
+            div.innerHTML = formattedText;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') sendUserMessage();
+        }
+    </script>
+</body>
+Offer a ride or find one to get started!`,
+
+            help: `📋 *PDRides Community Guidelines*
+
+1️⃣ Be respectful and punctual
+2️⃣ Share accurate ride details
+3️⃣ Confirm pickup location clearly
+4️⃣ Cancel in advance if plans change
+5️⃣ Drive safely and legally
+6️⃣ Report any issues
+
+Safety: Always share ride details with a friend. Trust your instincts.`,
+
+            fareEstimate: (data) => `💰 *Fare Estimate*
+
+${data.rideTypeIcon} *${data.rideTypeName}*
+
+📏 Distance: ${data.distance} miles
+⏱️ Est. time: ${data.duration} min
+
+*Price Breakdown:*
+Base fare: $${data.baseFare.toFixed(2)}
+Distance: $${data.distanceFare.toFixed(2)}
+Time: $${data.timeFare.toFixed(2)}
+
+*Total: $${data.totalFare.toFixed(2)}*`
+        };
+
+        // Sample rides for demo
+        const sampleRides = [
+            { pickup: 'Edison, NJ', destination: 'New Brunswick, NJ', date: 'Tomorrow', time: '9:00 AM', seats: 3, price: 8, driver: 'John S.' },
+            { pickup: 'Edison, NJ', destination: 'Rutgers, NJ', date: 'Today', time: '2:00 PM', seats: 2, price: 5, driver: 'Sarah M.' },
+            { pickup: 'Metuchen, NJ', destination: 'Princeton, NJ', date: 'Tomorrow', time: '10:00 AM', seats: 4, price: 12, driver: 'Mike R.' }
+        ];
+
+        // Process user message and generate bot response
+        function processMessage(text) {
+            const lowerText = text.toLowerCase();
+            
+            // Handle different states
+            switch (conversationState) {
+                case 'idle':
+                    if (lowerText.includes('hi') || lowerText.includes('hello') || lowerText.includes('start')) {
+                        return { 
+                            state: 'idle',
+                            response: botResponses.mainMenu 
+                        };
+                    }
+                    if (lowerText.includes('find') && lowerText.includes('ride')) {
+                        return { 
+                            state: 'requesting_pickup',
+                            response: botResponses.findRidePickup 
+                        };
+                    }
+                    if (lowerText.includes('offer') && lowerText.includes('ride')) {
+                        return { 
+                            state: 'offering_pickup',
+                            response: botResponses.offerRidePickup 
+                        };
+                    }
+                    if (lowerText.includes('my rides')) {
+                        return { 
+                            state: 'idle',
+                            response: botResponses.myRides 
+                        };
+                    }
+                    if (lowerText.includes('help')) {
+                        return { 
+                            state: 'idle',
+                            response: botResponses.help + '\n\n' + botResponses.mainMenu 
+                        };
+                    }
+                    return { 
+                        state: 'idle',
+                        response: botResponses.mainMenu 
+                    };
+
+                case 'requesting_pickup':
+                    conversationState = 'requesting_destination';
+                    tempData.pickup = text;
+                    return { 
+                        state: conversationState,
+                        response: botResponses.findRideDestination(text) 
+                    };
+
+                case 'requesting_destination':
+                    conversationState = 'requesting_date';
+                    tempData.destination = text;
+                    return { 
+                        state: conversationState,
+                        response: botResponses.findRideDate(text) 
+                    };
+
+                case 'requesting_date':
+                    conversationState = 'requesting_seats';
+                    tempData.date = text;
+                    return { 
+                        state: conversationState,
+                        response: botResponses.findRideSeats 
+                    };
+
+                case 'requesting_seats':
+                    conversationState = 'browsing_results';
+                    tempData.seats = text;
+                    const ride = sampleRides[0];
+                    return { 
+                        state: conversationState,
+                        response: botResponses.rideFound(ride, 1, sampleRides.length) + '\n\n✅ Join This Ride  |  ➡️ Next',
+                        ride: ride
+                    };
+
+                case 'browsing_results':
+                    if (text.toLowerCase().includes('join') || text.includes('✅')) {
+                        conversationState = 'idle';
+                        const confirmedRide = sampleRides[0];
+                        return { 
+                            state: conversationState,
+                            response: botResponses.rideConfirmed({
+                                pickup: tempData.pickup,
+                                destination: tempData.destination,
+                                date: tempData.date,
+                                driver: confirmedRide.driver,
+                                rating: '4.8',
+                                vehicle: 'Toyota Camry (Black)',
+                                plate: 'NJ-AB1234',
+                                fare: '15.00',
+                               '
+                            })
+                        };
+                    }
+ eta: '8                    return { state: conversationState, response: 'Use the buttons to join a ride or browse more.' };
+
+                case 'offering_pickup':
+                    conversationState = 'offering_destination';
+                    tempData.pickup = text;
+                    return { 
+                        state: conversationState,
+                        response: botResponses.offerRideDestination(text) 
+                    };
+
+                case 'offering_destination':
+                    conversationState = 'offering_date';
+                    tempData.destination = text;
+                    return { 
+                        state: conversationState,
+                        response: botResponses.offerRideDate(text) 
+                    };
+
+                case 'offering_date':
+                    conversationState = 'offering_time';
+                    tempData.date = text;
+                    return { 
+                        state: conversationState,
+                        response: botResponses.offerRideTime 
+                    };
+
+                case 'offering_time':
+                    conversationState = 'offering_seats';
+                    tempData.time = text;
+                    return { 
+                        state: conversationState,
+                        response: botResponses.offerRideSeats 
+                    };
+
+                case 'offering_seats':
+                    conversationState = 'offering_contribution';
+                    tempData.seats = text;
+                    return { 
+                        state: conversationState,
+                        response: botResponses.offerRideContrib(8) + '\n\nFree | $8 (suggested) | $10 | Other'
+                    };
+
+                case 'offering_contribution':
+                    conversationState = 'offering_confirm';
+                    tempData.contribution = text.includes('$') ? text.replace('$','') : '0';
+                    return { 
+                        state: conversationState,
+                        response: botResponses.offerRideConfirm({
+                            pickup: tempData.pickup,
+                            destination: tempData.destination,
+                            date: tempData.date,
+                            time: tempData.time,
+                            seats: tempData.seats,
+                            contribution: tempData.contribution
+                        }) + '\n\n✅ Yes, Post  |  ❌ Cancel'
+                    };
+
+                case 'offering_confirm':
+                    conversationState = 'idle';
+                    if (lowerText.includes('yes') || text.includes('✅')) {
+                        return { 
+                            state: conversationState,
+                            response: botResponses.ridePosted(tempData)
+                        };
+                    }
+                    return { state: conversationState, response: 'Ride cancelled. No problem!' };
+
+                default:
+                    return { 
+                        state: 'idle',
+                        response: botResponses.mainMenu 
+                    };
+            }
+        }
+
+        function sendMessage(text) {
+            document.getElementById('messageInput').value = text;
+            sendUserMessage();
+        }
+
+        function sendUserMessage() {
+            const input = document.getElementById('messageInput');
+            const phone = document.getElementById('phoneNumber').value;
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            // Add user message to chat
+            addMessage(text, 'user');
+            input.value = '';
+            
+            // Process message and get bot response
+            const result = processMessage(text);
+            conversationState = result.state;
+            
+            // Add bot response to chat
+            setTimeout(() => {
+                addMessage(result.response, 'bot', result.ride);
+            }, 500);
+        }
+
+        function addMessage(text, type, ride = null) {
+            const container = document.getElementById('responseMessages');
+            const div = document.createElement('div');
+            div.className = `message ${type === 'bot' ? 'bot-message' : 'user-message'}`;
+            
+            // Format the message with basic markdown
+            let formattedText = text
+                .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+                .replace(/📍/g, '📍 ')
+                .replace(/🏁/g, '🏁 ')
+                .replace(/📅/g, '📅 ')
+                .replace(/⏰/g, '⏰ ')
+                .replace(/💺/g, '💺 ')
+                .replace(/💰/g, '💰 ')
+                .replace(/👤/g, '👤 ')
+                .replace(/🚗/g, '🚗 ')
+                .replace(/🔍/g, '🔍 ')
+                .replace(/✅/g, '✅ ')
+                .replace(/❌/g, '❌ ');
+            
+            div.innerHTML = formattedText;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendUserMessage();
+            }
+        }
+    </script>
+</body>
+</html>

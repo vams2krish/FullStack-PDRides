@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDRides - Interactive Map View with WhatsApp Sync</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .map-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .map-header {
+            background: #25D366;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .map-header h2 {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+        
+        .controls {
+            padding: 20px;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .input-group input, .input-group select {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            border-color: #25D366;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: #25D366;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #128C7E;
+        }
+        
+        .btn-secondary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .btn-whatsapp:hover {
+            background: #128C7E;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .info-panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .info-panel h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pricing-card {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .pricing-card h4 {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .pricing-card .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        
+        .pricing-card .price-detail {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #25D366;
+        }
+        
+        .info-card label {
+            display: block;
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 3px;
+        }
+        
+        .info-card span {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .route-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .route-info.active {
+            display: block;
+        }
+        
+        .rides-panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .rides-panel h3 {
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ride-list {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .ride-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .ride-item:hover {
+            border-color: #25D366;
+            background: #e8f5e9;
+        }
+        
+        .ride-item.selected {
+            border-color: #25D366;
+            background: #e8f5e9;
+        }
+        
+        .ride-route {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .ride-meta {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .ride-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .price-tag {
+            background: #25D366;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .whatsapp-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .whatsapp-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-available {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #25D366;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .alert.active {
+            display: block;
+        }
+        
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        @media (max-width: 768px) {
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+            
+            #map {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 PDRides Map View</h1>
+        <p>Interactive ride sharing with real-time pricing & WhatsApp sync</p>
+    </div>
+    
+    <div class="container">
+        <div class="main-grid">
+            <div class="left-column">
+                <div class="map-section">
+                    <div class="map-header">
+                        <h2>🗺️ Live Ride Map</h2>
+                        <span class="status-badge status-available">Real-Time Sync</span>
+                    </div>
+                    <div id="map"></div>
+                    <div class="controls">
+                        <div class="input-group">
+                            <input type="text" id="pickup" placeholder="📍 Pickup location" value="Boston, MA">
+                            <input type="text" id="destination" placeholder="📍 Destination" value="New York, NY">
+                            <select id="seats">
+                                <option value="1">1 Seat</option>
+                                <option value="2">2 Seats</option>
+                                <option value="3">3 Seats</option>
+                                <option value="4">4 Seats</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="calculateRoute()">🚗 Calculate Route & Price</button>
+                            <button class="btn btn-secondary" onclick="findRides()">🔍 Find Available Rides</button>
+                        </div>
+                        
+                        <div class="loading" id="loading">
+                            <div class="spinner"></div>
+                            <p>Calculating route and pricing...</p>
+                        </div>
+                        
+                        <div class="route-info" id="routeInfo">
+                            <h4>🛣️ Route Information</h4>
+                            <div class="info-grid" style="margin-top: 10px;">
+                                <div class="info-card">
+                                    <label>Distance</label>
+                                    <span id="distance">-</span>
+                                </div>
+                                <div class="info-card">
+                                    <label>Duration</label>
+                                    <span id="duration">-</span>
+                                </div>
+                                <div class="info-card">
+                                    <label>Per Seat</label>
+                                    <span id="pricePerSeat">-</span>
+                                </div>
+                                <div class="info-card">
+                                    <label>Total Price</label>
+                                    <span id="totalPrice">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="info-panel">
+                    <h3>💰 Real-Time Pricing</h3>
+                    <div class="pricing-card" id="pricingCard" style="display: none;">
+                        <h4>Estimated Price</h4>
+                        <div class="price" id="mainPrice">$0</div>
+                        <div class="price-detail" id="priceBreakdown">Based on distance</div>
+                    </div>
+                    
+                    <div class="whatsapp-section">
+                        <h4 style="margin-bottom: 10px;">📱 Send to WhatsApp</h4>
+                        <input type="tel" id="phoneNumber" class="whatsapp-input" placeholder="Enter phone number (+1...)">
+                        <button class="btn btn-whatsapp" style="width: 100%;" onclick="sendToWhatsApp()">
+                            📲 Send Ride Details
+                        </button>
+                    </div>
+                    
+                    <div class="alert alert-success" id="successAlert"></div>
+                    <div class="alert alert-error" id="errorAlert"></div>
+                </div>
+                
+                <div class="rides-panel">
+                    <h3>🚗 Available Rides</h3>
+                    <div class="ride-list" id="ridesList">
+                        <p style="color: #666; text-align: center; padding: 20px;">
+                            Click "Find Available Rides" to see matching rides
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([42.3601, -71.0589], 8);
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        
+        let pickupMarker = null;
+        let destinationMarker = null;
+        let routeLine = null;
+        let currentRoute = null;
+        let selectedRide = null;
+        
+        // Custom marker icons
+        const pickupIcon = L.divIcon({
+            className: 'custom-marker',
+            html: '<div style="background: #25D366; width: 35px; height: 35px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">📍</div>',
+            iconSize: [35, 35],
+            iconAnchor: [17, 17]
+        });
+        
+        const destinationIcon = L.divIcon({
+            className: 'custom-marker',
+            html: '<div style="background: #e74c3c; width: 35px; height: 35px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">🏁</div>',
+            iconSize: [35, 35],
+            iconAnchor: [17, 17]
+        });
+        
+        const carIcon = L.divIcon({
+            className: 'custom-marker',
+            html: '<div style="background: #3498db; width: 40px; height: 40px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">🚗</div>',
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+        });
+        
+        function showAlert(type, message) {
+            const alert = document.getElementById(type === 'success' ? 'successAlert' : 'errorAlert');
+            alert.textContent = message;
+            alert.classList.add('active');
+            setTimeout(() => alert.classList.remove('active'), 5000);
+        }
+        
+        async function calculateRoute() {
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            const seats = document.getElementById('seats').value;
+            
+            if (!pickup || !destination) {
+                showAlert('error', 'Please enter both pickup and destination locations');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('routeInfo').classList.remove('active');
+            document.getElementById('pricingCard').style.display = 'none';
+            
+            // Clear previous markers and route
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            if (destinationMarker) map.removeLayer(destinationMarker);
+            if (routeLine) map.removeLayer(routeLine);
+            
+            try {
+                // Call API for route calculation
+                const response = await fetch(`/api/route?pickup=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(destination)}&seats=${seats}`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to calculate route');
+                }
+                
+                currentRoute = data;
+                
+                // Add markers
+                pickupMarker = L.marker([data.pickup.lat, data.pickup.lon], { icon: pickupIcon })
+                    .addTo(map)
+                    .bindPopup(`<strong>📍 Pickup:</strong><br>${data.pickup.address}`);
+                
+                destinationMarker = L.marker([data.destination.lat, data.destination.lon], { icon: destinationIcon })
+                    .addTo(map)
+                    .bindPopup(`<strong>🏁 Destination:</strong><br>${data.destination.address}`);
+                
+                // Draw route if geometry available
+                if (data.geometry && data.geometry.coordinates) {
+                    const coordinates = data.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+                    routeLine = L.polyline(coordinates, {
+                        color: '#25D366',
+                        weight: 6,
+                        opacity: 0.8
+                    }).addTo(map);
+                    
+                    map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+                }
+                
+                // Update UI with route info
+                document.getElementById('distance').textContent = data.distanceFormatted;
+                document.getElementById('duration').textContent = data.durationFormatted;
+                document.getElementById('pricePerSeat').textContent = `$${data.pricePerSeat}`;
+                document.getElementById('totalPrice').textContent = `$${data.price}`;
+                document.getElementById('routeInfo').classList.add('active');
+                
+                // Update pricing card
+                document.getElementById('mainPrice').textContent = `$${data.price}`;
+                document.getElementById('priceBreakdown').textContent = `$${data.pricePerSeat} × ${seats} seat${seats > 1 ? 's' : ''} • ${data.distanceFormatted}`;
+                document.getElementById('pricingCard').style.display = 'block';
+                
+                // Open popups
+                pickupMarker.openPopup();
+                
+            } catch (error) {
+                console.error('Route calculation error:', error);
+                showAlert('error', error.message || 'Failed to calculate route. Please try again.');
+                
+                // Fallback: draw straight line
+                if (currentRoute) {
+                    routeLine = L.polyline([
+                        [currentRoute.pickup?.lat || 42.3601, currentRoute.pickup?.lon || -71.0589],
+                        [currentRoute.destination?.lat || 40.7128, currentRoute.destination?.lon || -74.006]
+                    ], {
+                        color: '#25D366',
+                        weight: 4,
+                        opacity: 0.6,
+                        dashArray: '10, 10'
+                    }).addTo(map);
+                }
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+        
+        async function findRides() {
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            const seats = document.getElementById('seats').value;
+            
+            document.getElementById('loading').classList.add('active');
+            
+            try {
+                const response = await fetch(`/api/rides?pickup=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(destination)}&seats=${seats}`);
+                const data = await response.json();
+                
+                const ridesList = document.getElementById('ridesList');
+                
+                if (!data.success || data.rides.length === 0) {
+                    ridesList.innerHTML = `
+                        <div style="text-align: center; padding: 30px; color: #666;">
+                            <p>😕 No rides found matching your route</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">Try adjusting your search or create a new ride</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                ridesList.innerHTML = data.rides.map((ride, index) => `
+                    <div class="ride-item" onclick="selectRide(${index}, '${ride._id}')" data-index="${index}">
+                        <div class="ride-route">📍 ${ride.pickupLocation} → 🏁 ${ride.destination}</div>
+                        <div class="ride-meta">
+                            📅 ${new Date(ride.date).toLocaleDateString()} • ⏰ ${ride.time} • 💺 ${ride.availableSeats} seats
+                        </div>
+                        <div class="ride-price">
+                            <span>👤 ${ride.driverName || 'Anonymous'}</span>
+                            <span class="price-tag">$${ride.totalPrice || ride.contribution}</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Show rides on map
+                showRidesOnMap(data.rides);
+                
+            } catch (error) {
+                console.error('Error finding rides:', error);
+                showAlert('error', 'Failed to find rides. Please try again.');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+        
+        function showRidesOnMap(rides) {
+            // Clear existing ride markers
+            map.eachLayer((layer) => {
+                if (layer instanceof L.Marker && layer !== pickupMarker && layer !== destinationMarker) {
+                    map.removeLayer(layer);
+                }
+            });
+            
+            const bounds = [];
+            
+            rides.forEach((ride, index) => {
+                // Use stored coordinates or fallback
+                const pickupLat = ride.pickupLat || 42.3601 + (index * 0.01);
+                const pickupLng = ride.pickupLng || -71.0589 + (index * 0.01);
+                const destLat = ride.destLat || 40.7128 + (index * 0.01);
+                const destLng = ride.destLng || -74.006 + (index * 0.01);
+                
+                // Add pickup marker
+                const pickupMarkerRide = L.marker([pickupLat, pickupLng], { icon: pickupIcon })
+                    .addTo(map)
+                    .bindPopup(`<strong>Pickup:</strong> ${ride.pickupLocation}<br>Driver: ${ride.driverName || 'Anonymous'}`);
+                
+                // Add destination marker
+                const destMarkerRide = L.marker([destLat, destLng], { icon: destinationIcon })
+                    .addTo(map)
+                    .bindPopup(`<strong>Destination:</strong> ${ride.destination}`);
+                
+                // Add car marker in middle
+                const midLat = (pickupLat + destLat) / 2;
+                const midLng = (pickupLng + destLng) / 2;
+                const carMarker = L.marker([midLat, midLng], { icon: carIcon })
+                    .addTo(map)
+                    .bindPopup(`<strong>🚗 ${ride.driverName || 'Driver'}</strong><br>Price: $${ride.contribution}<br>Seats: ${ride.availableSeats}`);
+                
+                bounds.push([pickupLat, pickupLng], [destLat, destLng]);
+            });
+            
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
+        }
+        
+        function selectRide(index, rideId) {
+            // Remove previous selection
+            document.querySelectorAll('.ride-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selection to clicked ride
+            const selected = document.querySelector(`[data-index="${index}"]`);
+            if (selected) {
+                selected.classList.add('selected');
+            }
+            
+            selectedRide = { index, rideId };
+        }
+        
+        async function sendToWhatsApp() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            
+            if (!phoneNumber) {
+                showAlert('error', 'Please enter a phone number');
+                return;
+            }
+            
+            if (!currentRoute) {
+                showAlert('error', 'Please calculate a route first');
+                return;
+            }
+            
+            const seats = document.getElementById('seats').value;
+            const data = {
+                phoneNumber: phoneNumber,
+                pickup: currentRoute.pickup.address,
+                destination: currentRoute.destination.address,
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                price: currentRoute.price,
+                seats: seats
+            };
+            
+            try {
+                const response = await fetch('/api/whatsapp/send-ride', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', 'Ride details sent to WhatsApp!');
+                } else {
+                    throw new Error(result.error || 'Failed to send');
+                }
+            } catch (error) {
+                console.error('WhatsApp send error:', error);
+                showAlert('error', 'Failed to send WhatsApp message. Please try again.');
+            }
+        }
+        
+        // Load initial data
+        window.onload = () => {
+            calculateRoute();
+        };
+    </script>
+</body>
+</html>

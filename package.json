@@ -1,0 +1,32 @@
+{
+  "name": "pdrides-whatsapp-bot",
+  "version": "1.0.0",
+  "description": "PDRides - Community Rides WhatsApp Bot for carpooling",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "whatsapp",
+    "bot",
+    "carpool",
+    "rideshare"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongodb": "^7.1.0",
+    "mongoose": "^8.0.3",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "ngrok": "^5.0.0-beta.2",
+    "nodemon": "^3.0.2"
+  }
+}
