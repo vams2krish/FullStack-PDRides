@@ -14,6 +14,9 @@ const conversationSchema = new mongoose.Schema({
     enum: [
       'idle',
       'onboarding_name',
+      'onboarding_verify_otp',
+      'requesting_otp',
+      'verifying_otp',
       'offering_pickup',
       'offering_destination',
       'offering_date',
@@ -115,3 +118,4 @@ conversationSchema.methods.reset = function() {
 };
 
 export default mongoose.model('Conversation', conversationSchema);
+

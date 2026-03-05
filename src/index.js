@@ -4,13 +4,17 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import webhookRoutes from './routes/webhook.js';
+import authRoutes from './routes/auth.js';
+import userRoutes from './routes/user.js';
 import { startScheduledTasks } from './services/scheduler.js';
 import { 
   calculateRoute, 
   geocodeAddress, 
   formatDistance, 
   formatDuration,
-  calculatePrice
+  calculatePrice,
+  searchLocations,
+  reverseGeocode
 } from './services/maps.js';
 import {
   calculateFare,
@@ -60,94 +64,35 @@ app.get('/privacy-policy', (req, res) => {
   res.sendFile(path.join(__dirname, '../privacy-policy.html'));
 });
 
+// Terms of Service page
+app.get('/terms-of-service', (req, res) => {
+  res.sendFile(path.join(__dirname, '../terms-of-service.html'));
+});
+
 // Welcome page
 app.get('/', (req, res) => {
-
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>PDRides - WhatsApp Carpool Bot</title>
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .container { 
-          text-align: center; 
-          color: white;
-          padding: 40px;
-          max-width: 600px;
-        }
-        h1 { font-size: 3rem; margin-bottom: 20px; }
-        p { font-size: 1.2rem; margin-bottom: 30px; opacity: 0.9; }
-        .feature {
-          background: rgba(255,255,255,0.15);
-          padding: 15px 20px;
-          border-radius: 10px;
-          margin: 10px 0;
-          text-align: left;
-        }
-        .btn {
-          display: inline-block;
-          background: #25D366;
-          color: white;
-          padding: 15px 30px;
-          border-radius: 25px;
-          text-decoration: none;
-          font-weight: bold;
-          margin: 10px;
-          transition: transform 0.2s;
-        }
-        .btn:hover { transform: scale(1.05); }
-        .status { 
-          margin-top: 30px; 
-          padding: 15px; 
-          background: rgba(0,0,0,0.2); 
-          border-radius: 10px;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>🚗 PDRides</h1>
-        <p>Community Carpooling via WhatsApp</p>
-        
-        <div class="feature">
-          <strong>🚙 Offer a Ride</strong> - Share your ride with community members
-        </div>
-        <div class="feature">
-          <strong>🔍 Find a Ride</strong> - Search and book available rides
-        </div>
-        <div class="feature">
-          <strong>💬 WhatsApp Integration</strong> - Easy booking via chat
-        </div>
-        
-        <div class="status">
-          <strong>✅ Bot Status:</strong> Connected & Running<br>
-          <strong>🔗 Webhook:</strong> ${process.env.WEB_APP_URL ? process.env.WEB_APP_URL.replace('/webhook', '') + '/webhook' : 'Configure WEB_APP_URL in .env'}
-        </div>
-        
-        <br><br>
-        <a href="/map" class="btn">🗺️ Open Map View</a>
-        <a href="/health" class="btn">💚 Health Check</a>
-      </div>
-    </body>
-    </html>
-  `);
+  res.sendFile(path.join(__dirname, '../index.html'));
 });
 
 
 // Serve map view
 app.get('/map', (req, res) => {
   res.sendFile(path.join(__dirname, '../map-view.html'));
+});
+
+// Serve login page
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../login.html'));
+});
+
+// Serve registration page
+app.get('/register', (req, res) => {
+  res.sendFile(path.join(__dirname, '../register.html'));
+});
+
+// Serve settings page
+app.get('/settings', (req, res) => {
+  res.sendFile(path.join(__dirname, '../settings.html'));
 });
 
 // API: Uber-style fare estimate
@@ -369,6 +314,120 @@ app.get('/api/rides', async (req, res) => {
   }
 });
 
+// API: Create a new ride (for drivers)
+app.post('/api/rides', async (req, res) => {
+  try {
+    const { 
+      driverPhone, 
+      driverName,
+      pickup, 
+      destination, 
+      date, 
+      time, 
+      seats, 
+      contribution,
+      pickupLat,
+      pickupLng,
+      destLat,
+      destLng
+    } = req.body;
+
+    // Validate required fields
+    if (!driverPhone || !pickup || !destination || !date || !time || !seats) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Missing required fields: driverPhone, pickup, destination, date, time, seats' 
+      });
+    }
+
+    // Get driver info from database
+    const driver = await User.findOne({ phoneNumber: driverPhone });
+    if (!driver) {
+      return res.status(404).json({ 
+        success: false,
+        error: 'Driver not found' 
+      });
+    }
+
+    // Check if user is registered as driver
+    if (!driver.driverInfo || !driver.driverInfo.isDriver) {
+      return res.status(403).json({ 
+        success: false,
+        error: 'User is not registered as a driver' 
+      });
+    }
+
+    // Calculate route and price if coordinates provided
+    let routeDistance = null;
+    let calculatedPrice = contribution;
+
+    if (pickupLat && destLat) {
+      const route = await calculateRoute(pickupLat, pickupLng, destLat, destLng);
+      if (route) {
+        routeDistance = route.distance;
+        // Auto-calculate price if not provided
+        if (!contribution) {
+          calculatedPrice = calculatePrice(routeDistance, parseInt(seats));
+        }
+      }
+    }
+
+    // Set expiration (24 hours from now for one-time rides)
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24);
+
+    // Create the ride
+    const ride = new Ride({
+      driverPhone: driverPhone,
+      driverName: driverName || driver.name || 'Anonymous Driver',
+      pickupLocation: pickup,
+      destination: destination,
+      pickupLat: pickupLat || null,
+      pickupLng: pickupLng || null,
+      destLat: destLat || null,
+      destLng: destLng || null,
+      date: new Date(date),
+      time: time,
+      totalSeats: parseInt(seats),
+      availableSeats: parseInt(seats),
+      contribution: calculatedPrice || 0,
+      status: 'active',
+      expiresAt: expiresAt,
+      routeDistance: routeDistance
+    });
+
+    await ride.save();
+
+    // Update driver's total trips
+    if (driver.driverInfo) {
+      driver.driverInfo.totalTrips = (driver.driverInfo.totalTrips || 0) + 1;
+      await driver.save();
+    }
+
+    res.json({
+      success: true,
+      message: 'Ride created successfully',
+      ride: {
+        id: ride._id,
+        pickup: ride.pickupLocation,
+        destination: ride.destination,
+        date: ride.date,
+        time: ride.time,
+        seats: ride.totalSeats,
+        availableSeats: ride.availableSeats,
+        contribution: ride.contribution,
+        status: ride.status
+      }
+    });
+  } catch (error) {
+    console.error('Error creating ride:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to create ride' 
+    });
+  }
+});
+
 // API: Book ride with real-time pricing
 app.post('/api/rides/:id/book', async (req, res) => {
   try {
@@ -419,6 +478,51 @@ app.post('/api/whatsapp/send-ride', async (req, res) => {
     res.status(500).json({ error: 'Failed to send WhatsApp message' });
   }
 });
+
+// API: Location autocomplete
+app.get('/api/autocomplete', async (req, res) => {
+  try {
+    const { q } = req.query;
+    
+    if (!q || q.length < 3) {
+      return res.json({ success: true, suggestions: [] });
+    }
+
+    const suggestions = await searchLocations(q, 5);
+    res.json({ success: true, suggestions });
+  } catch (error) {
+    console.error('Autocomplete error:', error);
+    res.status(500).json({ error: 'Failed to get suggestions' });
+  }
+});
+
+// API: Reverse geocode (coordinates to address)
+app.get('/api/reverse-geocode', async (req, res) => {
+  try {
+    const { lat, lon } = req.query;
+    
+    if (!lat || !lon) {
+      return res.status(400).json({ error: 'Latitude and longitude are required' });
+    }
+
+    const address = await reverseGeocode(parseFloat(lat), parseFloat(lon));
+    
+    if (!address) {
+      return res.status(400).json({ error: 'Could not reverse geocode' });
+    }
+
+    res.json({ success: true, address: address.display_name });
+  } catch (error) {
+    console.error('Reverse geocode error:', error);
+    res.status(500).json({ error: 'Failed to reverse geocode' });
+  }
+});
+
+// Auth routes
+app.use('/api/auth', authRoutes);
+
+// User routes (protected)
+app.use('/api/user', userRoutes);
 
 // Webhook routes
 app.use('/webhook', webhookRoutes);

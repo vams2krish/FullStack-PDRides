@@ -10,8 +10,6 @@ const OSRM_BASE_URL = 'https://router.project-osrm.org';
 
 /**
  * Geocode an address to coordinates
- * @param {string} address - The address to geocode
- * @returns {Promise<{lat: number, lon: number, display_name: string} | null>}
  */
 export async function geocodeAddress(address) {
   try {
@@ -45,9 +43,6 @@ export async function geocodeAddress(address) {
 
 /**
  * Reverse geocode coordinates to address
- * @param {number} lat - Latitude
- * @param {number} lon - Longitude
- * @returns {Promise<{display_name: string, address: object} | null>}
  */
 export async function reverseGeocode(lat, lon) {
   try {
@@ -78,11 +73,6 @@ export async function reverseGeocode(lat, lon) {
 
 /**
  * Calculate route between two points
- * @param {number} startLat - Start latitude
- * @param {number} startLon - Start longitude
- * @param {number} endLat - End latitude
- * @param {number} endLon - End longitude
- * @returns {Promise<{distance: number, duration: number, geometry: object} | null>}
  */
 export async function calculateRoute(startLat, startLon, endLat, endLon) {
   try {
@@ -100,8 +90,8 @@ export async function calculateRoute(startLat, startLon, endLat, endLon) {
     if (response.data && response.data.routes && response.data.routes.length > 0) {
       const route = response.data.routes[0];
       return {
-        distance: route.distance, // in meters
-        duration: route.duration, // in seconds
+        distance: route.distance,
+        duration: route.duration,
         geometry: route.geometry,
         steps: route.legs[0]?.steps || []
       };
@@ -115,8 +105,6 @@ export async function calculateRoute(startLat, startLon, endLat, endLon) {
 
 /**
  * Format distance for display
- * @param {number} meters - Distance in meters
- * @returns {string} Formatted distance
  */
 export function formatDistance(meters) {
   if (meters < 1000) {
@@ -127,8 +115,6 @@ export function formatDistance(meters) {
 
 /**
  * Format duration for display
- * @param {number} seconds - Duration in seconds
- * @returns {string} Formatted duration
  */
 export function formatDuration(seconds) {
   const hours = Math.floor(seconds / 3600);
@@ -141,16 +127,10 @@ export function formatDuration(seconds) {
 }
 
 /**
- * Validate if location is within service area (e.g., certain radius from city center)
- * @param {number} lat - Latitude
- * @param {number} lon - Longitude
- * @param {number} centerLat - Center latitude
- * @param {number} centerLon - Center longitude
- * @param {number} maxDistanceKm - Maximum distance in km
- * @returns {boolean} True if within service area
+ * Validate if location is within service area
  */
 export function isWithinServiceArea(lat, lon, centerLat, centerLon, maxDistanceKm = 100) {
-  const R = 6371; // Earth's radius in km
+  const R = 6371;
   const dLat = (lat - centerLat) * Math.PI / 180;
   const dLon = (lon - centerLon) * Math.PI / 180;
   const a = 
@@ -164,18 +144,17 @@ export function isWithinServiceArea(lat, lon, centerLat, centerLon, maxDistanceK
 }
 
 /**
- * Search for locations (autocomplete)
- * @param {string} query - Search query
- * @returns {Promise<Array<{display_name: string, lat: number, lon: number}>>}
+ * Search for locations (autocomplete suggestions)
  */
-export async function searchLocations(query) {
+export async function searchLocations(query, limit = 5) {
   try {
     const response = await axios.get(`${NOMINATIM_BASE_URL}/search`, {
       params: {
         q: query,
         format: 'json',
-        limit: 5,
-        addressdetails: 0
+        limit: limit,
+        addressdetails: 1,
+        featuretype: 'settlement|road|building'
       },
       headers: {
         'User-Agent': 'PDRides/1.0'
@@ -185,7 +164,9 @@ export async function searchLocations(query) {
     return response.data.map(item => ({
       display_name: item.display_name,
       lat: parseFloat(item.lat),
-      lon: parseFloat(item.lon)
+      lon: parseFloat(item.lon),
+      type: item.type,
+      address: item.address
     }));
   } catch (error) {
     console.error('Location search error:', error.message);
@@ -195,8 +176,6 @@ export async function searchLocations(query) {
 
 /**
  * Parse and validate location from user input
- * @param {string} input - User's location input
- * @returns {Promise<{valid: boolean, location: object, error: string | null}>}
  */
 export async function parseLocation(input) {
   if (!input || input.trim().length < 3) {
@@ -209,7 +188,6 @@ export async function parseLocation(input) {
     return { valid: false, location: null, error: 'Could not find that location. Please try with a more specific address.' };
   }
 
-  // Check if it looks like a valid street address (has house number or street name)
   const hasStreetInfo = geocoded.address && (
     geocoded.address.road || 
     geocoded.address.house_number ||
@@ -232,21 +210,14 @@ export async function parseLocation(input) {
 }
 
 /**
- * Generate static map URL (using OpenStreetMap tiles via staticmap service)
- * @param {number} lat - Center latitude
- * @param {number} lon - Center longitude
- * @param {number} zoom - Zoom level
- * @returns {string} Map image URL
+ * Generate static map URL
  */
 export function generateStaticMapUrl(lat, lon, zoom = 15) {
-  // Using staticmap service (free) or you can use Mapbox/Google for production
   return `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lon}&zoom=${zoom}&size=400x300&markers=${lat},${lon},ol-marker`;
 }
 
 /**
  * Extract city and state from geocoded result
- * @param {object} address - Nominatim address object
- * @returns {string} City and state
  */
 export function extractCityState(address) {
   const city = address.city || address.town || address.village || address.suburb || address.county;
@@ -264,10 +235,6 @@ export function extractCityState(address) {
 
 /**
  * Calculate price based on distance using PDRides fare structure
- * @param {number} distanceMeters - Distance in meters
- * @param {number} seats - Number of seats
- * @returns {number} Calculated price per seat
- * 
  * Fare Structure:
  * - First mile: $5.00 flat
  * - Under 5 mi: $5 + (mi − 1)
@@ -276,14 +243,14 @@ export function extractCityState(address) {
  * - 15 – 20 mi: $5 + 1.2×mi
  * - Above 20 mi: $5 + 1.3×mi
  */
-export function calculatePrice(distanceMeters, seats = 1) {
-  const distanceMiles = distanceMeters / 1609.34; // Convert meters to miles
+export function calculatePrice(distanceMeters, seats = 1, tipAmount = 0) {
+  const distanceMiles = distanceMeters / 1609.34;
   
   let pricePerSeat;
   
   if (distanceMiles <= 1) {
     // First mile: $5.00 flat
-    pricePerSeat = 5;
+    pricePerSeat = 5.00;
   } else if (distanceMiles < 5) {
     // Under 5 mi: $5 + (mi − 1)
     pricePerSeat = 5 + (distanceMiles - 1);
@@ -304,21 +271,16 @@ export function calculatePrice(distanceMeters, seats = 1) {
   // Round to 2 decimal places
   pricePerSeat = Math.round(pricePerSeat * 100) / 100;
   
-  return pricePerSeat * seats;
+  // Add tip if provided
+  const totalWithTip = (pricePerSeat * seats) + tipAmount;
+  return Math.round(totalWithTip * 100) / 100;
 }
-
 
 /**
  * Check if two locations are the same (within small radius)
- * @param {number} lat1 - First location lat
- * @param {number} lon1 - First location lon
- * @param {number} lat2 - Second location lat
- * @param {number} lon2 - Second location lon
- * @param {number} thresholdMeters - Distance threshold in meters
- * @returns {boolean} True if same location
  */
 export function isSameLocation(lat1, lon1, lat2, lon2, thresholdMeters = 100) {
-  const R = 6371000; // Earth's radius in meters
+  const R = 6371000;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = 
@@ -330,3 +292,4 @@ export function isSameLocation(lat1, lon1, lat2, lon2, thresholdMeters = 100) {
   
   return distance <= thresholdMeters;
 }
+
