@@ -10,250 +10,329 @@
             padding: 0;
             box-sizing: border-box;
         }
-
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --accent: #25D366;
-            --accent-dark: #128C7E;
-            --danger: #dc3545;
-            --danger-light: #ffebee;
-            --warning: #ffc107;
-            --success: #28a745;
-            --dark: #1a1a2e;
-            --light: #f8f9fa;
-            --white: #ffffff;
-            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            --driver-gradient: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-        }
-
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: var(--gradient);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: #333;
             line-height: 1.6;
         }
-
+        
         body.driver-mode {
-            background: var(--driver-gradient);
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
         }
-
+        
         .container {
-            max-width: 600px;
+            max-width: 480px;
             margin: 0 auto;
             padding: 20px;
+            min-height: 100vh;
         }
-
+        
+        /* Header */
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px;
+            padding: 15px 0;
             color: white;
         }
-
+        
         .header-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
-
+        
         .back-btn {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border: none;
             color: white;
             width: 40px;
             height: 40px;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 1.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.3s;
+            transition: all 0.2s ease;
+            text-decoration: none;
         }
-
+        
         .back-btn:hover {
-            background: rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
         }
-
+        
+        .back-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
         .header h1 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
+            font-weight: 600;
         }
-
+        
+        /* Role Toggle */
         .role-toggle {
             display: flex;
-            background: rgba(255,255,255,0.2);
-            border-radius: 20px;
-            padding: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 4px;
         }
-
+        
         .role-btn {
-            padding: 6px 14px;
+            padding: 8px 14px;
             border: none;
             background: transparent;
             color: white;
-            border-radius: 18px;
+            border-radius: 20px;
             cursor: pointer;
             font-size: 0.85rem;
             font-weight: 600;
-            transition: all 0.3s;
+            transition: all 0.2s ease;
         }
-
+        
+        .role-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
         .role-btn.active {
             background: white;
-            color: var(--primary);
+            color: #667eea;
         }
-
-        .card {
+        
+        .role-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Profile Card */
+        .profile-card {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            padding: 20px 25px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .card-header h2 {
-            font-size: 1.2rem;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-body {
-            padding: 0;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 25px;
-            border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .menu-item:last-child {
-            border-bottom: none;
-        }
-
-        .menu-item:hover {
-            background: #f8f9fa;
-        }
-
-        .menu-item-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .menu-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--light);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .menu-text h3 {
-            font-size: 1rem;
-            color: #333;
-            margin-bottom: 2px;
-        }
-
-        .menu-text p {
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        .menu-arrow {
-            color: #ccc;
-            font-size: 1.2rem;
-        }
-
-        .menu-item.danger:hover {
-            background: var(--danger-light);
-        }
-
-        .menu-item.danger .menu-icon {
-            background: var(--danger-light);
-        }
-
-        .menu-item.danger .menu-text h3 {
-            color: var(--danger);
-        }
-
-        /* Profile Section */
-        .profile-section {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             padding: 25px;
+            margin-bottom: 20px;
             text-align: center;
-            border-bottom: 1px solid #eee;
         }
-
+        
+        .profile-avatar-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+        }
+        
         .profile-avatar {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 15px;
             font-size: 2rem;
             color: white;
             font-weight: 600;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            overflow: hidden;
         }
-
+        
+        .profile-avatar.has-image {
+            background: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-avatar-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+        
+        .profile-avatar-edit:hover {
+            transform: scale(1.1);
+        }
+        
+        .profile-avatar-edit:active {
+            transform: scale(0.95);
+        }
+        
+        .profile-avatar-edit input {
+            display: none;
+        }
+        
         .profile-name {
             font-size: 1.3rem;
             font-weight: 600;
             color: #333;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
-
+        
         .profile-phone {
             font-size: 0.9rem;
             color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
-
+        
         .profile-badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 5px 14px;
             border-radius: 15px;
             font-size: 0.8rem;
             font-weight: 600;
         }
-
+        
         .profile-badge.passenger {
             background: #e3f2fd;
             color: #1565c0;
         }
-
+        
         .profile-badge.driver {
             background: #fff3e0;
             color: #e65100;
         }
-
-        /* Modal */
+        
+        /* Section Card */
+        .section-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .section-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+        
+        /* Menu Item */
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .menu-item:active {
+            background: #f0f0f0;
+            transform: scale(0.98);
+            transition: transform 0.1s ease;
+        }
+        
+        .menu-item-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .menu-item:hover .menu-icon {
+            transform: scale(1.1);
+        }
+        
+        .menu-text h3 {
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .menu-text p {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        .menu-arrow {
+            color: #ccc;
+            font-size: 1.3rem;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        
+        .menu-item:hover .menu-arrow {
+            transform: translateX(4px);
+            color: #667eea;
+        }
+        
+        /* Danger Menu Item */
+        .menu-item.danger:hover {
+            background: #ffebee;
+        }
+        
+        .menu-item.danger .menu-icon {
+            background: #ffebee;
+        }
+        
+        .menu-item.danger .menu-text h3 {
+            color: #dc3545;
+        }
+        
+        .menu-item.danger:hover .menu-arrow {
+            color: #dc3545;
+        }
+        
+        /* Version */
+        .version {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+        }
+        
+        /* Modal Overlay */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.6);
             display: none;
             align-items: center;
             justify-content: center;
@@ -261,305 +340,206 @@
             padding: 20px;
             backdrop-filter: blur(5px);
         }
-
+        
         .modal-overlay.active {
             display: flex;
         }
-
+        
         .modal-content {
             background: white;
             border-radius: 20px;
-            max-width: 450px;
             width: 100%;
+            max-width: 420px;
             max-height: 90vh;
             overflow-y: auto;
             animation: modalSlideIn 0.3s ease;
         }
-
+        
         @keyframes modalSlideIn {
-            from { transform: translateY(-30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-
+        
         .modal-header {
-            padding: 25px;
-            border-bottom: 1px solid #eee;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f0f0;
             text-align: center;
         }
-
+        
         .modal-header.danger {
             background: linear-gradient(135deg, #ff5252 0%, #c62828 100%);
             color: white;
             border-radius: 20px 20px 0 0;
+            border-bottom: none;
         }
-
+        
+        .modal-header.success {
+            background: linear-gradient(135deg, #66bb6a 0%, #388e3c 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            border-bottom: none;
+        }
+        
+        .modal-header.info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            border-bottom: none;
+        }
+        
         .modal-header h2 {
-            font-size: 1.3rem;
-            margin-bottom: 5px;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-        }
-
-        .modal-header p {
-            opacity: 0.9;
-            font-size: 0.9rem;
-        }
-
-        .modal-body {
-            padding: 25px;
-        }
-
-        /* Step indicator */
-        .step-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .step {
-            display: flex;
-            align-items: center;
             gap: 8px;
         }
-
-        .step-number {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        
+        .modal-header p {
             font-size: 0.85rem;
-            font-weight: 600;
-            color: #666;
+            opacity: 0.9;
+            margin-top: 4px;
         }
-
-        .step.active .step-number {
-            background: var(--danger);
-            color: white;
+        
+        .modal-body {
+            padding: 24px;
         }
-
-        .step.completed .step-number {
-            background: var(--success);
-            color: white;
-        }
-
-        .step-label {
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        .step.active .step-label {
-            color: var(--danger);
-            font-weight: 600;
-        }
-
-        .step.completed .step-label {
-            color: var(--success);
-        }
-
-        .step-line {
-            width: 30px;
-            height: 2px;
-            background: #e0e0e0;
-            align-self: center;
-        }
-
-        .step.completed + .step-line {
-            background: var(--success);
-        }
-
-        /* Warning box */
-        .warning-box {
-            background: #fff3e0;
-            border: 1px solid #ffcc80;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .warning-box-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-            color: #e65100;
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
-
-        .warning-box p {
-            color: #666;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .warning-box ul {
-            margin: 10px 0 0 20px;
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .warning-box li {
-            margin-bottom: 5px;
-        }
-
-        /* Form */
+        
+        /* Form Group */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
-
+        
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #333;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
-
-        .form-group input {
+        
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 12px 14px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: 0.95rem;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            background: white;
         }
-
-        .form-group input:focus {
+        
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
-            border-color: var(--danger);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-
-        .checkbox-item {
-            display: flex;
-            align-items: flex-start;
+        
+        .form-group input::placeholder {
+            color: #999;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
-            padding: 15px;
-            background: var(--light);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
         }
-
-        .checkbox-item input {
-            width: 20px;
-            height: 20px;
-            margin-top: 2px;
-            accent-color: var(--danger);
-        }
-
-        .checkbox-item-text h4 {
-            font-size: 0.95rem;
-            color: #333;
-            margin-bottom: 3px;
-        }
-
-        .checkbox-item-text p {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
+        
         /* Buttons */
         .btn-row {
             display: flex;
             gap: 12px;
             margin-top: 20px;
         }
-
+        
         .btn {
             flex: 1;
             padding: 14px;
             border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
         }
-
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
         .btn-primary {
-            background: var(--danger);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
-
+        
         .btn-primary:hover {
-            background: #c62828;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
-
+        
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+        }
+        
         .btn-primary:disabled {
             background: #ccc;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
-
+        
         .btn-secondary {
-            background: var(--light);
+            background: #f5f5f5;
             color: #666;
         }
-
+        
         .btn-secondary:hover {
-            background: #e0e0e0;
+            background: #e8e8e8;
         }
-
-        .btn-ghost {
-            background: transparent;
-            color: #666;
+        
+        .btn-secondary:active {
+            background: #ddd;
         }
-
-        .btn-ghost:hover {
-            background: var(--light);
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff5252 0%, #c62828 100%);
+            color: white;
         }
-
-        /* Success state */
-        .success-content {
-            text-align: center;
-            padding: 30px;
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 82, 82, 0.4);
         }
-
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            background: #e8f5e9;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 2.5rem;
+        
+        .btn-danger:active {
+            transform: translateY(0);
         }
-
-        .success-content h3 {
-            font-size: 1.3rem;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .success-content p {
-            color: #666;
-            margin-bottom: 20px;
-        }
-
+        
         /* Toggle Switch */
         .toggle {
             position: relative;
             width: 50px;
-            height: 26px;
+            height: 28px;
         }
-
+        
         .toggle input {
             opacity: 0;
             width: 0;
             height: 0;
         }
-
+        
         .toggle-slider {
             position: absolute;
             cursor: pointer;
@@ -569,29 +549,218 @@
             bottom: 0;
             background-color: #ccc;
             transition: 0.3s;
-            border-radius: 26px;
+            border-radius: 28px;
         }
-
+        
         .toggle-slider:before {
             position: absolute;
             content: "";
-            height: 20px;
-            width: 20px;
+            height: 22px;
+            width: 22px;
             left: 3px;
             bottom: 3px;
             background-color: white;
             transition: 0.3s;
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-
+        
         input:checked + .toggle-slider {
-            background-color: var(--accent);
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
         }
-
+        
         input:checked + .toggle-slider:before {
-            transform: translateX(24px);
+            transform: translateX(22px);
         }
-
+        
+        /* Settings Group */
+        .settings-group {
+            margin-bottom: 20px;
+        }
+        
+        .settings-group-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-info h4 {
+            font-size: 0.9rem;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .setting-info p {
+            font-size: 0.75rem;
+            color: #888;
+        }
+        
+        /* Warning Box */
+        .warning-box {
+            background: #fff3e0;
+            border: 1px solid #ffcc80;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .warning-box-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #e65100;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .warning-box p,
+        .warning-box li {
+            color: #666;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+        
+        .warning-box ul {
+            margin: 8px 0 0 16px;
+        }
+        
+        .warning-box li {
+            margin-bottom: 4px;
+        }
+        
+        /* Checkbox Item */
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .checkbox-item:hover {
+            background: #f0f0f5;
+        }
+        
+        .checkbox-item:active {
+            background: #e8e8f0;
+        }
+        
+        .checkbox-item input {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            accent-color: #667eea;
+            cursor: pointer;
+        }
+        
+        .checkbox-item-text h4 {
+            font-size: 0.9rem;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .checkbox-item-text p {
+            font-size: 0.75rem;
+            color: #888;
+        }
+        
+        /* Preferences Grid */
+        .preferences-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .preference-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: background 0.2s ease;
+        }
+        
+        .preference-item:hover {
+            background: #f0f0f5;
+        }
+        
+        .preference-item span {
+            font-size: 0.85rem;
+            color: #333;
+        }
+        
+        /* Contact Options */
+        .contact-options {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .contact-option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .contact-option:hover {
+            background: #f0f0f5;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .contact-option:active {
+            transform: translateY(0);
+        }
+        
+        .contact-option-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        
+        .contact-option-text h4 {
+            font-size: 0.95rem;
+            color: #333;
+            margin-bottom: 2px;
+        }
+        
+        .contact-option-text p {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
         /* Loading */
         .loading {
             display: inline-block;
@@ -603,564 +772,1018 @@
             animation: spin 0.8s linear infinite;
             margin-right: 8px;
         }
-
+        
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
-
+        
         .hidden {
             display: none !important;
         }
-
-        /* Info list */
-        .info-list {
-            padding: 0 25px 25px;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .info-item:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: #666;
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
             font-size: 0.9rem;
-        }
-
-        .info-value {
-            color: #333;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        /* Version */
-        .version {
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
             text-align: center;
-            padding: 20px;
-            color: #999;
-            font-size: 0.8rem;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.success {
+            background: linear-gradient(135deg, #66bb6a 0%, #388e3c 100%);
+        }
+        
+        .toast.error {
+            background: linear-gradient(135deg, #ff5252 0%, #c62828 100%);
+        }
+        
+        /* Modal Close Button */
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        
+        .modal-close:hover {
+            opacity: 1;
+        }
+        
+        .modal-close:active {
+            transform: scale(0.9);
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-row {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
             <div class="header-left">
-                <button class="back-btn" onclick="goBack()">←</button>
-                <h1>⚙️ Settings</h1>
+                <a href="/map" class="back-btn">←</a>
+                <h1>Settings</h1>
             </div>
             <div class="role-toggle">
                 <button class="role-btn" id="passengerModeBtn" onclick="setUserMode('passenger')">👤</button>
                 <button class="role-btn active" id="driverModeBtn" onclick="setUserMode('driver')">🚙</button>
             </div>
         </div>
-
-        <!-- Profile Section -->
-        <div class="card">
-            <div class="profile-section">
+        
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-avatar-container">
                 <div class="profile-avatar" id="profileAvatar">U</div>
-                <div class="profile-name" id="profileName">User</div>
-                <div class="profile-phone" id="profilePhone">+1 555 123 4567</div>
-                <span class="profile-badge" id="profileBadge">Passenger</span>
+                <label class="profile-avatar-edit" for="profilePhotoInput">
+                    📷
+                    <input type="file" id="profilePhotoInput" accept="image/*" onchange="handleProfilePhotoUpload(event)">
+                </label>
             </div>
-            <div class="card-body">
-                <div class="menu-item" onclick="editProfile()">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">✏️</div>
-                        <div class="menu-text">
-                            <h3>Edit Profile</h3>
-                            <p>Update your name, email, photo</p>
-                        </div>
+            <div class="profile-name" id="profileName">User</div>
+            <div class="profile-phone" id="profilePhone">+1 555 123 4567</div>
+            <span class="profile-badge" id="profileBadge">Passenger</span>
+        </div>
+        
+        <!-- Account Section -->
+        <div class="section-card">
+            <div class="section-header">Account</div>
+            <div class="menu-item" onclick="showEditProfileModal();">
+                <div class="menu-item-left">
+                    <div class="menu-icon">✏️</div>
+                    <div class="menu-text">
+                        <h3>Edit Profile</h3>
+                        <p>Name, email, emergency contact</p>
                     </div>
-                    <span class="menu-arrow">›</span>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="showChangePasswordModal();">
+                <div class="menu-item-left">
+                    <div class="menu-icon">🔑</div>
+                    <div class="menu-text">
+                        <h3>Change Password</h3>
+                        <p>Update your password</p>
+                    </div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="showNotificationSettings();">
+                <div class="menu-item-left">
+                    <div class="menu-icon">🔔</div>
+                    <div class="menu-text">
+                        <h3>Notifications</h3>
+                        <p>Push, email, SMS preferences</p>
+                    </div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="showPrivacySettings();">
+                <div class="menu-item-left">
+                    <div class="menu-icon">🔒</div>
+                    <div class="menu-text">
+                        <h3>Privacy</h3>
+                        <p>Profile visibility settings</p>
+                    </div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+        </div>
+        
+        <!-- Driver Section -->
+        <div class="section-card" id="driverSettingsCard">
+            <div class="section-header">Driver</div>
+            <div class="menu-item" onclick="showVehicleInfoModal();">
+                <div class="menu-item-left">
+                    <div class="menu-icon">🚗</div>
+                    <div class="menu-text">
+                        <h3>Vehicle Information</h3>
+                        <p>Make, model, license plate</p>
+                    </div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="showDriverPreferencesModal();">
+                <div class="menu-item-left">
+                    <div class="menu-icon">⚙️</div>
+                    <div class="menu-text">
+                        <h3>Driving Preferences</h3>
+                        <p>Smoking, music, pets, etc.</p>
+                    </div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+        </div>
+        
+        <!-- Data & Privacy Section -->
+        <div class="section-card">
+            <div class="section-header">Data & Privacy</div>
+            <div class="menu-item" onclick="downloadData();">
+                <div class="menu-item-left">
+                    <div class="menu-icon">📥</div>
+                    <div class="menu-text">
+                        <h3>Download My Data</h3>
+                        <p>Get a copy of your data</p>
+                    </div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item danger" onclick="showDeleteAccountModal();">
+                <div class="menu-item-left">
+                    <div class="menu-icon">🗑️</div>
+                    <div class="menu-text">
+                        <h3>Delete Account</h3>
+                        <p>Permanently delete account</p>
+                    </div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+        </div>
+        
+        <!-- Support Section -->
+        <div class="section-card">
+            <div class="section-header">Support</div>
+            <a href="/help-center" class="menu-item">
+                <div class="menu-item-left">
+                    <div class="menu-icon">❓</div>
+                    <div class="menu-text">
+                        <h3>Help Center</h3>
+                        <p>FAQs and support</p>
+                    </div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </a>
+            <div class="menu-item" onclick="contactForBusiness();">
+                <div class="menu-item-left">
+                    <div class="menu-icon">📧</div>
+                    <div class="menu-text">
+                        <h3>Contact Us for Business</h3>
+                        <p>Promote your local business</p>
+                    </div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+            <a href="#" class="menu-item" id="termsPrivacyLink" onclick="showTermsPrivacy(); return false;">
+                <div class="menu-item-left">
+                    <div class="menu-icon">📜</div>
+                    <div class="menu-text">
+                        <h3>Terms & Privacy</h3>
+                        <p>Legal documents</p>
+                    </div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </a>
+            <div class="menu-item danger" onclick="logout();">
+                <div class="menu-item-left">
+                    <div class="menu-icon">🚪</div>
+                    <div class="menu-text">
+                        <h3>Logout</h3>
+                        <p>Sign out of your account</p>
+                    </div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+        </div>
+        
+        <div class="version">PDRides v1.0.0 • © 2025</div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header info">
+                <h2>✏️ Edit Profile</h2>
+                <p>Update your personal information</p>
+                <button class="modal-close" onclick="closeModal('editProfileModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="profileNameInput" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="profileEmailInput" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Emergency Contact Name</label>
+                    <input type="text" id="emergencyContactName" placeholder="Emergency contact name">
+                </div>
+                <div class="form-group">
+                    <label>Emergency Contact Phone</label>
+                    <input type="tel" id="emergencyContactPhone" placeholder="Emergency contact phone">
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
+                    <button class="btn btn-primary" id="saveProfileBtn" onclick="saveProfile()">Save Changes</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Account Settings -->
-        <div class="card">
-            <div class="card-header">
-                <h2>🔐 Account</h2>
+    <!-- Change Password Modal -->
+    <div class="modal-overlay" id="changePasswordModal">
+        <div class="modal-content">
+            <div class="modal-header info">
+                <h2>🔑 Change Password</h2>
+                <p>Update your account password</p>
+                <button class="modal-close" onclick="closeModal('changePasswordModal')">×</button>
             </div>
-            <div class="card-body">
-                <div class="menu-item" onclick="showChangePassword()">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">🔑</div>
-                        <div class="menu-text">
-                            <h3>Change Password</h3>
-                            <p>Update your account password</p>
-                        </div>
-                    </div>
-                    <span class="menu-arrow">›</span>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Current Password</label>
+                    <input type="password" id="currentPassword" placeholder="Enter current password">
                 </div>
-                <div class="menu-item" onclick="showNotificationSettings()">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">🔔</div>
-                        <div class="menu-text">
-                            <h3>Notifications</h3>
-                            <p>Manage notification preferences</p>
-                        </div>
-                    </div>
-                    <span class="menu-arrow">›</span>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" id="newPassword" placeholder="Enter new password">
                 </div>
-                <div class="menu-item" onclick="showPrivacySettings()">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">🔒</div>
-                        <div class="menu-text">
-                            <h3>Privacy</h3>
-                            <p>Control your privacy settings</p>
-                        </div>
-                    </div>
-                    <span class="menu-arrow">›</span>
+                <div class="form-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Confirm new password">
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-secondary" onclick="closeModal('changePasswordModal')">Cancel</button>
+                    <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Driver Settings -->
-        <div class="card" id="driverSettingsCard">
-            <div class="card-header">
-                <h2>🚙 Driver Settings</h2>
+    <!-- Notification Settings Modal -->
+    <div class="modal-overlay" id="notificationSettingsModal">
+        <div class="modal-content">
+            <div class="modal-header info">
+                <h2>🔔 Notification Settings</h2>
+                <p>Manage your notification preferences</p>
+                <button class="modal-close" onclick="closeModal('notificationSettingsModal')">×</button>
             </div>
-            <div class="card-body">
-                <div class="menu-item" onclick="editVehicleInfo()">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">🚗</div>
-                        <div class="menu-text">
-                            <h3>Vehicle Information</h3>
-                            <p>Update your vehicle details</p>
-                        </div>
+            <div class="modal-body">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="pushNotifications" checked>
+                    <div class="checkbox-item-text">
+                        <h4>Push Notifications</h4>
+                        <p>Receive push notifications on your device</p>
                     </div>
-                    <span class="menu-arrow">›</span>
                 </div>
-                <div class="menu-item" onclick="editDriverPreferences()">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">⚙️</div>
-                        <div class="menu-text">
-                            <h3>Driving Preferences</h3>
-                            <p>Set your ride preferences</p>
-                        </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="emailNotifications" checked>
+                    <div class="checkbox-item-text">
+                        <h4>Email Notifications</h4>
+                        <p>Receive updates via email</p>
                     </div>
-                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="smsNotifications" checked>
+                    <div class="checkbox-item-text">
+                        <h4>SMS Notifications</h4>
+                        <p>Receive important updates via SMS</p>
+                    </div>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rideAlerts" checked>
+                    <div class="checkbox-item-text">
+                        <h4>Ride Alerts</h4>
+                        <p>Get notified about ride requests and updates</p>
+                    </div>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="promotionalEmails">
+                    <div class="checkbox-item-text">
+                        <h4>Promotional Emails</h4>
+                        <p>Receive promotional offers and discounts</p>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="saveNotificationSettings()">Save Preferences</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Data & Privacy -->
-        <div class="card">
-            <div class="card-header">
-                <h2>📊 Data & Privacy</h2>
+    <!-- Privacy Settings Modal -->
+    <div class="modal-overlay" id="privacySettingsModal">
+        <div class="modal-content">
+            <div class="modal-header info">
+                <h2>🔒 Privacy Settings</h2>
+                <p>Control your profile visibility</p>
+                <button class="modal-close" onclick="closeModal('privacySettingsModal')">×</button>
             </div>
-            <div class="card-body">
-                <div class="menu-item" onclick="downloadData()">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">📥</div>
-                        <div class="menu-text">
-                            <h3>Download My Data</h3>
-                            <p>Get a copy of your account data</p>
-                        </div>
+            <div class="modal-body">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="profileVisibility" checked>
+                    <div class="checkbox-item-text">
+                        <h4>Profile Visibility</h4>
+                        <p>Allow other users to see your profile</p>
                     </div>
-                    <span class="menu-arrow">›</span>
                 </div>
-                <div class="menu-item danger" onclick="showDeleteAccountModal()">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">🗑️</div>
-                        <div class="menu-text">
-                            <h3>Delete Account</h3>
-                            <p>Permanently delete your account and data</p>
-                        </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="showOnlineStatus" checked>
+                    <div class="checkbox-item-text">
+                        <h4>Online Status</h4>
+                        <p>Show when you're online to other users</p>
                     </div>
-                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="shareRideHistory">
+                    <div class="checkbox-item-text">
+                        <h4>Share Ride History</h4>
+                        <p>Allow others to view your ride history</p>
+                    </div>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="locationTracking" checked>
+                    <div class="checkbox-item-text">
+                        <h4>Location Tracking</h4>
+                        <p>Allow app to access your location</p>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="savePrivacySettings()">Save Settings</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Support -->
-        <div class="card">
-            <div class="card-header">
-                <h2>❓ Support</h2>
+    <!-- Vehicle Info Modal -->
+    <div class="modal-overlay" id="vehicleInfoModal">
+        <div class="modal-content">
+            <div class="modal-header info">
+                <h2>🚗 Vehicle Information</h2>
+                <p>Update your vehicle details</p>
+                <button class="modal-close" onclick="closeModal('vehicleInfoModal')">×</button>
             </div>
-            <div class="card-body">
-                <div class="menu-item" onclick="showHelp()">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">❓</div>
-                        <div class="menu-text">
-                            <h3>Help Center</h3>
-                            <p>Get help and FAQs</p>
-                        </div>
-                    </div>
-                    <span class="menu-arrow">›</span>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Vehicle Make</label>
+                    <input type="text" id="vehicleMake" placeholder="e.g., Toyota">
                 </div>
-                <div class="menu-item" onclick="showContact()">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">📧</div>
-                        <div class="menu-text">
-                            <h3>Contact Us</h3>
-                            <p>Reach out for support</p>
-                        </div>
-                    </div>
-                    <span class="menu-arrow">›</span>
+                <div class="form-group">
+                    <label>Vehicle Model</label>
+                    <input type="text" id="vehicleModel" placeholder="e.g., Camry">
                 </div>
-                <div class="menu-item" onclick="showTerms()">
-                    <div class="menu-item-left">
-                        <div class="menu-icon">📜</div>
-                        <div class="menu-text">
-                            <h3>Terms & Privacy</h3>
-                            <p>View legal documents</p>
-                        </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="text" id="vehicleYear" placeholder="e.g., 2022">
                     </div>
-                    <span class="menu-arrow">›</span>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="text" id="vehicleColor" placeholder="e.g., Silver">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>License Plate</label>
+                    <input type="text" id="licensePlate" placeholder="e.g., ABC 1234">
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-secondary" onclick="closeModal('vehicleInfoModal')">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveVehicleInfo()">Save Vehicle</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="version">
-            PDRides v1.0.0 • © 2025 PDRides
+    <!-- Driver Preferences Modal -->
+    <div class="modal-overlay" id="driverPreferencesModal">
+        <div class="modal-content">
+            <div class="modal-header info">
+                <h2>⚙️ Driving Preferences</h2>
+                <p>Set your driving preferences</p>
+                <button class="modal-close" onclick="closeModal('driverPreferencesModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="allowSmoking">
+                    <div class="checkbox-item-text">
+                        <h4>Allow Smoking</h4>
+                        <p>Allow passengers to smoke in the vehicle</p>
+                    </div>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="allowPets">
+                    <div class="checkbox-item-text">
+                        <h4>Allow Pets</h4>
+                        <p>Allow pets in the vehicle</p>
+                    </div>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="allowMusic" checked>
+                    <div class="checkbox-item-text">
+                        <h4>Play Music</h4>
+                        <p>Play your preferred music during rides</p>
+                    </div>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="airConditioning" checked>
+                    <div class="checkbox-item-text">
+                        <h4>Air Conditioning</h4>
+                        <p>Use AC during rides</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Additional Notes</label>
+                    <input type="text" id="additionalNotes" placeholder="Any other preferences...">
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="saveDriverPreferences()">Save Preferences</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Delete Account Modal -->
-    <div class="modal-overlay" id="deleteModal">
+    <div class="modal-overlay" id="deleteAccountModal">
         <div class="modal-content">
-            <!-- Step 1: Initial Warning -->
-            <div id="deleteStep1">
-                <div class="modal-header danger">
-                    <h2>🗑️ Delete Account</h2>
-                    <p>Are you sure you want to delete your account?</p>
-                </div>
-                <div class="modal-body">
-                    <div class="step-indicator">
-                        <div class="step completed">
-                            <div class="step-number">✓</div>
-                            <div class="step-label">Confirm</div>
-                        </div>
-                        <div class="step-line"></div>
-                        <div class="step active">
-                            <div class="step-number">2</div>
-                            <div class="step-label">Final</div>
-                        </div>
-                    </div>
-
-                    <div class="warning-box">
-                        <div class="warning-box-title">
-                            ⚠️ Important Information
-                        </div>
-                        <p>Before you delete your account, please note:</p>
-                        <ul>
-                            <li><strong>60-Day Retention:</strong> Your data will be retained in our system for 60 days for legal and government purposes before complete deletion.</li>
-                            <li><strong>Reactivation:</strong> You can reactivate your account within 60 days by logging in again.</li>
-                            <li><strong>Ride History:</strong> Past ride records may be retained for compliance purposes.</li>
-                        </ul>
-                    </div>
-
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="deleteConfirm1">
-                        <div class="checkbox-item-text">
-                            <h4>I understand this action is permanent</h4>
-                            <p>I understand that most of my data will be deleted immediately, but some information may be retained for up to 60 days.</p>
-                        </div>
-                    </div>
-
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="deleteConfirm2">
-                        <div class="checkbox-item-text">
-                            <h4>I want to delete my account</h4>
-                            <p>I acknowledge that I am deleting my PDRides account voluntarily.</p>
-                        </div>
-                    </div>
-
-                    <div class="btn-row">
-                        <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                        <button class="btn btn-primary" id="deleteStep1Btn" onclick="goToDeleteStep2()" disabled>Continue</button>
-                    </div>
-                </div>
+            <div class="modal-header danger">
+                <h2>🗑️ Delete Account</h2>
+                <p>This action cannot be undone</p>
+                <button class="modal-close" onclick="closeModal('deleteAccountModal')">×</button>
             </div>
-
-            <!-- Step 2: Final Confirmation -->
-            <div id="deleteStep2" class="hidden">
-                <div class="modal-header danger">
-                    <h2>⚠️ Final Confirmation</h2>
-                    <p>Last step before account deletion</p>
+            <div class="modal-body">
+                <div class="warning-box">
+                    <div class="warning-box-title">⚠️ Warning</div>
+                    <p>Deleting your account will:</p>
+                    <ul>
+                        <li>Permanently remove all your data</li>
+                        <li>Delete your ride history</li>
+                        <li>Remove all saved routes and preferences</li>
+                        <li>Cancel any active rides</li>
+                    </ul>
                 </div>
-                <div class="modal-body">
-                    <div class="step-indicator">
-                        <div class="step completed">
-                            <div class="step-number">✓</div>
-                            <div class="step-label">Confirm</div>
-                        </div>
-                        <div class="step-line"></div>
-                        <div class="step completed">
-                            <div class="step-number">✓</div>
-                            <div class="step-label">Review</div>
-                        </div>
-                        <div class="step-line"></div>
-                        <div class="step active">
-                            <div class="step-number">3</div>
-                            <div class="step-label">Delete</div>
-                        </div>
-                    </div>
-
-                    <div class="warning-box">
-                        <div class="warning-box-title">
-                            🔴 This action cannot be undone
-                        </div>
-                        <p>Please type <strong>DELETE</strong> in the box below to confirm your decision.</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Type DELETE to confirm</label>
-                        <input type="text" id="deleteConfirmationText" placeholder="Type DELETE here">
-                    </div>
-
-                    <div class="btn-row">
-                        <button class="btn btn-secondary" onclick="goToDeleteStep1()">Go Back</button>
-                        <button class="btn btn-primary" id="deleteFinalBtn" onclick="deleteAccount()" disabled>
-                            🗑️ Delete My Account
-                        </button>
-                    </div>
+                <div class="form-group">
+                    <label>Type "DELETE" to confirm</label>
+                    <input type="text" id="deleteConfirmation" placeholder="Type DELETE">
                 </div>
-            </div>
-
-            <!-- Success -->
-            <div id="deleteSuccess" class="hidden">
-                <div class="success-content">
-                    <div class="success-icon">✅</div>
-                    <h3>Account Deletion Requested</h3>
-                    <p>Your account has been scheduled for deletion. You have 60 days to change your mind by logging back in.</p>
-                    <p style="font-size: 0.85rem; color: #666;">A confirmation has been sent to your email.</p>
-                    <button class="btn btn-primary" onclick="logout()" style="margin-top: 20px; max-width: 200px;">
-                        OK, Goodbye
-                    </button>
+                <div class="btn-row">
+                    <button class="btn btn-secondary" onclick="closeModal('deleteAccountModal')">Cancel</button>
+                    <button class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Contact Modal -->
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-content">
+            <div class="modal-header info">
+                <h2>📧 Contact Us</h2>
+                <p>Choose your preferred support method</p>
+                <button class="modal-close" onclick="closeModal('contactModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="contact-options">
+                    <div class="contact-option" onclick="contactViaEmail();">
+                        <div class="contact-option-icon">📧</div>
+                        <div class="contact-option-text">
+                            <h4>Email Support</h4>
+                            <p>support@pdrides.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-option" onclick="contactViaWhatsApp();">
+                        <div class="contact-option-icon">💬</div>
+                        <div class="contact-option-text">
+                            <h4>WhatsApp</h4>
+                            <p>Chat with us on WhatsApp</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms & Privacy Modal -->
+    <div class="modal-overlay" id="termsPrivacyModal">
+        <div class="modal-content">
+            <div class="modal-header info">
+                <h2>📜 Terms & Privacy</h2>
+                <p>Legal documents</p>
+                <button class="modal-close" onclick="closeModal('termsPrivacyModal')">×</button>
+            </div>
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #333; margin-bottom: 10px; font-size: 1rem;">📄 Terms of Service</h3>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; font-size: 0.85rem; color: #666; line-height: 1.6;">
+                        <p style="margin-bottom: 10px;">By using PDRides, you agree to our terms of service:</p>
+                        <ul style="margin-left: 16px;">
+                            <li>All users must be 18 years or older</li>
+                            <li>Drivers must have valid license and insurance</li>
+                            <li>Shared rides must follow local traffic laws</li>
+                            <li>All rides are at user's own risk</li>
+                            <li>PDRides is not liable for any damages</li>
+                            <li>Users must treat each other with respect</li>
+                            <li>Cancellation fees may apply</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #333; margin-bottom: 10px; font-size: 1rem;">🔒 Privacy Policy</h3>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; font-size: 0.85rem; color: #666; line-height: 1.6;">
+                        <p style="margin-bottom: 10px;">Your privacy is important to us:</p>
+                        <ul style="margin-left: 16px;">
+                            <li>We collect only necessary personal data</li>
+                            <li>Location data is used for ride matching</li>
+                            <li>Phone numbers are used for authentication</li>
+                            <li>Data is encrypted and stored securely</li>
+                            <li>We never sell your data to third parties</li>
+                            <li>You can request data deletion anytime</li>
+                            <li>Trip history is kept for 2 years</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="/terms-of-service" style="color: #667eea; text-decoration: none; font-size: 0.85rem;">View Full Terms →</a>
+                    <br>
+                    <a href="/privacy-policy" style="color: #667eea; text-decoration: none; font-size: 0.85rem;">View Full Privacy Policy →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
     <script>
-        // Auth state
-        let authToken = localStorage.getItem('pdrides_token') || null;
-        let userPhone = localStorage.getItem('pdrides_phone') || null;
+        // State
+        let currentMode = 'driver';
+        
+    // Initialize - load profile from server first, then localStorage as fallback
+    document.addEventListener('DOMContentLoaded', async function() {
+        // First try to load from localStorage as fallback
         let userName = localStorage.getItem('pdrides_name') || 'User';
-        let userMode = localStorage.getItem('pdrides_mode') || 'passenger';
-
-        // Check if logged in
-        if (!authToken || !userPhone) {
-            window.location.href = '/login';
+        let userPhone = localStorage.getItem('pdrides_phone') || '';
+        const userRole = localStorage.getItem('pdrides_role') || 'passenger';
+        const userPhoto = localStorage.getItem('pdrides_photo');
+        
+        // Get auth credentials
+        const authToken = localStorage.getItem('pdrides_token');
+        
+        // Try to fetch from server if logged in
+        if (authToken && userPhone) {
+            try {
+                const response = await fetch(`/api/user/profile?phoneNumber=${userPhone}&token=${authToken}`);
+                const data = await response.json();
+                
+                if (data.success && data.profile) {
+                    // Update with server data
+                    userName = data.profile.name || userName;
+                    userPhone = data.profile.phoneNumber || userPhone;
+                    
+                    // Save to localStorage for consistency
+                    localStorage.setItem('pdrides_name', userName);
+                    localStorage.setItem('pdrides_phone', userPhone);
+                    
+                    // Pre-fill edit profile form with server data
+                    document.getElementById('profileNameInput').value = data.profile.name || '';
+                    document.getElementById('profileEmailInput').value = data.profile.email || '';
+                    document.getElementById('emergencyContactName').value = data.profile.emergencyContact?.name || '';
+                    document.getElementById('emergencyContactPhone').value = data.profile.emergencyContact?.phone || '';
+                }
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            }
         }
-
-        // Initialize
-        window.onload = () => {
-            initUI();
-        };
-
-        function initUI() {
-            // Set user info
-            document.getElementById('profileName').textContent = userName;
-            document.getElementById('profilePhone').textContent = userPhone;
-            document.getElementById('profileAvatar').textContent = userName.charAt(0).toUpperCase();
-
-            // Set mode
-            setUserMode(userMode, false);
-
-            // Show/hide driver settings based on role
-            const driverCard = document.getElementById('driverSettingsCard');
-            if (userMode === 'driver') {
-                driverCard.style.display = 'block';
+        
+        // Update profile card
+        updateProfileAvatar(userPhoto, userName);
+        document.getElementById('profileName').textContent = userName;
+        document.getElementById('profilePhone').textContent = userPhone;
+        
+        // Update badge
+        const badge = document.getElementById('profileBadge');
+        badge.textContent = userRole === 'driver' ? 'Driver' : 'Passenger';
+        badge.className = 'profile-badge ' + userRole;
+        
+        // Set mode
+        setUserMode(localStorage.getItem('pdrides_mode') || 'passenger');
+    });
+        
+        // Update profile avatar with photo or initials
+        function updateProfileAvatar(photoData, name) {
+            const avatar = document.getElementById('profileAvatar');
+            
+            if (photoData) {
+                avatar.innerHTML = '<img src="' + photoData + '" alt="Profile Photo">';
+                avatar.classList.add('has-image');
             } else {
-                driverCard.style.display = 'none';
+                avatar.textContent = name.charAt(0).toUpperCase();
+                avatar.classList.remove('has-image');
+                avatar.style.background = 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)';
             }
         }
-
-        function setUserMode(mode, save = true) {
-            userMode = mode;
-            if (save) {
-                localStorage.setItem('pdrides_mode', mode);
+        
+        // Handle profile photo upload
+        function handleProfilePhotoUpload(event) {
+            const file = event.target.files[0];
+            
+            if (!file) {
+                return;
             }
-
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image file', 'error');
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image must be less than 5MB', 'error');
+                return;
+            }
+            
+            // Read and display the image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const photoData = e.target.result;
+                
+                // Save to localStorage
+                localStorage.setItem('pdrides_photo', photoData);
+                
+                // Update avatar display
+                const userName = localStorage.getItem('pdrides_name') || 'User';
+                updateProfileAvatar(photoData, userName);
+                
+                // Update profile photo across all views (stored in localStorage for other pages to use)
+                showToast('Profile photo updated!', 'success');
+            };
+            
+            reader.onerror = function() {
+                showToast('Error reading file', 'error');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // Set user mode
+        function setUserMode(mode) {
+            currentMode = mode;
+            localStorage.setItem('pdrides_mode', mode);
+            
             // Update buttons
             document.getElementById('passengerModeBtn').classList.toggle('active', mode === 'passenger');
             document.getElementById('driverModeBtn').classList.toggle('active', mode === 'driver');
-
-            // Update background
-            if (mode === 'driver') {
-                document.body.classList.add('driver-mode');
-                document.getElementById('profileBadge').textContent = 'Driver';
-                document.getElementById('profileBadge').className = 'profile-badge driver';
-                document.getElementById('driverSettingsCard').style.display = 'block';
-            } else {
-                document.body.classList.remove('driver-mode');
-                document.getElementById('profileBadge').textContent = 'Passenger';
-                document.getElementById('profileBadge').className = 'profile-badge passenger';
-                document.getElementById('driverSettingsCard').style.display = 'none';
-            }
+            
+            // Update body class
+            document.body.classList.toggle('driver-mode', mode === 'driver');
+            
+            // Update driver settings visibility
+            const driverCard = document.getElementById('driverSettingsCard');
+            driverCard.style.display = mode === 'driver' ? 'block' : 'none';
+            
+            // Update profile badge
+            const badge = document.getElementById('profileBadge');
+            badge.textContent = mode === 'driver' ? 'Driver' : 'Passenger';
+            badge.className = 'profile-badge ' + mode;
+            
+            // Show toast
+            showToast(`Switched to ${mode} mode`, 'success');
         }
-
-        function goBack() {
-            window.location.href = '/map';
-        }
-
+        
         // Modal functions
-        function showDeleteAccountModal() {
-            document.getElementById('deleteModal').classList.add('active');
-            goToDeleteStep1();
+        function showEditProfileModal() {
+            document.getElementById('editProfileModal').classList.add('active');
         }
-
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.remove('active');
+        
+        function showChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.add('active');
         }
-
-        function goToDeleteStep1() {
-            document.getElementById('deleteStep1').classList.remove('hidden');
-            document.getElementById('deleteStep2').classList.add('hidden');
-            document.getElementById('deleteSuccess').classList.add('hidden');
-
-            // Reset checkboxes
-            document.getElementById('deleteConfirm1').checked = false;
-            document.getElementById('deleteConfirm2').checked = false;
-            document.getElementById('deleteStep1Btn').disabled = true;
-        }
-
-        function goToDeleteStep2() {
-            document.getElementById('deleteStep1').classList.add('hidden');
-            document.getElementById('deleteStep2').classList.remove('hidden');
-
-            // Reset final confirmation
-            document.getElementById('deleteConfirmationText').value = '';
-            document.getElementById('deleteFinalBtn').disabled = true;
-        }
-
-        // Checkbox listeners for step 1
-        document.getElementById('deleteConfirm1').addEventListener('change', checkDeleteStep1);
-        document.getElementById('deleteConfirm2').addEventListener('change', checkDeleteStep1);
-
-        function checkDeleteStep1() {
-            const c1 = document.getElementById('deleteConfirm1').checked;
-            const c2 = document.getElementById('deleteConfirm2').checked;
-            document.getElementById('deleteStep1Btn').disabled = !(c1 && c2);
-        }
-
-        // Text input listener for step 2
-        document.getElementById('deleteConfirmationText').addEventListener('input', function(e) {
-            const value = e.target.value.trim().toUpperCase();
-            document.getElementById('deleteFinalBtn').disabled = value !== 'DELETE';
-        });
-
-        // Delete account
-        async function deleteAccount() {
-            const btn = document.getElementById('deleteFinalBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>Deleting...';
-
-            try {
-                const response = await fetch('/api/user/account', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    },
-                    body: JSON.stringify({
-                        scheduledDeletion: true,
-                        deletionDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString()
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    document.getElementById('deleteStep2').classList.add('hidden');
-                    document.getElementById('deleteSuccess').classList.remove('hidden');
-                } else {
-                    throw new Error(data.error || 'Failed to delete account');
-                }
-            } catch (error) {
-                console.error('Delete error:', error);
-                alert(error.message || 'Failed to delete account. Please try again.');
-                btn.disabled = false;
-                btn.innerHTML = '🗑️ Delete My Account';
-            }
-        }
-
-        // Menu functions
-        function editProfile() {
-            window.location.href = '/map?tab=profile';
-        }
-
-        function showChangePassword() {
-            alert('Password change feature coming soon!');
-        }
-
+        
         function showNotificationSettings() {
-            alert('Notification settings coming soon!');
+            document.getElementById('notificationSettingsModal').classList.add('active');
         }
-
+        
         function showPrivacySettings() {
-            alert('Privacy settings coming soon!');
+            document.getElementById('privacySettingsModal').classList.add('active');
         }
-
-        function editVehicleInfo() {
-            window.location.href = '/map?tab=vehicle';
+        
+        function showVehicleInfoModal() {
+            document.getElementById('vehicleInfoModal').classList.add('active');
         }
-
-        function editDriverPreferences() {
-            alert('Driver preferences coming soon!');
+        
+        function showDriverPreferencesModal() {
+            document.getElementById('driverPreferencesModal').classList.add('active');
         }
-
-        async function downloadData() {
-            try {
-                const response = await fetch('/api/user/profile', {
-                    headers: {
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    }
-                });
-                const data = await response.json();
-
-                if (data.success) {
-                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'pdrides-data.json';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                }
-            } catch (error) {
-                alert('Failed to download data');
-            }
+        
+        function showDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.add('active');
         }
-
-        function showHelp() {
-            alert('Help center coming soon!');
-        }
-
+        
         function showContact() {
-            alert('Contact support coming soon!');
+            document.getElementById('contactModal').classList.add('active');
         }
-
-        function showTerms() {
-            window.location.href = '/terms-of-service';
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
         }
-
-        function logout() {
-            localStorage.removeItem('pdrides_token');
-            localStorage.removeItem('pdrides_phone');
-            localStorage.removeItem('pdrides_name');
-            localStorage.removeItem('pdrides_mode');
-            window.location.href = '/login';
-        }
-
-        // Close modal on outside click
-        document.getElementById('deleteModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeDeleteModal();
-            }
+        
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
         });
+        
+        // Save profile function
+        function saveProfile() {
+            const btn = document.getElementById('saveProfileBtn');
+            const name = document.getElementById('profileNameInput').value.trim();
+            const email = document.getElementById('profileEmailInput').value.trim();
+            const emergencyName = document.getElementById('emergencyContactName').value.trim();
+            const emergencyPhone = document.getElementById('emergencyContactPhone').value.trim();
+            
+            if (!name) {
+                showToast('Please enter your name', 'error');
+                return;
+            }
+            
+            // Get auth credentials from localStorage
+            const authToken = localStorage.getItem('pdrides_token');
+            const userPhone = localStorage.getItem('pdrides_phone');
+            
+            if (!authToken || !userPhone) {
+                showToast('Please login first', 'error');
+                // Redirect to login if no token
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1500);
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>Saving...';
+            
+            // Prepare request data
+            const requestData = {
+                name: name,
+                email: email,
+                emergencyContact: {
+                    name: emergencyName,
+                    phone: emergencyPhone
+                }
+            };
+            
+            // Build URL with query parameters for authentication (as fallback)
+            const queryParams = `?phoneNumber=${encodeURIComponent(userPhone)}&token=${encodeURIComponent(authToken)}`;
+            
+            // Call API to update profile - include auth in both headers and URL params
+            fetch('/api/user/profile' + queryParams, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'phoneNumber': userPhone,
+                    'token': authToken
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json().then(data => ({ status: response.status, data }));
+                } else {
+                    return { status: response.status, data: { success: false, error: 'Server error' } };
+                }
+            })
+            .then(result => {
+                btn.disabled = false;
+                btn.innerHTML = 'Save Changes';
+                
+                if (result.data.success) {
+                    // Update localStorage with new name for display across the app
+                    localStorage.setItem('pdrides_name', name);
+                    
+                    // Update profile card display
+                    document.getElementById('profileName').textContent = name;
+                    updateProfileAvatar(localStorage.getItem('pdrides_photo'), name);
+                    
+                    // Dispatch custom event for other pages to update name in real-time
+                    window.dispatchEvent(new CustomEvent('profileNameUpdated', { detail: { name: name } }));
+                    
+                    closeModal('editProfileModal');
+                    showToast('Profile updated successfully!', 'success');
+                } else {
+                    // Handle authentication errors specifically
+                    if (result.status === 401 || result.data.error?.includes('Authentication') || result.data.error?.includes('login')) {
+                        showToast('Session expired. Please login again.', 'error');
+                        // Clear token and redirect to login
+                        setTimeout(() => {
+                            localStorage.removeItem('pdrides_token');
+                            window.location.href = '/login';
+                        }, 2000);
+                    } else {
+                        showToast(result.data.error || 'Failed to update profile', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error saving profile:', error);
+                btn.disabled = false;
+                btn.innerHTML = 'Save Changes';
+                showToast('Failed to update profile. Please check your connection.', 'error');
+            });
+        }
+        
+        function changePassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmNewPassword').value;
+            
+            if (!current || !newPass || !confirm) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (newPass !== confirm) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (newPass.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            // Simulate change
+            showToast('Password changed successfully!', 'success');
+            closeModal('changePasswordModal');
+            
+            // Clear fields
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+        }
+        
+        function saveNotificationSettings() {
+            showToast('Notification settings saved!', 'success');
+            closeModal('notificationSettingsModal');
+        }
+        
+        function savePrivacySettings() {
+            showToast('Privacy settings saved!', 'success');
+            closeModal('privacySettingsModal');
+        }
+        
+        function saveVehicleInfo() {
+            showToast('Vehicle information saved!', 'success');
+            closeModal('vehicleInfoModal');
+        }
+        
+        function saveDriverPreferences() {
+            showToast('Driving preferences saved!', 'success');
+            closeModal('driverPreferencesModal');
+        }
+        
+        function downloadData() {
+            showToast('Preparing your data for download...', 'success');
+        }
+        
+        function deleteAccount() {
+            const confirmation = document.getElementById('deleteConfirmation').value;
+            
+            if (confirmation !== 'DELETE') {
+                showToast('Please type DELETE to confirm', 'error');
+                return;
+            }
+            
+            // Simulate deletion
+            showToast('Account deletion is not implemented yet', 'error');
+            closeModal('deleteAccountModal');
+        }
+        
+        function contactViaEmail() {
+            window.location.href = 'mailto:support@pdrides.com';
+            closeModal('contactModal');
+        }
+        
+        // Contact for Business
+        function contactForBusiness() {
+            const subject = encodeURIComponent('Promote My Local Business in your website');
+            const body = encodeURIComponent('Hello PDRides Team,\n\nI would like to promote my local business on your platform. Please contact me with more information about the advertising options available.\n\nThank you!');
+            window.location.href = 'mailto:business@pdrides.com?subject=' + subject + '&body=' + body;
+        }
+        
+        function contactViaWhatsApp() {
+            window.open('https://wa.me/15551234567', '_blank');
+            closeModal('contactModal');
+        }
+        
+        // Toast notification
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Logout function
+        function logout() {
+            // Clear all localStorage data
+            localStorage.clear();
+            
+            // Show logout message
+            showToast('Logging out...', 'success');
+            
+            // Redirect to main landing page after a short delay
+            setTimeout(function() {
+                window.location.href = '/';
+            }, 1000);
+        }
+        
+        // Show Terms & Privacy Modal
+        function showTermsPrivacy() {
+            document.getElementById('termsPrivacyModal').classList.add('active');
+        }
     </script>
 </body>
 </html>

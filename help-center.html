@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center - PDRides</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #25D366;
+            --accent-dark: #128C7E;
+            --danger: #dc3545;
+            --success: #28a745;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--light);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--gradient);
+            padding: 20px;
+            color: white;
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.3rem;
+            flex: 1;
+            text-align: center;
+            margin-right: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .category-btn {
+            background: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .category-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .faq-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .faq-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .faq-header:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .faq-icon {
+            font-size: 1.2rem;
+        }
+
+        .faq-arrow {
+            color: #999;
+            transition: transform 0.3s;
+        }
+
+        .faq-header.active .faq-arrow {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .faq-answer.show {
+            max-height: 500px;
+            padding: 15px 0;
+            padding-top: 10px;
+        }
+
+        .faq-answer p {
+            color: #666;
+            line-height: 1.7;
+        }
+
+        .faq-answer ul {
+            margin: 10px 0 10px 20px;
+            color: #666;
+        }
+
+        .faq-answer li {
+            margin-bottom: 8px;
+        }
+
+        .contact-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .contact-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .contact-card p {
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .contact-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .contact-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+
+        .contact-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-results-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .version {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <h1>❓ Help Center</h1>
+            <div style="width: 40px;"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Search -->
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="🔍 Search for help..." id="searchInput" oninput="searchFAQ()">
+        </div>
+
+        <!-- Categories -->
+        <div class="categories">
+            <button class="category-btn active" onclick="filterCategory('all')">
+                <span class="category-icon">📚</span>
+                All Topics
+            </button>
+            <button class="category-btn" onclick="filterCategory('account')">
+                <span class="category-icon">👤</span>
+                Account
+            </button>
+            <button class="category-btn" onclick="filterCategory('rides')">
+                <span class="category-icon">🚗</span>
+                Rides
+            </button>
+            <button class="category-btn" onclick="filterCategory('payments')">
+                <span class="category-icon">💳</span>
+                Payments
+            </button>
+            <button class="category-btn" onclick="filterCategory('safety')">
+                <span class="category-icon">🛡️</span>
+                Safety
+            </button>
+            <button class="category-btn" onclick="filterCategory('technical')">
+                <span class="category-icon">🔧</span>
+                Technical
+            </button>
+        </div>
+
+        <!-- Account Section -->
+        <div id="accountSection" class="faq-section">
+            <div class="section-title">👤 Account & Profile</div>
+            
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">❓</span>
+                    How do I edit my profile information?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>To edit your profile information:</p>
+                <ul>
+                    <li>Go to the <strong>Settings</strong> page from the main menu</li>
+                    <li>Tap on <strong>"Edit Profile"</strong></li>
+                    <li>Update your name, email, or emergency contact information</li>
+                    <li>Tap <strong>"Save Changes"</strong> to apply your updates</li>
+                </ul>
+            </div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">🔑</span>
+                    How do I change my password?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>To change your account password:</p>
+                <ul>
+                    <li>Navigate to <strong>Settings</strong></li>
+                    <li>Tap on <strong>"Change Password"</strong></li>
+                    <li>Enter your current password and your new password</li>
+                    <li>Confirm the new password and tap <strong>"Change Password"</strong></li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Note:</strong> If you're using WhatsApp authentication, password changes are optional but recommended for added security.</p>
+            </div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">🚗</span>
+                    How do I update my vehicle information?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>To update your vehicle information (for drivers):</p>
+                <ul>
+                    <li>Go to <strong>Settings</strong> and switch to Driver mode</li>
+                    <li>Tap on <strong>"Vehicle Information"</strong></li>
+                    <li>Update your vehicle make, model, year, color, and license plate</li>
+                    <li>Tap <strong>"Save Vehicle"</strong> to update</li>
+                </ul>
+            </div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">🗑️</span>
+                    How do I delete my account?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>To delete your account:</p>
+                <ul>
+                    <li>Go to <strong>Settings</strong></li>
+                    <li>Scroll down and tap on <strong>"Delete Account"</strong></li>
+                    <li>Read the information about what happens when you delete your account</li>
+                    <li>Confirm by typing "DELETE" in the confirmation field</li>
+                    <li>Tap <strong>"Delete My Account"</strong></li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Important:</strong> After deletion, your data will be retained for 60 days for legal and government compliance purposes. You can reactivate your account by logging back in during this period.</p>
+            </div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">🔒</span>
+                    What are the privacy settings available?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>PDRides offers various privacy settings:</p>
+                <ul>
+                    <li><strong>Show Profile:</strong> Control whether your profile is visible to other users</li>
+                    <li><strong>Show Phone Number:</strong> Choose if your phone number is visible to drivers/passengers</li>
+                    <li><strong>Show Rating:</strong> Control visibility of your rating score</li>
+                    <li><strong>Show Ride History:</strong> Decide if others can see your past rides</li>
+                    <li><strong>Allow Messages:</strong> Enable/disable receiving messages from other users</li>
+                    <li><strong>Show Online Status:</strong> Choose if you're shown as online</li>
+                </ul>
+                <p style="margin-top: 10px;">Find these settings in <strong>Settings → Privacy</strong></p>
+            </div>
+        </div>
+
+        <!-- Rides Section -->
+        <div id="ridesSection" class="faq-section">
+            <div class="section-title">🚗 Rides & Carpooling</div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">🔍</span>
+                    How do I find a ride?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>Finding a ride is easy:</p>
+                <ul>
+                    <li>Open the app and go to the <strong>Map</strong></li>
+                    <li>Enter your <strong>pickup location</strong> and <strong>destination</strong></li>
+                    <li>Browse available rides that match your route</li>
+                    <li>Select a ride and tap <strong>"Join Ride"</strong></li>
+                    <li>Coordinate pickup details with the driver via WhatsApp</li>
+                </ul>
+            </div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">➕</span>
+                    How do I offer a ride?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>To offer a ride to other passengers:</p>
+                <ul>
+                    <li>Switch to <strong>Driver mode</strong> in the app</li>
+                    <li>Enter your <strong>pickup location</strong> and <strong>destination</strong></li>
+                    <li>Set your <strong>departure date and time</strong></li>
+                    <li>Specify the <strong>number of seats available</strong></li>
+                    <li>Set your <strong>contribution amount</strong> (fare)</li>
+                    <li>Tap <strong>"Offer Ride"</strong> to publish</li>
+                </ul>
+            </div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">⚙️</span>
+                    What are driving preferences?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>Driving preferences allow you to set your ride style:</p>
+                <ul>
+                    <li><strong>Smoking:</strong> Allow or prohibit smoking in your vehicle</li>
+                    <li><strong>Music:</strong> Preference for playing music during rides</li>
+                    <li><strong>Chat:</strong> How much you like to chat with passengers</li>
+                    <li><strong>Pets:</strong> Allow or prohibit pets in your vehicle</li>
+                    <li><strong>Food:</strong> Allow or prohibit food in the vehicle</li>
+                    <li><strong>Phone Charging:</strong> Offer phone charging to passengers</li>
+                </ul>
+                <p style="margin-top: 10px;">Configure these in <strong>Settings → Driving Preferences</strong></p>
+            </div>
+        </div>
+
+        <!-- Payments Section -->
+        <div id="paymentsSection" class="faq-section">
+            <div class="section-title">💳 Payments & Pricing</div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">💰</span>
+                    How is the fare calculated?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>PDRides uses distance-based pricing:</p>
+                <ul>
+                    <li><strong>Base Fare:</strong> $5.00 for the first mile</li>
+                    <li><strong>Under 5 Miles:</strong> $5 + (miles - 1)</li>
+                    <li><strong>5-10 Miles:</strong> $5 + miles</li>
+                    <li><strong>10-15 Miles:</strong> $5 + 1.1 × miles</li>
+                    <li><strong>15-20 Miles:</strong> $5 + 1.2 × miles</li>
+                    <li><strong>Above 20 Miles:</strong> $5 + 1.3 × miles</li>
+                </ul>
+                <p style="margin-top: 10px;">Tips for drivers are optional and separate from the fare.</p>
+            </div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">🤝</span>
+                    How do payments work?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>PDRides facilitates rides through direct coordination:</p>
+                <ul>
+                    <li>Fares are agreed upon before the ride</li>
+                    <li>Payment is typically made directly to the driver (cash or transfer)</li>
+                    <li>The contribution amount shown is the suggested fare</li>
+                    <li>Tips are optional and can be given directly to drivers</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Safety Section -->
+        <div id="safetySection" class="faq-section">
+            <div class="section-title">🛡️ Safety & Trust</div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">⭐</span>
+                    How do ratings work?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>Our rating system builds trust in the community:</p>
+                <ul>
+                    <li>After each ride, both drivers and passengers can rate each other</li>
+                    <li>Ratings are on a scale of 1-5 stars</li>
+                    <li>Your rating is calculated from all your ratings</li>
+                    <li>You can view a user's rating before joining their ride</li>
+                    <li>Low-rated users may have limited access to the platform</li>
+                </ul>
+            </div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">🚨</span>
+                    What should I do in case of an emergency?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>In case of emergency during a ride:</p>
+                <ul>
+                    <li>Ensure your personal safety first</li>
+                    <li>Contact local emergency services (911) if needed</li>
+                    <li>Report the incident through the app or contact support</li>
+                    <li>Document any relevant information for reference</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Emergency Contact:</strong> We recommend adding an emergency contact in your profile settings.</p>
+            </div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">📱</span>
+                    How is my data protected?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>We take data privacy seriously:</p>
+                <ul>
+                    <li>Your personal information is encrypted and stored securely</li>
+                    <li>We only share necessary information with other users for ride coordination</li>
+                    <li>You can control your privacy settings at any time</li>
+                    <li>You can request to delete your account and data at any time</li>
+                    <li>After deletion, some data may be retained for up to 60 days for legal compliance</li>
+                </ul>
+                <p style="margin-top: 10px;">See our <a href="/privacy-policy">Privacy Policy</a> for more details.</p>
+            </div>
+        </div>
+
+        <!-- Technical Section -->
+        <div id="technicalSection" class="faq-section">
+            <div class="section-title">🔧 Technical Support</div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">📱</span>
+                    How do I verify my account?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>Account verification is done through WhatsApp:</p>
+                <ul>
+                    <li>Enter your phone number during registration</li>
+                    <li>You'll receive a verification code via WhatsApp</li>
+                    <li>Enter the code in the app to verify your account</li>
+                    <li>Verification helps build trust in the community</li>
+                </ul>
+            </div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">💬</span>
+                    How does WhatsApp integration work?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>WhatsApp is used for communication:</p>
+                <ul>
+                    <li>After booking a ride, you'll be connected with the driver/passengers via WhatsApp</li>
+                    <li>Coordinate pickup location, timing, and any special requests</li>
+                    <li>Receive ride updates and notifications through WhatsApp</li>
+                    <li>Our WhatsApp bot can help with common questions</li>
+                </ul>
+            </div>
+
+            <div class="faq-header" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span class="faq-icon">🔄</span>
+                    What if I'm not receiving verification codes?
+                </div>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-answer">
+                <p>If you're not receiving codes:</p>
+                <ul>
+                    <li>Check your internet connection</li>
+                    <li>Ensure your phone number is correct with country code</li>
+                    <li>Wait a few minutes and try again</li>
+                    <li>Check if you have blocked unknown numbers</li>
+                    <li>Contact support if the issue persists</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- No Results -->
+        <div id="noResults" class="no-results" style="display: none;">
+            <div class="no-results-icon">🔍</div>
+            <p>No matching results found. Try different keywords or browse categories.</p>
+        </div>
+
+        <!-- Contact Card -->
+        <div class="contact-card">
+            <h3>📧 Still Need Help?</h3>
+            <p>Can't find what you're looking for? Contact our support team.</p>
+            <div class="contact-options">
+                <button class="contact-btn" onclick="contactViaEmail()">
+                    📧 Email Support
+                </button>
+                <button class="contact-btn" onclick="contactViaWhatsApp()">
+                    💬 WhatsApp
+                </button>
+            </div>
+        </div>
+
+        <div class="version">
+            PDRides v1.0.0 • © 2025 PDRides
+        </div>
+    </div>
+
+    <script>
+        // Check if logged in
+        const authToken = localStorage.getItem('pdrides_token');
+        const userPhone = localStorage.getItem('pdrides_phone');
+
+        function goBack() {
+            if (authToken && userPhone) {
+                window.location.href = '/map';
+            } else {
+                window.location.href = '/';
+            }
+        }
+
+        // Toggle FAQ
+        function toggleFAQ(header) {
+            header.classList.toggle('active');
+            const answer = header.nextElementSibling;
+            answer.classList.toggle('show');
+        }
+
+        // Filter by category
+        function filterCategory(category) {
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.category-btn').classList.add('active');
+
+            // Show/hide sections
+            const sections = ['account', 'rides', 'payments', 'safety', 'technical'];
+            sections.forEach(section => {
+                const element = document.getElementById(section + 'Section');
+                if (category === 'all' || section === category) {
+                    element.style.display = 'block';
+                } else {
+                    element.style.display = 'none';
+                }
+            });
+
+            // Clear search
+            document.getElementById('searchInput').value = '';
+            document.getElementById('noResults').style.display = 'none';
+        }
+
+        // Search FAQ
+        function searchFAQ() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (query.length < 2) {
+                // Show all sections
+                document.querySelectorAll('.faq-section').forEach(section => {
+                    section.style.display = 'block';
+                });
+                document.getElementById('noResults').style.display = 'none';
+                return;
+            }
+
+            let hasResults = false;
+            const sections = ['account', 'rides', 'payments', 'safety', 'technical'];
+            
+            sections.forEach(section => {
+                const element = document.getElementById(section + 'Section');
+                const faqs = element.querySelectorAll('.faq-header');
+                let sectionHasResults = false;
+
+                faqs.forEach(faq => {
+                    const question = faq.querySelector('.faq-question').textContent.toLowerCase();
+                    const answer = faq.nextElementSibling.textContent.toLowerCase();
+                    
+                    if (question.includes(query) || answer.includes(query)) {
+                        faq.style.display = 'flex';
+                        sectionHasResults = true;
+                    } else {
+                        faq.style.display = 'none';
+                    }
+                });
+
+                if (sectionHasResults) {
+                    element.style.display = 'block';
+                    hasResults = true;
+                } else {
+                    element.style.display = 'none';
+                }
+            });
+
+            // Update category buttons
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById('noResults').style.display = hasResults ? 'none' : 'block';
+        }
+
+        // Contact via email
+        function contactViaEmail() {
+            const subject = encodeURIComponent('PDRides Support Request');
+            const body = encodeURIComponent('Hello PDRides Support,\n\nI need help with:\n\n[Please describe your issue here]\n\nThank you!');
+            window.location.href = 'mailto:support@pdrides.com?subject=' + subject + '&body=' + body;
+        }
+
+        // Contact via WhatsApp
+        function contactViaWhatsApp() {
+            window.open('https://wa.me/15551758507', '_blank');
+        }
+    </script>
+</body>
+</html>
+

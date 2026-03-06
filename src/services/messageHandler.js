@@ -5,6 +5,7 @@ import {
   sendTextMessage, 
   sendButtonMessage, 
   sendListMessage,
+  sendTemplateMessage,
   parseIncomingMessage 
 } from './whatsapp.js';
 import { 
@@ -27,24 +28,159 @@ import {
 
 const MAX_RESULTS = parseInt(process.env.MAX_RIDE_RESULTS) || 5;
 
-// Welcome message
-const WELCOME_MESSAGE = `🚗 Welcome to *PDRides* - Community Carpooling!
+// ============================================
+// WELCOME & GREETING MESSAGES
+// ============================================
 
-Find or offer rides in your neighborhood. Save money, reduce traffic, and connect with your community.`;
+const WELCOME_MESSAGE = `🚗 *Welcome to PDRides!*
 
-// Main menu
-const showMainMenu = async (phoneNumber) => {
-  const text = `What would you like to do?`;
+Your community carpooling solution. Save money, reduce traffic, and connect with neighbors heading your way.
+
+*What I can do:*
+• 🚗 Offer rides and earn
+• 🔍 Find rides near you
+• 📋 Manage your rides
+• ⭐ Rate and review
+
+Let's get started!`;
+
+// Quick reply keyboard for main actions
+const showQuickReplies = async (phoneNumber, text, options) => {
+  // Using list message for better UX
+  const sections = [
+    {
+      title: 'Main Actions',
+      rows: options.map(opt => ({
+        id: opt.id,
+        title: opt.title,
+        description: opt.desc || ''
+      }))
+    }
+  ];
+  await sendListMessage(phoneNumber, text, sections);
+};
+
+// Main menu with enhanced buttons
+const showMainMenu = async (phoneNumber, customText = null) => {
+  const text = customText || `What would you like to do?`;
   const buttons = [
     { id: 'offer_ride', title: '🚗 Offer a Ride' },
     { id: 'find_ride', title: '🔍 Find a Ride' },
-    { id: 'my_rides', title: '📋 My Rides' }
+    { id: 'my_rides', title: '📋 My Rides' },
+    { id: 'help_menu', title: '❓ Help' }
   ];
   
   await sendButtonMessage(phoneNumber, text, buttons);
 };
 
-// Onboarding flow
+// Help menu
+const showHelpMenu = async (phoneNumber) => {
+  const text = `❓ *How can I help?*\n\nChoose an option:`;
+  const buttons = [
+    { id: 'help_how_offer', title: '📤 Offer a Ride' },
+    { id: 'help_how_find', title: '🔍 Find a Ride' },
+    { id: 'help_rates', title: '💰 Pricing' },
+    { id: 'help_safety', title: '🛡️ Safety' },
+    { id: 'help_contact', title: '📞 Contact Us' },
+    { id: 'back_menu', title: '⬅️ Back to Menu' }
+  ];
+  
+  await sendButtonMessage(phoneNumber, text, buttons);
+};
+
+// Show help for offering rides
+const showOfferRideHelp = async (phoneNumber) => {
+  await sendTextMessage(phoneNumber,
+    `📤 *How to Offer a Ride*\n\n` +
+    `1. Click "Offer a Ride" from the menu\n` +
+    `2. Enter your pickup location\n` +
+    `3. Enter your destination\n` +
+    `4. Set date and time\n` +
+    `5. Choose seats available\n` +
+    `6. Set contribution amount\n` +
+    `7. Add preferences (optional)\n` +
+    `8. Confirm and post!\n\n` +
+    `💡 Tips:\n` +
+    `• Be specific with locations\n` +
+    `• Add tags for passenger preferences\n` +
+    `• Keep your contact info ready`
+  );
+  await showMainMenu(phoneNumber);
+};
+
+// Show help for finding rides
+const showFindRideHelp = async (phoneNumber) => {
+  await sendTextMessage(phoneNumber,
+    `🔍 *How to Find a Ride*\n\n` +
+    `1. Click "Find a Ride" from menu\n` +
+    `2. Enter your pickup location\n` +
+    `3. Enter your destination\n` +
+    `4. Choose date needed\n` +
+    `5. Select number of seats\n` +
+    `6. Browse available rides\n` +
+    `7. Join a ride you like!\n\n` +
+    `💡 Tips:\n` +
+    `• Be flexible with times\n` +
+    `• Check multiple routes\n` +
+    `• Contact driver to confirm`
+  );
+  await showMainMenu(phoneNumber);
+};
+
+// Show pricing info
+const showPricingInfo = async (phoneNumber) => {
+  await sendTextMessage(phoneNumber,
+    `💰 *PDRides Pricing*\n\n` +
+    `*Drivers set their own contribution:*\n` +
+    `• Free rides available\n` +
+    `• Typical: $5-15 per ride\n` +
+    `• Based on distance & fuel costs\n\n` +
+    `*PDRides is free to use!*\n` +
+    `We don't charge any fees.\n\n` +
+    `Fair pricing helps drivers cover costs\n` +
+    `and keeps rides affordable for all.`
+  );
+  await showMainMenu(phoneNumber);
+};
+
+// Show safety info
+const showSafetyInfo = async (phoneNumber) => {
+  await sendTextMessage(phoneNumber,
+    `🛡️ *Safety Tips*\n\n` +
+    `*Before the ride:*\n` +
+    `• Verify driver & vehicle details\n` +
+    `• Share trip info with a friend\n` +
+    `• Confirm pickup location\n\n` +
+    `*During the ride:**\n` +
+    `• Trust your instincts\n` +
+    `• Wear seatbelt\n` +
+    `• Follow traffic laws\n\n` +
+    `*After the ride:**\n` +
+    `• Rate your experience\n` +
+    `• Report any issues\n\n` +
+    `🚨 Emergency? Contact 911`
+  );
+  await showMainMenu(phoneNumber);
+};
+
+// Show contact info
+const showContactInfo = async (phoneNumber) => {
+  await sendTextMessage(phoneNumber,
+    `📞 *Contact Us*\n\n` +
+    `Need help? We're here for you!\n\n` +
+    `• Email: support@pdrides.com\n` +
+    `• Website: www.pdrides.com\n` +
+    `• Hours: 9am-6pm daily\n\n` +
+    `*For urgent issues:*\n` +
+    `Type "emergency" or call 911`
+  );
+  await showMainMenu(phoneNumber);
+};
+
+// ============================================
+// ONBOARDING FLOW
+// ============================================
+
 const handleOnboarding = async (phoneNumber, text, conversation) => {
   if (conversation.state === 'onboarding_name') {
     const name = text.trim();
@@ -53,26 +189,80 @@ const handleOnboarding = async (phoneNumber, text, conversation) => {
       return;
     }
     
+    // Update user name
     await User.findOneAndUpdate(
       { phoneNumber },
       { name, onboardingComplete: true }
     );
     
     await conversation.setState('idle');
-    await sendTextMessage(phoneNumber, `Nice to meet you, ${name}! 👋`);
+    
+    // Show welcome with features
+    await sendTextMessage(phoneNumber, 
+      `Nice to meet you, ${name}! 👋\n\n` +
+      `Welcome to PDRides! 🎉`
+    );
+    
+    // Show quick tour
+    await sendTextMessage(phoneNumber,
+      `*Here's how PDRides works:*\n\n` +
+      `🚗 *Offer Rides*\n` +
+      `Share your commute and earn for gas\n\n` +
+      `🔍 *Find Rides*\n` +
+      `Connect with neighbors going your way\n\n` +
+      `💰 *Save Money*\n` +
+      `Split costs and reduce expenses\n\n` +
+      `🌍 *Help the Planet*\n` +
+      `Less cars = cleaner air!`
+    );
+    
     await showMainMenu(phoneNumber);
   }
 };
 
-// Start offering a ride
+// ============================================
+// OFFER RIDE FLOW
+// ============================================
+
 const startOfferRide = async (phoneNumber, conversation) => {
   await conversation.setState('offering_pickup');
   await sendTextMessage(phoneNumber, 
-    '🚗 *Offer a Ride*\n\nWhere will you pick up passengers? (e.g., "Downtown Metuchen", "Rutgers Busch Campus")\n\nOr share your location:'
+    `🚗 *Offer a Ride*\n\n` +
+    `Let's list your ride!\n\n` +
+    `Where will you pick up passengers?\n\n` +
+    `📍 *Tips:*\n` +
+    `• Use a well-known address\n` +
+    `• Include city/area name\n` +
+    `• Or share your location`
   );
 };
 
-// Handle offer ride flow
+// Parse contribution from button/text
+const parseContribution = (text, tempData) => {
+  let contribution = 0;
+  
+  // Handle button replies
+  if (text === 'contrib_free') return 0;
+  if (text.startsWith('contrib_')) {
+    const val = text.replace('contrib_', '');
+    if (val === 'other') return -1; // Signal to ask for custom amount
+    return parseInt(val) || 0;
+  }
+  
+  // Handle text input
+  const lower = text.toLowerCase();
+  if (lower.includes('free') || lower.includes('0')) return 0;
+  
+  const match = text.match(/\d+/);
+  if (match) {
+    contribution = parseInt(match[0]);
+    // Validate reasonable range
+    if (contribution > 100) contribution = 100;
+  }
+  
+  return contribution;
+};
+
 const handleOfferRide = async (phoneNumber, text, conversation, messageData) => {
   const { tempData } = conversation;
   
@@ -83,7 +273,7 @@ const handleOfferRide = async (phoneNumber, text, conversation, messageData) => 
       
       if (!pickupResult.valid) {
         await sendTextMessage(phoneNumber, 
-          `❌ ${pickupResult.error || 'Could not find that location. Please try again with a more specific address:'}`
+          `❌ ${pickupResult.error || 'Could not find that location. Please try again with a more specific address:\n\nExamples:\n• 123 Main St, Edison NJ\n• Rutgers Busch Campus\n• Downtown Metuchen'}`
         );
         return;
       }
@@ -92,12 +282,13 @@ const handleOfferRide = async (phoneNumber, text, conversation, messageData) => 
       await conversation.setState('offering_destination', { 
         pickup: pickupLocation,
         pickupLat: pickupResult.location.lat,
-        pickupLng: pickupResult.location.lon,
+        pickupLng: pickupResult.location.lng,
         pickupAddress: pickupResult.location.display_name
       });
       
       await sendTextMessage(phoneNumber, 
-        `✅ Found: ${pickupResult.location.display_name}\n\nWhere are you going to? (Enter destination address)`
+        `✅ Found: *${pickupResult.location.display_name}*\n\n` +
+        `Now, where are you heading?`
       );
       break;
       
@@ -107,12 +298,13 @@ const handleOfferRide = async (phoneNumber, text, conversation, messageData) => 
       
       if (!destResult.valid) {
         await sendTextMessage(phoneNumber, 
-          `❌ ${destResult.error || 'Could not find that location. Please try again:'}`
+          `❌ ${destResult.error || 'Could not find that location. Please try again:'}\n\n` +
+          `Examples:\n• Princeton University\n• 50 Hamilton St, New Brunswick\n• Newark Airport`
         );
         return;
       }
       
-// Calculate route
+      // Calculate route
       const route = await calculateRoute(
         tempData.pickupLat,
         tempData.pickupLng,
@@ -122,17 +314,17 @@ const handleOfferRide = async (phoneNumber, text, conversation, messageData) => 
       
       const destination = extractCityState(destResult.location.address);
       
-      // Calculate suggested price based on distance (e.g., $0.15 per km or $0.25 per mile)
+      // Calculate suggested price
       let suggestedPrice = 0;
       if (route?.distance) {
-        const distanceMiles = route.distance / 1609.34; // Convert meters to miles
-        suggestedPrice = Math.round(distanceMiles * 0.25); // $0.25 per mile
-        if (suggestedPrice < 5) suggestedPrice = 5; // Minimum $5
-        if (suggestedPrice > 50) suggestedPrice = 50; // Cap at $50
+        const distanceMiles = route.distance / 1609.34;
+        suggestedPrice = Math.round(distanceMiles * 0.25);
+        if (suggestedPrice < 5) suggestedPrice = 5;
+        if (suggestedPrice > 50) suggestedPrice = 50;
       }
       
       const routeInfo = route 
-        ? `\n\n📏 Distance: ${formatDistance(route.distance)}\n⏱️ Estimated time: ${formatDuration(route.duration)}\n💰 Suggested contribution: $${suggestedPrice} (based on ${(route.distance / 1609.34).toFixed(1)} miles)`
+        ? `\n\n📏 Distance: ${formatDistance(route.distance)}\n⏱️ Est. time: ${formatDuration(route.duration)}\n💰 Suggested: $${suggestedPrice}`
         : '';
       
       await conversation.setState('offering_date', { 
@@ -146,29 +338,59 @@ const handleOfferRide = async (phoneNumber, text, conversation, messageData) => 
         suggestedPrice
       });
       
+      const dateText = routeInfo + `\n\nWhen is this ride?\n\n` +
+        `Quick options:\n` +
+        `• "Today" or "Now"\n` +
+        `• "Tomorrow"\n` +
+        `• Day of week (e.g., "Monday")\n` +
+        `• Specific date (e.g., "12/25")`;
+      
       await sendTextMessage(phoneNumber, 
-        `✅ Found: ${destResult.location.display_name}${routeInfo}\n\nWhen is this ride?\n\nOptions:\n• Today\n• Tomorrow\n• Monday, Tuesday, etc.\n• MM/DD/YYYY`
+        `✅ Destination: *${destResult.location.display_name}*${dateText}`
       );
       break;
       
     case 'offering_date':
       const date = parseDate(text);
       if (!date) {
-        await sendTextMessage(phoneNumber, 'Sorry, I didn\'t understand that date. Please try again (e.g., "today", "tomorrow", "Monday"):');
+        await sendTextMessage(phoneNumber, 
+          `Sorry, I didn't understand that date.\n\n` +
+          `Please try:\n• "today" or "tomorrow"\n• Day name (e.g., "Monday")\n• Date (e.g., "12/25" or "12/25/2024")`
+        );
         return;
       }
+      
+      // Check if date is in the past
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      if (date < now) {
+        await sendTextMessage(phoneNumber, 'Please choose a future date (today or later):');
+        return;
+      }
+      
       await conversation.setState('offering_time', { ...tempData, date });
-      await sendTextMessage(phoneNumber, 'What time? (e.g., "8:00 AM", "5:30 PM", "14:00")');
+      await sendTextMessage(phoneNumber, 
+        `📅 *${formatDate(date)}*\n\n` +
+        `What time? (e.g., "8:00 AM", "5:30 PM", "14:00")`
+      );
       break;
       
     case 'offering_time':
       const time = parseTime(text);
       if (!time) {
-        await sendTextMessage(phoneNumber, 'Sorry, I didn\'t understand that time. Please try again (e.g., "8:00 AM"):');
+        await sendTextMessage(phoneNumber, 
+          `I didn't understand that time.\n\n` +
+          `Try formats like:\n• "8:00 AM" or "8am"\n• "5:30 PM" or "5:30pm"\n• "14:00" (24-hour)`
+        );
         return;
       }
       await conversation.setState('offering_seats', { ...tempData, time });
-      await sendTextMessage(phoneNumber, 'How many seats available? (1-7)');
+      
+      await sendTextMessage(phoneNumber, 
+        `⏰ *${formatTime12Hour(time)}*\n\n` +
+        `How many seats are available?\n\n` +
+        `(1-7 passengers)`
+      );
       break;
       
     case 'offering_seats':
@@ -179,67 +401,87 @@ const handleOfferRide = async (phoneNumber, text, conversation, messageData) => 
       }
       await conversation.setState('offering_contribution', { ...tempData, seats });
       
-      // Build button options with suggested price if available
+      // Build contribution buttons
       const buttons = [
-        { id: 'contrib_free', title: 'Free' }
+        { id: 'contrib_free', title: '🙋 Free' }
       ];
       
-      // Add suggested price button if we have route data
       if (tempData.suggestedPrice && tempData.suggestedPrice > 0) {
-        buttons.push({ id: `contrib_${tempData.suggestedPrice}`, title: `💰 $${tempData.suggestedPrice} (suggested)` });
+        buttons.push({ id: `contrib_${tempData.suggestedPrice}`, title: `💰 $${tempData.suggestedPrice}` });
       }
       
       buttons.push(
         { id: 'contrib_5', title: '$5' },
         { id: 'contrib_10', title: '$10' },
-        { id: 'contrib_other', title: 'Other' }
+        { id: 'contrib_other', title: '💵 Other' }
       );
       
+      const distanceMiles = tempData.routeDistance 
+        ? (tempData.routeDistance / 1609.34).toFixed(1) 
+        : 'N/A';
+      
       const contributionText = tempData.suggestedPrice 
-        ? `💡 Based on the ${(tempData.routeDistance / 1609.34).toFixed(1)} mile route, we suggest $${tempData.suggestedPrice} per person.\n\nIs there a contribution for gas/parking?`
-        : 'Is there a contribution for gas/parking?';
+        ? `💡 *Route Info:* ${distanceMiles} miles\n\nIs there a contribution for gas/parking?`
+        : `How much would you like to request?`;
       
       await sendButtonMessage(phoneNumber, contributionText, buttons);
       break;
       
     case 'offering_contribution':
-      let contribution = 0;
-      if (text === '$5' || text.includes('5')) contribution = 5;
-      else if (text === '$10' || text.includes('10')) contribution = 10;
-      else if (!text.toLowerCase().includes('free')) {
-        const match = text.match(/\d+/);
-        if (match) contribution = parseInt(match[0]);
+      let contribution = parseContribution(text, tempData);
+      
+      if (contribution === -1) {
+        // Ask for custom amount
+        await sendTextMessage(phoneNumber, 'Enter your contribution amount (e.g., "$8" or "8"):');
+        return;
       }
       
       await conversation.setState('offering_tags', { ...tempData, contribution });
-      await sendTextMessage(phoneNumber, 
-        'Any preferences? (Reply with numbers, or "none")\n\n1️⃣ Female passengers only\n2️⃣ No smoking\n3️⃣ Pets OK\n4️⃣ Quiet ride\n5️⃣ AC available'
-      );
+      
+      const tagsText = `Any preferences for passengers?\n\n` +
+        `Reply with numbers (or "none"):\n\n` +
+        `1️⃣ Female only\n` +
+        `2️⃣ No smoking\n` +
+        `3️⃣ Pets OK\n` +
+        `4️⃣ Quiet ride\n` +
+        `5️⃣ AC available\n` +
+        `6️⃣ Luggage space`;
+      
+      await sendTextMessage(phoneNumber, tagsText);
       break;
       
     case 'offering_tags':
       const tags = [];
       const lowerText = text.toLowerCase();
-      if (lowerText.includes('1')) tags.push('female-only');
-      if (lowerText.includes('2')) tags.push('no-smoking');
-      if (lowerText.includes('3')) tags.push('pets-ok');
-      if (lowerText.includes('4')) tags.push('quiet-ride');
-      if (lowerText.includes('5')) tags.push('ac');
+      
+      if (lowerText === 'none' || lowerText === 'no' || lowerText === 'skip') {
+        // No tags selected
+      } else {
+        if (lowerText.includes('1')) tags.push('Female only');
+        if (lowerText.includes('2')) tags.push('No smoking');
+        if (lowerText.includes('3')) tags.push('Pets OK');
+        if (lowerText.includes('4')) tags.push('Quiet ride');
+        if (lowerText.includes('5')) tags.push('AC');
+        if (lowerText.includes('6')) tags.push('Luggage');
+      }
       
       await conversation.setState('offering_confirm', { ...tempData, tags });
       
-      const confirmText = `*Please confirm your ride:*\n\n` +
-        `📍 From: ${tempData.pickup}\n` +
-        `🏁 To: ${tempData.destination}\n` +
-        `📅 Date: ${formatDate(tempData.date)}\n` +
-        `⏰ Time: ${tempData.time}\n` +
-        `💺 Seats: ${tempData.seats}\n` +
-        `💰 Contribution: ${tempData.contribution > 0 ? '$' + tempData.contribution : 'Free'}\n` +
-        `${tags.length > 0 ? '🏷️ Tags: ' + tags.join(', ') : ''}\n\n` +
-        `Is this correct?`;
+      // Format confirmation message
+      const tagsDisplay = tags.length > 0 ? `\n🏷️ ${tags.join(', ')}` : '\n🏷️ No preferences';
+      const confirmText = 
+        `*📋 Please Confirm Your Ride:*\n\n` +
+        `📍 *From:* ${tempData.pickup}\n` +
+        `🏁 *To:* ${tempData.destination}\n` +
+        `📅 *Date:* ${formatDate(tempData.date)}\n` +
+        `⏰ *Time:* ${formatTime12Hour(tempData.time)}\n` +
+        `💺 *Seats:* ${tempData.seats}\n` +
+        `💰 *Contribution:* ${tempData.contribution > 0 ? '$' + tempData.contribution : 'Free'}` +
+        tagsDisplay +
+        `\n\nIs this correct?`;
       
       await sendButtonMessage(phoneNumber, confirmText, [
-        { id: 'confirm_yes', title: '✅ Yes, Post' },
+        { id: 'confirm_yes', title: '✅ Yes, Post It' },
         { id: 'confirm_no', title: '❌ Cancel' }
       ]);
       break;
@@ -249,7 +491,7 @@ const handleOfferRide = async (phoneNumber, text, conversation, messageData) => 
         // Save the ride
         const user = await User.findOne({ phoneNumber });
         const expiresAt = new Date(tempData.date);
-        expiresAt.setHours(expiresAt.getHours() + 24); // Expire 24h after ride time
+        expiresAt.setHours(expiresAt.getHours() + 24);
         
         const ride = new Ride({
           driverPhone: phoneNumber,
@@ -277,30 +519,48 @@ const handleOfferRide = async (phoneNumber, text, conversation, messageData) => 
         await User.findOneAndUpdate({ phoneNumber }, { $inc: { rideCount: 1 } });
         
         await conversation.reset();
+        
+        // Success message with share option
         await sendTextMessage(phoneNumber, 
-          `✅ Ride posted successfully!\n\n` +
-          `Your ride from ${tempData.pickup} to ${tempData.destination} on ${formatDate(tempData.date)} at ${tempData.time} is now live.\n\n` +
-          `You'll be notified when someone wants to join.`
+          `✅ *Ride Posted Successfully!*\n\n` +
+          `📍 ${tempData.pickup} → ${tempData.destination}\n` +
+          `📅 ${formatDate(tempData.date)} at ${formatTime12Hour(tempData.time)}\n` +
+          `💺 ${tempData.seats} seats\n\n` +
+          `You'll be notified when someone wants to join!`
         );
-        await showMainMenu(phoneNumber);
+        
+        // Show quick actions
+        const buttons = [
+          { id: 'my_rides', title: '📋 View My Rides' },
+          { id: 'offer_ride', title: '➕ Post Another' }
+        ];
+        await sendButtonMessage(phoneNumber, 'What would you like to do next?', buttons);
       } else {
         await conversation.reset();
-        await sendTextMessage(phoneNumber, 'Ride cancelled. No problem!');
+        await sendTextMessage(phoneNumber, 'No problem! Your ride was not posted.');
         await showMainMenu(phoneNumber);
       }
       break;
   }
 };
 
-// Start finding a ride
+// ============================================
+// FIND RIDE FLOW
+// ============================================
+
 const startFindRide = async (phoneNumber, conversation) => {
   await conversation.setState('requesting_pickup');
   await sendTextMessage(phoneNumber, 
-    '🔍 *Find a Ride*\n\nWhere do you need to be picked up?\n\nEnter a street address (e.g., "104 Hana Rd, Edison, NJ")'
+    `🔍 *Find a Ride*\n\n` +
+    `Let's find you a ride!\n\n` +
+    `Where do you need to be picked up?\n\n` +
+    `📍 *Tips:*\n` +
+    `• Use a specific address\n` +
+    `• Include city name\n` +
+    `• Or share your location`
   );
 };
 
-// Handle find ride flow
 const handleFindRide = async (phoneNumber, text, conversation, messageData) => {
   const { tempData } = conversation;
   
@@ -311,7 +571,11 @@ const handleFindRide = async (phoneNumber, text, conversation, messageData) => {
       
       if (!pickupResult.valid) {
         await sendTextMessage(phoneNumber, 
-          `❌ ${pickupResult.error || 'Could not find that location. Please try again with a full street address:'}`
+          `❌ ${pickupResult.error || 'Could not find that location.'}\n\n` +
+          `Try a more specific address:\n` +
+          `• "104 Hana Rd, Edison NJ"\n` +
+          `• "Rutgers Busch Campus"\n` +
+          `• "Metuchen Train Station"`
         );
         return;
       }
@@ -320,12 +584,13 @@ const handleFindRide = async (phoneNumber, text, conversation, messageData) => {
       await conversation.setState('requesting_destination', { 
         pickup: pickupLocation,
         pickupLat: pickupResult.location.lat,
-        pickupLng: pickupResult.location.lon,
+        pickupLng: pickupResult.location.lng,
         pickupAddress: pickupResult.location.display_name
       });
       
       await sendTextMessage(phoneNumber, 
-        `✅ Found: ${pickupResult.location.display_name}\n\nWhere are you going? (Enter destination address)`
+        `✅ Pickup: *${pickupResult.location.display_name}*\n\n` +
+        `Where are you going?`
       );
       break;
       
@@ -335,12 +600,15 @@ const handleFindRide = async (phoneNumber, text, conversation, messageData) => {
       
       if (!destResult.valid) {
         await sendTextMessage(phoneNumber, 
-          `❌ ${destResult.error || 'Could not find that location. Please try again:'}`
+          `❌ ${destResult.error || 'Could not find that location.'}\n\n` +
+          `Examples:\n` +
+          `• "Princeton University"\n` +
+          `• "Newark Airport"\n` +
+          `• "50 Hamilton St, New Brunswick"`
         );
         return;
       }
       
-      // Calculate route
       const route = await calculateRoute(
         tempData.pickupLat,
         tempData.pickupLng,
@@ -363,54 +631,79 @@ const handleFindRide = async (phoneNumber, text, conversation, messageData) => {
         routeDuration: route?.duration
       });
       
+      const dateText = routeInfo + `\n\nWhen do you need a ride?\n\n` +
+        `Quick options:\n` +
+        `• "Today" - for today\n` +
+        `• "Tomorrow" - for tomorrow\n` +
+        `• "This week" - any day this week\n` +
+        `• Specific date`;
+      
       await sendTextMessage(phoneNumber, 
-        `✅ Found: ${destResult.location.display_name}${routeInfo}\n\nWhen do you need a ride?\n\n• Today\n• Tomorrow\n• This week\n• Or specific date`
+        `✅ Destination: *${destResult.location.display_name}*${dateText}`
       );
       break;
       
     case 'requesting_date':
-      const dateText = text.toLowerCase();
+      const dateTextInput = text.toLowerCase();
       let dateFilter = {};
+      let displayDate = '';
       
-      if (dateText === 'today') {
+      if (dateTextInput === 'today') {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
         dateFilter = { $gte: today, $lt: tomorrow };
-      } else if (dateText === 'tomorrow') {
+        displayDate = 'Today';
+      } else if (dateTextInput === 'tomorrow') {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         tomorrow.setHours(0, 0, 0, 0);
         const dayAfter = new Date(tomorrow);
         dayAfter.setDate(dayAfter.getDate() + 1);
         dateFilter = { $gte: tomorrow, $lt: dayAfter };
-      } else if (dateText.includes('week')) {
+        displayDate = 'Tomorrow';
+      } else if (dateTextInput.includes('week')) {
         const today = new Date();
         const nextWeek = new Date(today);
         nextWeek.setDate(nextWeek.getDate() + 7);
         dateFilter = { $gte: today, $lt: nextWeek };
+        displayDate = 'This Week';
       } else {
         const date = parseDate(text);
         if (date) {
           const nextDay = new Date(date);
           nextDay.setDate(nextDay.getDate() + 1);
           dateFilter = { $gte: date, $lt: nextDay };
+          displayDate = formatDate(date);
+        } else {
+          await sendTextMessage(phoneNumber, 
+            `I didn't understand that date.\n\n` +
+            `Try:\n` +
+            `• "today"\n` +
+            `• "tomorrow"\n` +
+            `• "Monday" or other day\n` +
+            `• "12/25" or date`
+          );
+          return;
         }
       }
       
-      await conversation.setState('requesting_seats', { ...tempData, dateFilter, dateText: text });
-      await sendTextMessage(phoneNumber, 'How many seats do you need? (1-3)');
+      await conversation.setState('requesting_seats', { ...tempData, dateFilter, displayDate });
+      await sendTextMessage(phoneNumber, 
+        `📅 *${displayDate}*\n\n` +
+        `How many seats do you need? (1-3)`
+      );
       break;
       
     case 'requesting_seats':
       const seats = parseInt(text);
       if (isNaN(seats) || seats < 1 || seats > 3) {
-        await sendTextMessage(phoneNumber, 'Please enter a number between 1 and 3:');
+        await sendTextMessage(phoneNumber, 'Please enter 1, 2, or 3 seats:');
         return;
       }
       
-      // Search for matching rides
+      // Search for rides
       await sendTextMessage(phoneNumber, '🔍 Searching for rides...');
       
       const query = {
@@ -420,7 +713,6 @@ const handleFindRide = async (phoneNumber, text, conversation, messageData) => {
         date: tempData.dateFilter || { $gte: new Date() }
       };
       
-      // Try to find rides matching pickup or destination
       const rides = await Ride.find({
         ...query,
         $or: [
@@ -430,11 +722,11 @@ const handleFindRide = async (phoneNumber, text, conversation, messageData) => {
       }).limit(MAX_RESULTS);
       
       if (rides.length === 0) {
-        // Save rider's search criteria for notifications when matching rides become available
+        // Save search for notifications
         await Ride.createRiderNotification(phoneNumber, {
           pickup: tempData.pickup,
           destination: tempData.destination,
-          date: tempData.dateText,
+          date: tempData.displayDate,
           seats,
           pickupLat: tempData.pickupLat,
           pickupLng: tempData.pickupLng,
@@ -443,46 +735,35 @@ const handleFindRide = async (phoneNumber, text, conversation, messageData) => {
         });
         
         await conversation.reset();
+        
+        // Show suggestions
         await sendTextMessage(phoneNumber,
-          `😕 No rides found matching:\n` +
+          `😕 *No Rides Found*\n\n` +
+          `Looking for:\n` +
           `📍 ${tempData.pickup} → ${tempData.destination}\n` +
-          `📅 ${tempData.dateText}\n` +
+          `📅 ${tempData.displayDate}\n` +
           `💺 ${seats} seat${seats > 1 ? 's' : ''}\n\n` +
-          `✅ *Don't worry! We've saved your request.*\n\n` +
-          `We'll notify you when a matching ride becomes available.\n\n` +
-          `In the meantime:\n` +
-          `• Try different pickup/destination points\n` +
-          `• Check back later for new rides\n` +
+          `*We saved your search!*\n` +
+          `We'll notify you when a matching ride is posted.\n\n` +
+          `*Suggestions:*\n` +
+          `• Try different pickup/destination\n` +
+          `• Check another date\n` +
           `• Offer a ride and help others!`
         );
+        
         await showMainMenu(phoneNumber);
         return;
       }
-
       
-      // Show results
+      // Store results and show first
       await conversation.setState('browsing_results', { 
         ...tempData, 
         seats,
-        searchResults: rides.map(r => ({ id: r._id.toString(), ...r.toObject() }))
+        searchResults: rides.map(r => ({ id: r._id.toString(), ...r.toObject() })),
+        currentResultIndex: 0
       });
       
-      await sendTextMessage(phoneNumber, `Found ${rides.length} ride${rides.length > 1 ? 's' : ''}:`);
-      
-      // Show first result with buttons
-      const firstRide = rides[0];
-      const rideText = formatRideDetails(firstRide, 1, rides.length);
-      
-      const buttons = [
-        { id: `join_${firstRide._id}`, title: '✅ Join This Ride' },
-        { id: 'next_ride', title: '➡️ Next' }
-      ];
-      
-      if (rides.length === 1) {
-        buttons.pop(); // Remove "Next" if only one result
-      }
-      
-      await sendButtonMessage(phoneNumber, rideText, buttons);
+      await showRideResult(phoneNumber, rides, 0, tempData);
       break;
       
     case 'browsing_results':
@@ -491,59 +772,127 @@ const handleFindRide = async (phoneNumber, text, conversation, messageData) => {
         const ride = await Ride.findById(rideId);
         
         if (!ride || ride.isExpired() || ride.isFull()) {
-          await sendTextMessage(phoneNumber, 'Sorry, this ride is no longer available.');
+          await sendTextMessage(phoneNumber, 'Sorry, this ride is no longer available. Showing next option...');
+          await showNextRide(phoneNumber, tempData, conversation);
           return;
         }
         
-        // Notify driver
+        // Send request to driver
         const user = await User.findOne({ phoneNumber });
+        
+        // Notify driver
         await sendTextMessage(ride.driverPhone,
           `🚗 *Ride Request!*\n\n` +
-          `${user?.name || 'Someone'} wants to join your ride:\n` +
+          `*${user?.name || 'Someone'}* wants to join your ride:\n\n` +
           `📍 ${ride.pickupLocation} → ${ride.destination}\n` +
           `📅 ${formatDate(ride.date)} at ${ride.time}\n` +
           `💺 Seats needed: ${tempData.seats}\n\n` +
-          `Reply YES to accept or NO to decline.`
+          `*Passenger:* ${user?.name || 'Unknown'}\n\n` +
+          `Reply:\n` +
+          `• "YES" to accept\n` +
+          `• "NO" to decline\n` +
+          `• "FULL" if no more seats`
         );
         
-        await conversation.setState('awaiting_driver_response', { ...tempData, pendingRideId: rideId });
+        await conversation.setState('awaiting_driver_response', { 
+          ...tempData, 
+          pendingRideId: rideId,
+          driverPhone: ride.driverPhone
+        });
+        
         await sendTextMessage(phoneNumber, 
-          `✅ Request sent! Waiting for the driver to confirm.\n\n` +
-          `We'll notify you once they respond.`
+          `✅ *Request Sent!*\n\n` +
+          `📍 ${ride.pickupLocation} → ${ride.destination}\n` +
+          `📅 ${formatDate(ride.date)} at ${ride.time}\n\n` +
+          `Waiting for driver to confirm...\n` +
+          `We'll notify you when they respond!`
         );
-      } else if (text === 'next_ride') {
-        // Show next result
-        const currentIndex = tempData.currentResultIndex || 0;
-        const nextIndex = currentIndex + 1;
-        const rides = tempData.searchResults;
         
-        if (nextIndex >= rides.length) {
-          await sendTextMessage(phoneNumber, 'No more rides. Showing first one again.');
-          await conversation.setState('browsing_results', { ...tempData, currentResultIndex: 0 });
-          const ride = rides[0];
-          const rideText = formatRideDetails(ride, 1, rides.length);
-          await sendButtonMessage(phoneNumber, rideText, [
-            { id: `join_${ride._id}`, title: '✅ Join This Ride' },
-            { id: 'next_ride', title: '➡️ Next' }
-          ]);
-        } else {
-          await conversation.setState('browsing_results', { ...tempData, currentResultIndex: nextIndex });
-          const ride = rides[nextIndex];
-          const rideText = formatRideDetails(ride, nextIndex + 1, rides.length);
-          const buttons = [
-            { id: `join_${ride._id}`, title: '✅ Join This Ride' }
-          ];
-          if (nextIndex < rides.length - 1) {
-            buttons.push({ id: 'next_ride', title: '➡️ Next' });
-          }
-          await sendButtonMessage(phoneNumber, rideText, buttons);
-        }
+      } else if (text === 'next_ride' || text === '➡️ Next') {
+        await showNextRide(phoneNumber, tempData, conversation);
+      } else if (text === 'prev_ride' || text === '⬅️ Previous') {
+        await showPrevRide(phoneNumber, tempData, conversation);
+      } else if (text.toLowerCase() === 'save') {
+        // Save search for later
+        await User.findOneAndUpdate(
+          { phoneNumber },
+          { $push: { recentSearches: {
+            pickup: tempData.pickup,
+            destination: tempData.destination,
+            pickupLat: tempData.pickupLat,
+            pickupLng: tempData.pickupLng,
+            destLat: tempData.destLat,
+            destLng: tempData.destLng,
+            createdAt: new Date()
+          }}}
+        );
+        
+        await sendTextMessage(phoneNumber, '✅ Search saved! You can quickly search this route again later.');
+        await showMainMenu(phoneNumber);
+        await conversation.reset();
+      } else {
+        // Default: show current ride again
+        await showRideResult(phoneNumber, tempData.searchResults, tempData.currentResultIndex || 0, tempData);
       }
       break;
   }
 };
 
-// Show my rides
+// Helper: Show a specific ride result
+const showRideResult = async (phoneNumber, rides, index, tempData) => {
+  const ride = rides[index];
+  if (!ride) return;
+  
+  const rideText = formatRideDetails(ride, index + 1, rides.length);
+  
+  const buttons = [
+    { id: `join_${ride._id}`, title: '✅ Join This Ride' }
+  ];
+  
+  if (rides.length > 1) {
+    buttons.push({ id: 'next_ride', title: '➡️ Next Ride' });
+  }
+  
+  // Add back option if not first
+  if (index > 0) {
+    buttons.push({ id: 'prev_ride', title: '⬅️ Previous' });
+  }
+  
+  await sendButtonMessage(phoneNumber, rideText, buttons);
+};
+
+// Helper: Show next ride in results
+const showNextRide = async (phoneNumber, tempData, conversation) => {
+  const rides = tempData.searchResults;
+  const currentIndex = tempData.currentResultIndex || 0;
+  const nextIndex = (currentIndex + 1) % rides.length;
+  
+  await conversation.setState('browsing_results', { 
+    ...tempData, 
+    currentResultIndex: nextIndex 
+  });
+  
+  await showRideResult(phoneNumber, rides, nextIndex, tempData);
+};
+
+// Helper: Show previous ride in results
+const showPrevRide = async (phoneNumber, tempData, conversation) => {
+  const rides = tempData.searchResults;
+  const currentIndex = tempData.currentResultIndex || 0;
+  const prevIndex = currentIndex === 0 ? rides.length - 1 : currentIndex - 1;
+  
+  await conversation.setState('browsing_results', { 
+    ...tempData, 
+    currentResultIndex: prevIndex 
+  });
+  
+  await showRideResult(phoneNumber, rides, prevIndex, tempData);
+};
+
+// ============================================
+// MY RIDES
+// ============================================
+
 const showMyRides = async (phoneNumber) => {
   const offeredRides = await Ride.find({
     driverPhone: phoneNumber,
@@ -556,46 +905,80 @@ const showMyRides = async (phoneNumber) => {
     status: { $in: ['active', 'full'] }
   }).sort({ date: 1 });
   
-  if (offeredRides.length === 0 && joinedRides.length === 0) {
+  // Also get past rides
+  const pastOffered = await Ride.find({
+    driverPhone: phoneNumber,
+    $or: [
+      { status: { $in: ['completed', 'cancelled', 'expired'] } },
+      { expiresAt: { $lt: new Date() } }
+    ]
+  }).sort({ date: -1 }).limit(5);
+  
+  const pastJoined = await Ride.find({
+    'passengers.phone': phoneNumber,
+    $or: [
+      { status: { $in: ['completed', 'cancelled', 'expired'] } },
+      { expiresAt: { $lt: new Date() } }
+    ]
+  }).sort({ date: -1 }).limit(5);
+  
+  if (offeredRides.length === 0 && joinedRides.length === 0 && pastOffered.length === 0 && pastJoined.length === 0) {
     await sendTextMessage(phoneNumber, 
-      '📋 *Your Rides*\n\n' +
-      'You don\'t have any active rides.\n\n' +
-      'Offer a ride or find one to get started!'
+      `📋 *Your Rides*\n\n` +
+      `You don't have any rides yet.\n\n` +
+      `🚗 Offer a ride to earn\n` +
+      `🔍 Find a ride to travel`
     );
     await showMainMenu(phoneNumber);
     return;
   }
   
-  let message = '📋 *Your Rides*\n\n';
+  let message = '';
   
+  // Active offered rides
   if (offeredRides.length > 0) {
-    message += '*Offering:*\n';
+    message += `*🚗 Your Offered Rides (${offeredRides.length}):*\n\n`;
     offeredRides.forEach((ride, i) => {
+      const seatsLeft = ride.availableSeats;
       message += `${i + 1}. ${ride.pickupLocation} → ${ride.destination}\n`;
       message += `   📅 ${formatDate(ride.date)} at ${ride.time}\n`;
-      message += `   💺 ${ride.availableSeats}/${ride.totalSeats} seats left\n\n`;
+      message += `   💺 ${seatsLeft}/${ride.totalSeats} seats left\n`;
+      message += `   💰 ${ride.contribution > 0 ? '$' + ride.contribution : 'Free'}\n\n`;
     });
   }
   
+  // Active joined rides
   if (joinedRides.length > 0) {
-    message += '*Joined:*\n';
+    message += `*🔍 Your Joined Rides (${joinedRides.length}):*\n\n`;
     joinedRides.forEach((ride, i) => {
       message += `${i + 1}. ${ride.pickupLocation} → ${ride.destination}\n`;
       message += `   📅 ${formatDate(ride.date)} at ${ride.time}\n`;
-      message += `   📞 Driver: ${ride.driverPhone.slice(-4)}\n\n`;
+      message += `   👤 Driver: ${ride.driverName || ride.driverPhone.slice(-4)}\n\n`;
     });
   }
   
+  // Show message
   await sendTextMessage(phoneNumber, message);
-  await showMainMenu(phoneNumber);
+  
+  // Quick actions
+  const buttons = [
+    { id: 'offer_ride', title: '🚗 Offer New Ride' },
+    { id: 'find_ride', title: '🔍 Find a Ride' }
+  ];
+  
+  await sendButtonMessage(phoneNumber, 'What would you like to do next?', buttons);
 };
 
-// Handle driver response to ride request
+// ============================================
+// DRIVER RESPONSE HANDLING
+// ============================================
+
 const handleDriverResponse = async (phoneNumber, text, conversation) => {
   const { tempData } = conversation;
   
   if (!tempData.pendingRideId) {
     await conversation.reset();
+    await showMainMenu(phoneNumber);
     return;
   }
   
@@ -603,71 +986,97 @@ const handleDriverResponse = async (phoneNumber, text, conversation) => {
   if (!ride) {
     await sendTextMessage(phoneNumber, 'Sorry, this ride is no longer available.');
     await conversation.reset();
+    await showMainMenu(phoneNumber);
     return;
   }
   
-  const passengerPhone = phoneNumber; // The one waiting for response
+  const lowerText = text.toLowerCase();
+  const passengerPhone = tempData.passengerPhone || phoneNumber;
+  const user = await User.findOne({ phoneNumber });
   
-  if (text.toLowerCase() === 'yes') {
+  if (lowerText === 'yes' || lowerText === 'accept') {
     try {
-      await ride.addPassenger(passengerPhone, 'Passenger', tempData.seats || 1);
+      await ride.addPassenger(passengerPhone, user?.name || 'Passenger', tempData.seats || 1);
       
-      await sendTextMessage(ride.driverPhone,
-        `✅ Confirmed! You've accepted the ride request.`
+      // Confirm to driver
+      await sendTextMessage(phoneNumber, 
+        `✅ *Ride Confirmed!*\n\n` +
+        `You've accepted the request.\n\n` +
+        `Passenger: ${user?.name || 'Unknown'}\n` +
+        `Seats: ${tempData.seats || 1}`
       );
       
-      // Generate map URL with ride details
+      // Notify passenger
       const mapUrl = `${process.env.WEB_APP_URL || 'http://localhost:3002'}/map?pickup=${encodeURIComponent(ride.pickupLocation)}&destination=${encodeURIComponent(ride.destination)}`;
       
       await sendTextMessage(passengerPhone,
         `🎉 *Ride Confirmed!*\n\n` +
+        `✅ The driver accepted your request!\n\n` +
+        `*Ride Details:*\n` +
         `📍 ${ride.pickupLocation} → ${ride.destination}\n` +
         `📅 ${formatDate(ride.date)} at ${ride.time}\n` +
-        `📞 Driver: ${ride.driverPhone}\n\n` +
-        `🗺️ View on Map: ${mapUrl}\n\n` +
-        `Contact your driver to coordinate pickup details.`
+        `👤 Driver: ${ride.driverName || ride.driverPhone}\n\n` +
+        `🗺️ View Route: ${mapUrl}\n\n` +
+        `Contact your driver to arrange pickup!`
       );
-
+      
     } catch (error) {
-      await sendTextMessage(ride.driverPhone, 'Sorry, this ride is now full.');
+      await sendTextMessage(phoneNumber, 'Sorry, this ride is now full.');
       await sendTextMessage(passengerPhone, 'Sorry, this ride is no longer available.');
     }
-  } else {
-    await sendTextMessage(ride.driverPhone, 'Request declined.');
+  } else if (lowerText === 'no' || lowerText === 'decline') {
+    await sendTextMessage(phoneNumber, 'Request declined. The passenger has been notified.');
     await sendTextMessage(passengerPhone, 
-      'The driver couldn\'t accept your request. Try another ride!'
+      `😕 *Request Declined*\n\n` +
+      `The driver couldn't accept your request this time.\n\n` +
+      `Try finding another ride!`
     );
+  } else if (lowerText === 'full') {
+    await sendTextMessage(phoneNumber, 'Noted. No seats available.');
+    await sendTextMessage(passengerPhone, 
+      `😕 *Ride Full*\n\n` +
+      `Unfortunately, this ride is now full.\n\n` +
+      `Try finding another ride!`
+    );
+  } else {
+    // Unclear response, ask again
+    await sendTextMessage(phoneNumber,
+      `Please reply with:\n` +
+      `• "YES" to accept\n` +
+      `• "NO" to decline\n` +
+      `• "FULL" if no seats available`
+    );
+    return;
   }
   
   await conversation.reset();
-  await showMainMenu(passengerPhone);
+  await showMainMenu(phoneNumber);
 };
 
-// Format ride details
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
 const formatRideDetails = (ride, current, total) => {
-  const tags = ride.tags?.length > 0 ? `🏷️ ${ride.tags.join(', ')}\n` : '';
+  const tags = ride.tags?.length > 0 ? `\n🏷️ ${ride.tags.join(', ')}` : '';
   return (
-    `*Ride ${current}/${total}*\n\n` +
+    `*Ride ${current}${total > 1 ? '/' + total : ''}*\n\n` +
     `📍 ${ride.pickupLocation}\n` +
-    `🏁 ${ride.destination}\n` +
+    `🏁 ${ride.destination}\n\n` +
     `📅 ${formatDate(ride.date)} at ${ride.time}\n` +
     `💺 ${ride.availableSeats} seat${ride.availableSeats > 1 ? 's' : ''} available\n` +
-    `💰 ${ride.contribution > 0 ? '$' + ride.contribution : 'Free'}\n` +
-    `${tags}` +
-    `👤 Driver: ${ride.driverName || 'Anonymous'}`
+    `💰 ${ride.contribution > 0 ? '$' + ride.contribution : 'Free'}` +
+    tags +
+    `\n\n👤 Driver: ${ride.driverName || 'Anonymous'}`
   );
 };
 
-// Parse date from text
 const parseDate = (text) => {
   const lower = text.toLowerCase().trim();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  if (lower === 'today') {
-    return today;
-  }
-  
+  if (lower === 'today') return today;
   if (lower === 'tomorrow') {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -684,7 +1093,6 @@ const parseDate = (text) => {
     return targetDate;
   }
   
-  // Try parsing MM/DD/YYYY
   const dateMatch = text.match(/(\d{1,2})\/(\d{1,2})\/?(\d{2,4})?/);
   if (dateMatch) {
     const month = parseInt(dateMatch[1]) - 1;
@@ -693,17 +1101,13 @@ const parseDate = (text) => {
     if (year < 100) year += 2000;
     
     const date = new Date(year, month, day);
-    if (date >= today) {
-      return date;
-    }
+    if (date >= today) return date;
   }
   
   return null;
 };
 
-// Parse time from text
 const parseTime = (text) => {
-  // Match patterns like "8:00 AM", "14:00", "5:30pm"
   const match = text.match(/(\d{1,2}):?(\d{2})?\s?(am|pm)?/i);
   if (!match) return null;
   
@@ -717,7 +1121,15 @@ const parseTime = (text) => {
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 };
 
-// Format date for display
+const formatTime12Hour = (time24) => {
+  if (!time24) return '';
+  const [hours, minutes] = time24.split(':');
+  const h = parseInt(hours);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${minutes} ${ampm}`;
+};
+
 const formatDate = (date) => {
   if (!date) return 'N/A';
   const d = new Date(date);
@@ -728,7 +1140,10 @@ const formatDate = (date) => {
   });
 };
 
-// Main message handler
+// ============================================
+// MAIN MESSAGE HANDLER
+// ============================================
+
 export const handleMessage = async (reqBody) => {
   const messageData = parseIncomingMessage(reqBody);
   
@@ -737,7 +1152,7 @@ export const handleMessage = async (reqBody) => {
     return;
   }
   
-  const { phoneNumber, text, buttonReply, listReply, type } = messageData;
+  const { phoneNumber, text, buttonReply, listReply, type, location } = messageData;
   const inputText = buttonReply || listReply || text || '';
   
   console.log(`Message from ${phoneNumber}: ${inputText}`);
@@ -770,8 +1185,9 @@ export const handleMessage = async (reqBody) => {
     }
     
     // Handle special commands
-    const lowerInput = inputText.toLowerCase();
+    const lowerInput = inputText.toLowerCase().trim();
     
+    // Quick commands
     if (lowerInput === 'hi' || lowerInput === 'hello' || lowerInput === 'start' || lowerInput === 'menu') {
       await conversation.reset();
       await sendTextMessage(phoneNumber, WELCOME_MESSAGE);
@@ -779,24 +1195,66 @@ export const handleMessage = async (reqBody) => {
       return;
     }
     
-    if (lowerInput === 'help' || lowerInput === 'rules') {
-      await sendTextMessage(phoneNumber,
-        `📋 *PDRides Community Guidelines*\n\n` +
-        `1️⃣ Be respectful and punctual\n` +
-        `2️⃣ Share accurate ride details\n` +
-        `3️⃣ Confirm pickup location clearly\n` +
-        `4️⃣ Cancel in advance if plans change\n` +
-        `5️⃣ Drive safely and legally\n` +
-        `6️⃣ Report any issues\n\n` +
-        `Safety: Always share ride details with a friend. Trust your instincts.`
+    if (lowerInput === 'bye' || lowerInput === 'goodbye' || lowerInput === 'good bye' || lowerInput === 'see you' || lowerInput === 'talk to you later') {
+      await conversation.reset();
+      await sendTextMessage(phoneNumber, 
+        `Thank you! Bye for now! 👋\n\n` +
+        `We hope to see you again soon!\n` +
+        `Have a great day! 🌟`
       );
+      return;
+    }
+    
+    if (lowerInput === 'help' || lowerInput === '?' || lowerInput === 'help menu') {
+      await showHelpMenu(phoneNumber);
+      return;
+    }
+    
+    if (lowerInput === 'cancel' || lowerInput === 'stop') {
+      await conversation.reset();
+      await sendTextMessage(phoneNumber, 'Cancelled. What would you like to do?');
       await showMainMenu(phoneNumber);
       return;
     }
     
-    if (lowerInput === 'cancel') {
-      await conversation.reset();
-      await sendTextMessage(phoneNumber, 'Cancelled. What would you like to do?');
+    if (lowerInput === 'back' || lowerInput === 'go back') {
+      // Handle back navigation based on current state
+      await handleBackNavigation(phoneNumber, conversation);
+      return;
+    }
+    
+    // Help menu handlers
+    if (buttonReply === 'help_menu' || lowerInput === 'help') {
+      await showHelpMenu(phoneNumber);
+      return;
+    }
+    
+    if (buttonReply === 'help_how_offer') {
+      await showOfferRideHelp(phoneNumber);
+      return;
+    }
+    
+    if (buttonReply === 'help_how_find') {
+      await showFindRideHelp(phoneNumber);
+      return;
+    }
+    
+    if (buttonReply === 'help_rates') {
+      await showPricingInfo(phoneNumber);
+      return;
+    }
+    
+    if (buttonReply === 'help_safety') {
+      await showSafetyInfo(phoneNumber);
+      return;
+    }
+    
+    if (buttonReply === 'help_contact') {
+      await showContactInfo(phoneNumber);
+      return;
+    }
+    
+    if (buttonReply === 'back_menu') {
       await showMainMenu(phoneNumber);
       return;
     }
@@ -822,19 +1280,18 @@ export const handleMessage = async (reqBody) => {
           await handleOfferRide(phoneNumber, inputText, conversation, messageData);
           return;
         default:
-          // Handle dynamic contribution buttons (e.g., "contrib_12")
           if (buttonReply && buttonReply.startsWith('contrib_')) {
             await handleOfferRide(phoneNumber, inputText, conversation, messageData);
             return;
           }
       }
       
-      if (buttonReply.startsWith('join_')) {
+      if (buttonReply && buttonReply.startsWith('join_')) {
         await handleFindRide(phoneNumber, buttonReply, conversation, messageData);
         return;
       }
       
-      if (buttonReply === 'next_ride') {
+      if (buttonReply === 'next_ride' || buttonReply === 'prev_ride') {
         await handleFindRide(phoneNumber, buttonReply, conversation, messageData);
         return;
       }
@@ -857,7 +1314,54 @@ export const handleMessage = async (reqBody) => {
   } catch (error) {
     console.error('Error handling message:', error);
     await sendTextMessage(phoneNumber, 
-      'Sorry, something went wrong. Please try again or type "menu" to start over.'
+      `😕 Sorry, something went wrong.\n\n` +
+      `Type "menu" to start over or "help" for assistance.`
     );
   }
 };
+
+// Handle back navigation
+const handleBackNavigation = async (phoneNumber, conversation) => {
+  const state = conversation.state;
+  const tempData = conversation.tempData;
+  
+  // Map states to their previous states
+  const backMap = {
+    'offering_destination': 'offering_pickup',
+    'offering_date': 'offering_destination',
+    'offering_time': 'offering_date',
+    'offering_seats': 'offering_time',
+    'offering_contribution': 'offering_seats',
+    'offering_tags': 'offering_contribution',
+    'offering_confirm': 'offering_tags',
+    'requesting_destination': 'requesting_pickup',
+    'requesting_date': 'requesting_destination',
+    'requesting_seats': 'requesting_date'
+  };
+  
+  const prevState = backMap[state];
+  
+  if (prevState) {
+    // Go back to previous state
+    await conversation.setState(prevState, tempData);
+    
+    // Send appropriate message for that state
+    if (prevState === 'offering_pickup') {
+      await sendTextMessage(phoneNumber, '🔙 Went back.\n\nWhere will you pick up passengers?');
+    } else if (prevState === 'offering_destination') {
+      await sendTextMessage(phoneNumber, `🔙 Back to: ${tempData.pickup}\n\nWhere are you going?`);
+    } else if (prevState === 'requesting_pickup') {
+      await sendTextMessage(phoneNumber, '🔙 Back to start.\n\nWhere do you need to be picked up?');
+    } else if (prevState === 'requesting_destination') {
+      await sendTextMessage(phoneNumber, `🔙 Back to: ${tempData.pickup}\n\nWhere are you going?`);
+    } else {
+      await sendTextMessage(phoneNumber, '🔙 Going back...');
+    }
+  } else {
+    // Can't go back further, reset to main menu
+    await conversation.reset();
+    await sendTextMessage(phoneNumber, '🔙 Starting over...');
+    await showMainMenu(phoneNumber);
+  }
+};
+

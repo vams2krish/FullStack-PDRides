@@ -78,24 +78,24 @@ cp .env.example .env
 ### Environment Variables
 
 ```env
-# ═══════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # 🔧 App Configuration
-# ═══════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 APP_NAME=PDRides
 PORT=3000
 NODE_ENV=development
 
-# ═══════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # 📱 WhatsApp Cloud API (from Meta Developer Dashboard)
-# ═══════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
 WHATSAPP_BUSINESS_ACCOUNT_ID=your_business_account_id
 WHATSAPP_ACCESS_TOKEN=your_access_token
 WHATSAPP_WEBHOOK_VERIFY_TOKEN=your_custom_verify_token
 
-# ═══════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 # 🗄️ MongoDB Configuration
-# ═══════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
 MONGODB_URI=mongodb://localhost:27017/pdrides
 
 # 🌐 Web App URL
@@ -121,6 +121,12 @@ npm start
 | 🔐 `http://localhost:3000/login` | User login |
 | 📝 `http://localhost:3000/register` | User registration |
 | ⚙️ `http://localhost:3000/settings` | User settings |
+| 🔍 `http://localhost:3000/browse-all-rides` | Browse all rides |
+| 🚗 `http://localhost:3000/my-rides` | My rides |
+| ❓ `http://localhost:3000/help-center` | Help center |
+| 📧 `http://localhost:3000/contact-us` | Contact us |
+| 🔒 `http://localhost:3000/privacy-policy` | Privacy policy |
+| 📜 `http://localhost:3000/terms-of-service` | Terms of service |
 | ❤️ `http://localhost:3000/health` | Health check |
 
 ---
@@ -148,37 +154,48 @@ npm start
 
 ```
 📦 PDRides/
+├── 📄 index.html              # 🏠 Landing page
+├── 📄 map-view.html          # 🗺️ Interactive map
+├── 📄 login.html             # 🔐 Login page
+├── 📄 register.html          # 📝 Registration page
+├── 📄 settings.html          # ⚙️ User settings
+├── 📄 browse-rides.html      # 🔍 Browse all rides
+├── 📄 my-rides.html          # 🚗 My rides
+├── 📄 help-center.html       # ❓ Help center
+├── 📄 contact-us.html        # 📧 Contact us
+├── 📄 privacy-policy.html    # 🔒 Privacy policy
+├── 📄 terms-of-service.html  # 📜 Terms of service
+├── 📄 test-bot.html          # 🧪 WhatsApp bot tester
+│
 ├── 📂 src/
-│   ├── 📄 index.js              # 🚀 Main server entry point
+│   ├── 📄 index.js           # 🚀 Main server entry point
 │   │
 │   ├── 📂 models/
-│   │   ├── 📄 User.js           # 👤 User data model
-│   │   ├── 📄 Ride.js           # 🚗 Ride listings model
-│   │   └── 📄 Conversation.js   # 💬 Conversation state model
+│   │   ├── 📄 User.js        # 👤 User data model
+│   │   ├── 📄 Ride.js         # 🚗 Ride listings model
+│   │   └── 📄 Conversation.js # 💬 Conversation state model
 │   │
 │   ├── 📂 services/
-│   │   ├── 📄 whatsapp.js       # 📱 WhatsApp API integration
+│   │   ├── 📄 whatsapp.js    # 📱 WhatsApp API integration
 │   │   ├── 📄 messageHandler.js  # 🧠 Message processing & bot logic
-│   │   ├── 📄 scheduler.js       # ⏰ Background scheduled tasks
-│   │   ├── 📄 maps.js           # 🗺️ Geocoding & routing services
-│   │   ├── 📄 rideTypes.js      # 💵 Uber-style ride pricing
-│   │   └── 📄 otp.js            # 🔐 OTP verification service
+│   │   ├── 📄 scheduler.js    # ⏰ Background scheduled tasks
+│   │   ├── 📄 maps.js          # 🗺️ Geocoding & routing services
+│   │   ├── 📄 rideTypes.js     # 💵 Uber-style ride pricing
+│   │   └── 📄 otp.js           # 🔐 OTP verification service
 │   │
 │   └── 📂 routes/
-│       ├── 📄 auth.js           # 🔐 Authentication routes
-│       ├── 📄 user.js          # 👤 User management routes
-│       └── 📄 webhook.js        # 📥 WhatsApp webhook endpoints
+│       ├── 📄 auth.js         # 🔐 Authentication routes
+│       ├── 📄 user.js         # 👤 User management routes
+│       └── 📄 webhook.js      # 📥 WhatsApp webhook endpoints
 │
-├── 📂 public/
-│   ├── 📄 index.html            # 🏠 Landing page
-│   ├── 📄 map-view.html        # 🗺️ Interactive map
-│   ├── 📄 login.html           # 🔐 Login page
-│   ├── 📄 register.html        # 📝 Registration page
-│   └── 📄 settings.html        # ⚙️ User settings
+├── 📂 test/
+│   ├── 📄 test-full-flow.js   # 🧪 Full flow tests
+│   ├── 📄 test-whatsapp.js    # 🧪 WhatsApp tests
+│   └── 📄 test-*.json          # 🧪 Test data files
 │
-├── 📄 package.json              # 📦 Project dependencies
-├── 📄 .env.example             # 📝 Environment template
-└── 📄 README.md                # 📖 This file
+├── 📄 package.json            # 📦 Project dependencies
+├── 📄 .env.example            # 📝 Environment template
+└── 📄 README.md               # 📖 This file
 ```
 
 ---
@@ -267,6 +284,7 @@ npm start
 | `/webhook` | GET | Webhook verification |
 | `/webhook` | POST | Receive messages |
 | `/api/whatsapp/send-ride` | POST | Send ride to WhatsApp |
+| `/api/whatsapp/send-message` | POST | Send direct message |
 
 ---
 
@@ -298,8 +316,8 @@ npm start
     femaleOnly: Boolean,
     smoking: Boolean
   },
-  favoriteRoutes: [],         # ⭐ Saved routes
-  recentSearches: []           # 🔍 Recent searches
+  favoriteRoutes: [],         // ⭐ Saved routes
+  recentSearches: []          // 🔍 Recent searches
 }
 ```
 
@@ -315,17 +333,17 @@ npm start
   destLat/Lng: Number,        // 🏁 Coordinates
   date: Date,                 // 📅 Ride date
   time: String,               // ⏰ Ride time
-  totalSeats: Number,         # 💺 Total seats
-  availableSeats: Number,     # 💺 Available seats
-  contribution: Number,       # 💵 Price per seat
+  totalSeats: Number,          // 💺 Total seats
+  availableSeats: Number,     // 💺 Available seats
+  contribution: Number,       // 💵 Price per seat
   status: String,             // 📊 active/full/completed/cancelled
-  passengers: [{              # 👥 Joined passengers
+  passengers: [{              // 👥 Joined passengers
     phone: String,
     name: String,
     seats: Number
   }],
-  tags: [String],             # 🏷️ Ride preferences
-  expiresAt: Date             # ⏰ Expiration time
+  tags: [String],             // 🏷️ Ride preferences
+  expiresAt: Date             // ⏰ Expiration time
 }
 ```
 

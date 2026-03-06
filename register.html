@@ -695,7 +695,7 @@
         </div>
 
         <div class="login-link">
-            Already have an account? <a href="/login">Login here</a>
+            Already have an account? <a href="/register">Register here</a>
         </div>
 
         <p class="privacy-note">
@@ -712,6 +712,12 @@
 
         // Check if already logged in
         if (authToken && userPhone) {
+            // If there's a pending name from registration, save it to pdrides_name for display across the app
+            const pendingName = localStorage.getItem('pdrides_pending_name');
+            if (pendingName) {
+                localStorage.setItem('pdrides_name', pendingName);
+                localStorage.removeItem('pdrides_pending_name');
+            }
             window.location.href = '/map';
         }
 
@@ -946,7 +952,7 @@
                     localStorage.setItem('pdrides_pending_driver', JSON.stringify(driverInfo));
                     localStorage.setItem('pdrides_pending_prefs', JSON.stringify({ preferences, communication, emergencyContact: { name: emergencyName, phone: emergencyPhone } }));
                     
-                    // Redirect to login with OTP
+                    // Redirect to login with OTP verification (since login.html has proper OTP handling)
                     window.location.href = '/login?mode=verify&phone=' + encodeURIComponent(phone);
                 } else {
                     throw new Error(data.error || 'Registration failed');

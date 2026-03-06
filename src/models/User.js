@@ -182,6 +182,90 @@ const userSchema = new mongoose.Schema({
     phone: String
   },
 
+  // Driver preferences
+  driverPreferences: {
+    smoking: {
+      type: Boolean,
+      default: false
+    },
+    music: {
+      type: Boolean,
+      default: true
+    },
+    chat: {
+      type: Boolean,
+      default: true
+    },
+    pets: {
+      type: Boolean,
+      default: false
+    },
+    food: {
+      type: Boolean,
+      default: true
+    },
+    phoneCharging: {
+      type: Boolean,
+      default: true
+    },
+    notes: {
+      type: String,
+      default: ''
+    }
+  },
+
+  // Privacy settings
+  privacySettings: {
+    showProfile: {
+      type: Boolean,
+      default: true
+    },
+    showPhone: {
+      type: Boolean,
+      default: true
+    },
+    showRating: {
+      type: Boolean,
+      default: true
+    },
+    showRideHistory: {
+      type: Boolean,
+      default: true
+    },
+    allowMessages: {
+      type: Boolean,
+      default: true
+    },
+    showOnlineStatus: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  // Notification settings
+  notificationSettings: {
+    rideRequests: {
+      type: Boolean,
+      default: true
+    },
+    rideUpdates: {
+      type: Boolean,
+      default: true
+    },
+    promotions: {
+      type: Boolean,
+      default: false
+    },
+    emailNotifications: {
+      type: Boolean,
+      default: false
+    },
+    smsNotifications: {
+      type: Boolean,
+      default: true
+    }
+  },
+
   // Communication preferences
   communication: {
     whatsapp: {

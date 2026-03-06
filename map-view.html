@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDRides - Interactive Map View</title>
+    <title>PDRides - Your Maps</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
@@ -1404,6 +1404,231 @@
             .settings-option { flex-direction: column; align-items: flex-start; gap: 10px; }
             .settings-option-btn { width: 100%; }
         }
+        
+        /* Booking Confirmation Modal */
+        .booking-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 20px;
+        }
+        
+        .booking-modal.active {
+            display: flex;
+        }
+        
+        .booking-modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 450px;
+            width: 100%;
+            animation: modalSlideIn 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .booking-modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .booking-modal-header.confirmed {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+        }
+        
+        .booking-modal-header h2 {
+            font-size: 1.3rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .booking-modal-body {
+            padding: 20px;
+        }
+        
+        .booking-ride-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .booking-ride-summary .route {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .booking-ride-summary .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .booking-ride-summary .details div {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .booking-price {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .booking-price .label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .booking-price .amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #25D366;
+        }
+        
+        .booking-question {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .booking-question h3 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .booking-question p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .booking-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .booking-buttons button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .booking-btn-confirm {
+            background: #25D366;
+            color: white;
+        }
+        
+        .booking-btn-confirm:hover {
+            background: #128C7E;
+        }
+        
+        .booking-btn-cancel {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        .booking-btn-cancel:hover {
+            background: #e0e0e0;
+        }
+        
+        .booking-driver-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .booking-driver-avatar {
+            width: 45px;
+            height: 45px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .booking-driver-details {
+            flex: 1;
+        }
+        
+        .booking-driver-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .booking-driver-phone {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .booking-success {
+            text-align: center;
+        }
+        
+        .booking-success-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+        
+        .booking-success h3 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .booking-success p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        
+        .booking-note {
+            background: #fff3e0;
+            border: 1px solid #ffcc80;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .booking-note strong {
+            color: #e65100;
+        }
     </style>
 </head>
 <body>
@@ -1430,10 +1655,8 @@
                         </div>
                         <ul class="profile-menu-items">
                             <li><a href="#" onclick="showProfileSettings()"><span class="icon">⚙️</span> Settings</a></li>
-                            <li><a href="#" onclick="showMyRides()"><span class="icon">🚗</span> My Rides</a></li>
-                            <li><a href="#" onclick="showSavedRoutes()"><span class="icon">⭐</span> Saved Routes</a></li>
-                            <li><a href="#" onclick="showRideHistory()"><span class="icon">📋</span> Ride History</a></li>
-                            <li><a href="#" onclick="showAvailableRides()"><span class="icon">🔍</span> Browse All Rides</a></li>
+<li><a href="/my-rides"><span class="icon">🚗</span> My Rides</a></li>
+<li><a href="/browse-all-rides"><span class="icon">🔍</span> Browse All Rides</a></li>
                             <li><a href="#" onclick="logout()" class="logout-btn"><span class="icon">🚪</span> Logout</a></li>
                         </ul>
                     </div>
@@ -1442,27 +1665,36 @@
         </div>
     </div>
     
-    <div class="route-title-bar">
-        <div class="route-title" id="routeTitle">
-            <span class="location start-loc">📍 Enter start location</span>
-            <span class="arrow">→</span>
-            <span class="location dest-loc">🏁 Enter destination</span>
+    <!-- Welcome Banner -->
+    <div class="welcome-banner" id="welcomeBanner" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);">
+        <div style="max-width: 1400px; margin: 0 auto; text-align: center;">
+            <h2 style="font-size: 1.5rem; color: white; margin-bottom: 5px; font-weight: 700;">👋 Welcome back! <span id="welcomeUserName">User</span> 😊</h2>
+            <p style="color: rgba(255,255,255,0.95); font-size: 1rem; font-weight: 500;">Book your Community Car Rides Now</p>
         </div>
     </div>
+    
+    <!-- Logged In Content Container -->
+    <div id="loggedInContent" style="display: none;">
+        <!-- Content shown when user is logged in -->
+    </div>
+    
+
     
     <div class="container">
         <div class="main-grid">
             <div class="left-column">
                 <div class="map-section">
                     <div class="map-header">
-                        <h2>🗺️ Interactive Map</h2>
+                        <h2>🗺️ Your Maps</h2>
                         <span style="font-size: 0.85rem;">Real-Time</span>
                     </div>
                     <div id="map"></div>
                     <div class="controls">
                         <div class="location-row">
+                            <button class="my-location-btn" onclick="getMyLocation()" title="Use my location">📍</button>
+                            
                             <div>
-                                <div class="location-label start">📍 Start Location</div>
+                                <div class="location-label start">📍 Pick Up Location</div>
                                 <div class="input-wrapper">
                                     <span class="input-icon">📍</span>
                                     <input type="text" id="pickup" placeholder="Enter pickup address" autocomplete="off">
@@ -1473,15 +1705,13 @@
                             <button class="swap-btn" onclick="swapLocations()" title="Swap locations">⇄</button>
                             
                             <div>
-                                <div class="location-label dest">🏁 Destination</div>
+                                <div class="location-label dest">🏁 Drop off Location</div>
                                 <div class="input-wrapper">
                                     <span class="input-icon">🏁</span>
-                                    <input type="text" id="destination" placeholder="Enter destination address" autocomplete="off">
+                                    <input type="text" id="destination" placeholder="Enter Drop off address" autocomplete="off">
                                     <div class="autocomplete-dropdown" id="destination-suggestions"></div>
                                 </div>
                             </div>
-                            
-                            <button class="my-location-btn" onclick="getMyLocation()" title="Use my location">📍</button>
                         </div>
                         
                         <div class="btn-row">
@@ -1492,8 +1722,9 @@
                                 <option value="4">4 Seats</option>
                             </select>
                             <button class="btn btn-primary" onclick="calculateRoute()">🚗 Calculate Price</button>
-                            <button class="btn btn-secondary" onclick="findRides()">🔍 Find Rides</button>
-                            <button class="btn btn-offer" id="offerRideBtn" onclick="showOfferRideForm()" style="display: none;">🚙 Offer a Ride</button>
+                            <button class="btn btn-secondary" onclick="handleFindRides()">🔍 Find Rides</button>
+                            <button class="btn btn-offer" id="offerRideBtn" onclick="handleOfferRide()" style="display: none;">🚙 Offer Ride</button>
+                            <button class="btn btn-share" id="shareBtn" onclick="shareToWhatsApp()" style="background: #25D366; color: white;">📤 Share</button>
                         </div>
                         
                         <div class="loading" id="loading">
@@ -1525,36 +1756,20 @@
                 </div>
             </div>
             
-            <div class="sidebar">
-                <div class="info-panel">
-                    <h3>⚡ Quick Actions</h3>
-                    <div class="quick-actions">
-                        <button class="quick-action-btn" onclick="showRecentSearches()">🕐 Recent</button>
-                        <button class="quick-action-btn" onclick="showFavoriteRoutes()">⭐ Saved</button>
-                        <button class="quick-action-btn" onclick="clearForm()">🗑️ Clear</button>
-                    </div>
-                    
-                    <div id="loggedInContent">
-                        <div class="section-title">
-                            Recent Searches
-                            <button onclick="clearRecentSearches()">Clear All</button>
-                        </div>
-                        <div class="quick-route-list" id="recentSearches">
-                            <p style="color: #999; font-size: 0.8rem; text-align: center; padding: 8px;">No recent searches</p>
-                        </div>
-                        
-                        <div class="section-title">
-                            Saved Routes
-                            <button onclick="showSaveRouteModal()">+ Add</button>
-                        </div>
-                        <div class="quick-route-list" id="favoriteRoutes">
-                            <p style="color: #999; font-size: 0.8rem; text-align: center; padding: 8px;">No saved routes</p>
-                        </div>
-                    </div>
+              <div class="sidebar">
+                  <div class="info-panel">
+                      <div class="section-title">
+                          <span>⭐ Saved Routes</span>
+                          <button onclick="showSaveRouteModal()" id="addRouteBtn" style="display: none;">+ Add</button>
+                      </div>
+                      <div id="savedRoutesList" class="quick-route-list">
+                          <p style="color: #999; font-size: 0.8rem; text-align: center; padding: 8px;">No saved routes</p>
+                      </div>
+                  </div>
                     
                     <div id="loggedOutContent" class="login-prompt" style="display: none;">
                         <p>Login to save your searches and routes</p>
-                        <a href="/login" class="btn btn-primary">🔐 Login</a>
+                        <a href="/register" class="btn btn-primary">🔐 Register</a>
                     </div>
                     
                     <h3 style="margin-top: 18px;">💰 Pricing</h3>
@@ -1632,6 +1847,18 @@
         </div>
     </div>
 
+    <!-- Booking Confirmation Modal -->
+    <div class="booking-modal" id="bookingModal">
+        <div class="booking-modal-content">
+            <div class="booking-modal-header" id="bookingModalHeader">
+                <h2>🎫 Book This Ride</h2>
+            </div>
+            <div class="booking-modal-body" id="bookingModalBody">
+                <!-- Booking content will be dynamically inserted -->
+            </div>
+        </div>
+    </div>
+
     <script>
         // Initialize the map
         const map = L.map('map').setView([40.7128, -74.0060], 10);
@@ -1655,8 +1882,11 @@
         let userName = localStorage.getItem('pdrides_name') || 'User';
         let userMode = localStorage.getItem('pdrides_mode') || 'passenger';
         
-        // Debounce timer for autocomplete
+        // Debounce timer for autocomplete - faster response for dynamic suggestions
         let autocompleteTimer = null;
+        let selectedIndex = -1;
+        let currentSuggestions = [];
+        let activeField = null;
         
         // Custom marker icons
         const pickupIcon = L.divIcon({
@@ -1688,7 +1918,63 @@
             loadRecentSearches();
             loadFavoriteRoutes();
             checkUrlParams();
+            
+            // NEW: Auto-handle location for first-time users or returning users
+            handleInitialLocation();
+            
+            // Listen for profile name updates from settings page
+            window.addEventListener('profileNameUpdated', function(e) {
+                const newName = e.detail.name;
+                if (newName) {
+                    userName = newName;
+                    // Update all name displays in the UI
+                    document.getElementById('profileName').textContent = userName;
+                    document.getElementById('profileMenuName').textContent = userName;
+                    document.getElementById('welcomeUserName').textContent = userName;
+                    
+                    // Update avatar initial
+                    document.getElementById('profileAvatar').textContent = userName.charAt(0).toUpperCase();
+                }
+            });
         };
+        
+        // NEW: Handle initial location based on user login status and history
+        async function handleInitialLocation() {
+            // Check if user has recent searches in localStorage or server
+            const hasRecentSearches = window.recentSearchesData && window.recentSearchesData.length > 0;
+            
+            if (authToken && userPhone) {
+                // User is logged in - fetch their recent searches from server
+                try {
+                    const response = await fetch(`/api/user/recent-searches?phoneNumber=${userPhone}&token=${authToken}`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.recentSearches && data.recentSearches.length > 0) {
+                        // User has history - load the most recent route
+                        const lastSearch = data.recentSearches[0];
+                        document.getElementById('pickup').value = lastSearch.pickup;
+                        document.getElementById('destination').value = lastSearch.destination;
+                        updateRouteTitle();
+                        
+                        // Calculate route with the saved locations
+                        calculateRoute();
+                        console.log('Loaded previous route from history:', lastSearch.pickup, '->', lastSearch.destination);
+                    } else {
+                        // First-time user (no history) - auto-get device location for start point
+                        console.log('First-time user - getting device location for pickup');
+                        getMyLocation();
+                    }
+                } catch (error) {
+                    console.error('Error loading recent searches:', error);
+                    // On error, try to get device location
+                    getMyLocation();
+                }
+            } else {
+                // Not logged in - still try to get device location for better UX
+                console.log('User not logged in - getting device location');
+                getMyLocation();
+            }
+        }
         
         // Initialize UI based on auth state
         function initUserInterface() {
@@ -1699,7 +1985,15 @@
                 document.getElementById('profileName').textContent = userName;
                 document.getElementById('profileMenuName').textContent = userName;
                 document.getElementById('profileMenuPhone').textContent = userPhone;
-                document.getElementById('profileAvatar').textContent = userName.charAt(0).toUpperCase();
+                document.getElementById('welcomeUserName').textContent = userName;
+                
+                // Load profile photo if exists
+                const userPhoto = localStorage.getItem('pdrides_photo') || localStorage.getItem('userProfilePhoto') || localStorage.getItem('globalProfilePhoto');
+                if (userPhoto) {
+                    document.getElementById('profileAvatar').innerHTML = '<img src="' + userPhoto + '" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+                } else {
+                    document.getElementById('profileAvatar').textContent = userName.charAt(0).toUpperCase();
+                }
             } else {
                 document.getElementById('loggedInContent').style.display = 'none';
                 document.getElementById('loggedOutContent').style.display = 'block';
@@ -1729,75 +2023,127 @@
             
             // Change header background color based on mode
             const header = document.querySelector('.header');
+            const welcomeBanner = document.getElementById('welcomeBanner');
+            
             if (mode === 'driver') {
                 header.classList.add('driver-mode');
+                // Update welcome banner to driver colors (green)
+                welcomeBanner.style.background = 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)';
                 showAlert('success', '🚙 You are now in Driver mode. You can offer rides!');
             } else {
                 header.classList.remove('driver-mode');
+                // Update welcome banner to passenger colors (purple)
+                welcomeBanner.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
                 showAlert('success', '👤 You are now in Passenger mode. You can find rides!');
             }
+            
+            // Update URL to reflect the current mode
+            updateUrlWithMode(mode);
+        }
+        
+        // Update URL with current mode (driver/passenger)
+        function updateUrlWithMode(mode) {
+            const url = new URL(window.location);
+            
+            // Get current URL params to preserve them
+            const pickup = url.searchParams.get('pickup');
+            const destination = url.searchParams.get('destination');
+            
+            // Always set the mode parameter explicitly
+            url.searchParams.set('mode', mode);
+            
+            // Restore other params if they exist
+            if (pickup) url.searchParams.set('pickup', pickup);
+            if (destination) url.searchParams.set('destination', destination);
+            
+            // Update URL without reloading the page
+            window.history.replaceState({}, '', url);
         }
         
         // Show Offer Ride Form Modal
-        function showOfferRideForm() {
-            const pickup = document.getElementById('pickup').value;
-            const destination = document.getElementById('destination').value;
+        function showOfferRideForm(existingPickup, existingDestination) {
+            // If no locations provided, get from input fields
+            const pickup = existingPickup || document.getElementById('pickup').value;
+            const destination = existingDestination || document.getElementById('destination').value;
             
-            if (!pickup || !destination) {
-                showAlert('error', 'Please enter both pickup and destination locations first');
-                return;
-            }
+            // Check if user needs to enter locations
+            const needsLocation = !pickup || !destination;
             
             const modalHtml = `
                 <div class="modal-overlay active" id="offerRideModal" onclick="closeOfferRideModal(event)">
                     <div class="modal-content" onclick="event.stopPropagation()">
                         <div class="modal-header driver-mode">
-                            <h2>🚙 Offer a Ride</h2>
+                            <h2>🚙 Offer Ride to Passengers</h2>
                             <button class="modal-close" onclick="closeOfferRideModal()">×</button>
                         </div>
                         <div class="modal-body">
-                            <div class="route-summary" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                                <div style="font-weight: 600; color: #25D366; margin-bottom: 8px;">
-                                    📍 ${pickup.split(',')[0]} → 🏁 ${destination.split(',')[0]}
+                            ${needsLocation ? `
+                                <div style="background: #fff3e0; border: 1px solid #ffcc80; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                                    <div style="font-weight: 600; color: #e65100; margin-bottom: 8px;">📍 Enter Your Route</div>
+                                    <p style="font-size: 0.85rem; color: #666;">Please enter pickup and drop-off locations for your ride offer.</p>
                                 </div>
-                                <div style="font-size: 0.85rem; color: #666;">
-                                    ${pickup} → ${destination}
+                                
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">📍 Pickup Location</label>
+                                    <input type="text" id="modalPickup" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="Enter pickup address" value="${pickup || ''}">
                                 </div>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">📅 Date</label>
-                                <input type="date" id="rideDate" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">⏰ Time</label>
-                                <input type="time" id="rideTime" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">💺 Available Seats</label>
-                                <select id="rideSeats" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-                                    <option value="1">1 Seat - $${(currentRoute?.pricePerSeat || 0).toFixed(2)}</option>
-                                    <option value="2" selected>2 Seats - $${((currentRoute?.pricePerSeat || 0) * 2).toFixed(2)}</option>
-                                    <option value="3">3 Seats - $${((currentRoute?.pricePerSeat || 0) * 3).toFixed(2)}</option>
-                                    <option value="4">4 Seats - $${((currentRoute?.pricePerSeat || 0) * 4).toFixed(2)}</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">💰 Price per Seat ($)</label>
-                                <input type="number" id="ridePrice" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" value="${(currentRoute?.pricePerSeat || 0).toFixed(2)}" min="0" step="0.01" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 20px;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">📝 Additional Details (Optional)</label>
-                                <textarea id="rideNotes" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; min-height: 80px; resize: vertical;" placeholder="Any additional information for passengers..."></textarea>
-                            </div>
-                            
-                            <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;" onclick="createRide()">
-                                🚗 Create Ride Offer
-                            </button>
+                                
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">🏁 Drop-off Location</label>
+                                    <input type="text" id="modalDestination" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="Enter destination address" value="${destination || ''}">
+                                </div>
+                                
+                                <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem; margin-bottom: 15px;" onclick="proceedWithLocations()">
+                                    ✅ Continue with Locations
+                                </button>
+                            ` : `
+                                <div class="route-summary" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                                    <div style="font-weight: 600; color: #25D366; margin-bottom: 8px;">
+                                        📍 ${pickup.split(',')[0]} → 🏁 ${destination.split(',')[0]}
+                                    </div>
+                                    <div style="font-size: 0.85rem; color: #666;">
+                                        ${pickup} → ${destination}
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">📅 Date</label>
+                                    <input type="date" id="rideDate" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" required>
+                                </div>
+                                
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">⏰ Time</label>
+                                    <input type="time" id="rideTime" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" required>
+                                </div>
+                                
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">💺 Available Seats</label>
+                                    <select id="rideSeats" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+                                        <option value="1">1 Seat - $${(currentRoute?.pricePerSeat || 0).toFixed(2)}</option>
+                                        <option value="2" selected>2 Seats - $${((currentRoute?.pricePerSeat || 0) * 2).toFixed(2)}</option>
+                                        <option value="3">3 Seats - $${((currentRoute?.pricePerSeat || 0) * 3).toFixed(2)}</option>
+                                        <option value="4">4 Seats - $${((currentRoute?.pricePerSeat || 0) * 4).toFixed(2)}</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">💰 Price per Seat ($)</label>
+                                    <input type="number" id="ridePrice" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" value="${(currentRoute?.pricePerSeat || 0).toFixed(2)}" min="0" step="0.01" required>
+                                </div>
+                                
+                                <div class="form-group" style="margin-bottom: 20px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">📝 Additional Details (Optional)</label>
+                                    <textarea id="rideNotes" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; min-height: 80px; resize: vertical;" placeholder="Any additional information for passengers..."></textarea>
+                                </div>
+                                
+                                <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem; margin-bottom: 10px;" onclick="createRide()">
+                                    🚗 Create Ride Offer
+                                </button>
+                                
+                                <button class="btn" style="width: 100%; padding: 12px; font-size: 0.95rem; background: #25D366; color: white; border: none;" onclick="createAndShareToWhatsApp()">
+                                    📲 Create & Share to WhatsApp
+                                </button>
+                            `}
                         </div>
                     </div>
                 </div>
@@ -1812,16 +2158,129 @@
             // Add modal to body
             document.body.insertAdjacentHTML('beforeend', modalHtml);
             
-            // Set default date to tomorrow
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            document.getElementById('rideDate').value = tomorrow.toISOString().split('T')[0];
-            document.getElementById('rideDate').min = new Date().toISOString().split('T')[0];
+            // If we have locations, set default date/time
+            if (!needsLocation) {
+                // Set default date to tomorrow
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                document.getElementById('rideDate').value = tomorrow.toISOString().split('T')[0];
+                document.getElementById('rideDate').min = new Date().toISOString().split('T')[0];
+                
+                // Set default time to current time + 1 hour
+                const now = new Date();
+                now.setHours(now.getHours() + 1);
+                document.getElementById('rideTime').value = now.toTimeString().slice(0, 5);
+            }
+        }
+        
+        // Proceed with locations from modal
+        async function proceedWithLocations() {
+            const modalPickup = document.getElementById('modalPickup').value.trim();
+            const modalDestination = document.getElementById('modalDestination').value.trim();
             
-            // Set default time to current time + 1 hour
-            const now = new Date();
-            now.setHours(now.getHours() + 1);
-            document.getElementById('rideTime').value = now.toTimeString().slice(0, 5);
+            if (!modalPickup || !modalDestination) {
+                showAlert('error', 'Please enter both pickup and destination locations');
+                return;
+            }
+            
+            // Close current modal and show the full form with locations
+            closeOfferRideModal();
+            showOfferRideForm(modalPickup, modalDestination);
+            
+            // Also update the main input fields
+            document.getElementById('pickup').value = modalPickup;
+            document.getElementById('destination').value = modalDestination;
+            
+            // Calculate route in background
+            calculateRoute();
+        }
+        
+        // Create ride and share to WhatsApp
+        async function createAndShareToWhatsApp() {
+            if (!authToken || !userPhone) {
+                showAlert('error', 'Please register to offer rides');
+                window.location.href = '/register';
+                return;
+            }
+            
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            const date = document.getElementById('rideDate').value;
+            const time = document.getElementById('rideTime').value;
+            const seats = document.getElementById('rideSeats').value;
+            const pricePerSeat = parseFloat(document.getElementById('ridePrice').value);
+            
+            if (!date || !time || !pricePerSeat) {
+                showAlert('error', 'Please fill in all required fields');
+                return;
+            }
+            
+            // Close modal
+            closeOfferRideModal();
+            document.getElementById('loading').classList.add('active');
+            
+            try {
+                const response = await fetch('/api/rides', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'phoneNumber': userPhone,
+                        'token': authToken
+                    },
+                    body: JSON.stringify({
+                        driverPhone: userPhone,
+                        driverName: userName,
+                        pickup: pickup,
+                        destination: destination,
+                        date: date,
+                        time: time,
+                        seats: parseInt(seats),
+                        contribution: pricePerSeat,
+                        pickupLat: currentRoute?.pickup?.lat,
+                        pickupLng: currentRoute?.pickup?.lng,
+                        destLat: currentRoute?.destination?.lat,
+                        destLng: currentRoute?.destination?.lng
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Ask user for WhatsApp number to share
+                    const sharePhone = prompt('Enter the phone number to share this ride offer on WhatsApp (+1...):', userPhone || '');
+                    
+                    if (sharePhone) {
+                        // Send ride details to WhatsApp
+                        const seatsText = seats === '1' ? '1 seat' : `${seats} seats`;
+                        const message = `🚗 *Ride Offered!*\n\n📍 From: ${pickup}\n🏁 To: ${destination}\n📅 Date: ${new Date(date).toLocaleDateString()}\n⏰ Time: ${time}\n💺 Available: ${seatsText}\n💰 Price: $${pricePerSeat.toFixed(2)} per seat\n\n👤 Driver: ${userName}\n\nBook now on PDRides!`;
+                        
+                        await fetch('/api/whatsapp/send-ride', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                phoneNumber: sharePhone,
+                                pickup: pickup,
+                                destination: destination,
+                                date: new Date(date).toLocaleDateString(),
+                                time: time,
+                                price: pricePerSeat.toFixed(2),
+                                seats: seats
+                            })
+                        });
+                    }
+                    
+                    showAlert('success', '🎉 Ride offer created and shared to WhatsApp!');
+                    // Refresh rides list
+                    findRides();
+                } else {
+                    throw new Error(data.error || 'Failed to create ride');
+                }
+            } catch (error) {
+                console.error('Error creating ride:', error);
+                showAlert('error', error.message || 'Failed to create ride offer');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
         }
         
         // Close Offer Ride Modal
@@ -1836,9 +2295,9 @@
         
 // Create a new ride
         async function createRide() {
-            if (!authToken || !userPhone) {
-                showAlert('error', 'Please login to offer rides');
-                window.location.href = '/login';
+if (!authToken || !userPhone) {
+                showAlert('error', 'Please register to offer rides');
+                window.location.href = '/register';
                 return;
             }
             
@@ -1902,7 +2361,7 @@
         // Toggle profile menu
         function toggleProfileMenu() {
             if (!authToken) {
-                window.location.href = '/login';
+                window.location.href = '/register';
                 return;
             }
             const menu = document.getElementById('profileMenu');
@@ -1922,9 +2381,16 @@
             const urlParams = new URLSearchParams(window.location.search);
             const pickup = urlParams.get('pickup');
             const destination = urlParams.get('destination');
+            const mode = urlParams.get('mode');
             
             if (pickup) document.getElementById('pickup').value = pickup;
             if (destination) document.getElementById('destination').value = destination;
+            
+            // Set user mode from URL if provided
+            if (mode === 'driver' || mode === 'passenger') {
+                userMode = mode;
+                localStorage.setItem('pdrides_mode', mode);
+            }
             
             if (pickup && destination) {
                 calculateRoute();
@@ -1952,32 +2418,50 @@
             }
         }
         
-        // Autocomplete for pickup
+        // Autocomplete for pickup - Dynamic location suggestions as user types
         document.getElementById('pickup').addEventListener('input', function(e) {
             updateRouteTitle();
             clearTimeout(autocompleteTimer);
-            autocompleteTimer = setTimeout(() => {
-                showAutocomplete('pickup', e.target.value);
-            }, 300);
+            const query = e.target.value;
+            
+            // Show suggestions immediately if we have enough characters
+            if (query.length >= 2) {
+                // Shorter delay for more responsive feel (150ms)
+                autocompleteTimer = setTimeout(() => {
+                    showAutocomplete('pickup', query);
+                }, 150);
+            } else if (query.length === 0) {
+                // Hide suggestions when input is cleared
+                document.getElementById('pickup-suggestions').classList.remove('active');
+            }
         });
         
         document.getElementById('pickup').addEventListener('focus', function(e) {
-            if (e.target.value.length > 0) {
+            if (e.target.value.length >= 2) {
                 showAutocomplete('pickup', e.target.value);
             }
         });
         
-        // Autocomplete for destination
+        // Autocomplete for destination - Dynamic location suggestions as user types
         document.getElementById('destination').addEventListener('input', function(e) {
             updateRouteTitle();
             clearTimeout(autocompleteTimer);
-            autocompleteTimer = setTimeout(() => {
-                showAutocomplete('destination', e.target.value);
-            }, 300);
+            const query = e.target.value;
+            
+            // Show suggestions immediately if we have enough characters
+            if (query.length >= 2) {
+                // Shorter delay for more responsive feel (150ms)
+                autocompleteTimer = setTimeout(() => {
+                    showAutocomplete('destination', query);
+                }, 150);
+            } else if (query.length === 0) {
+                // Hide suggestions when input is cleared
+                document.getElementById('destination-suggestions').classList.remove('active');
+            }
         });
         
         document.getElementById('destination').addEventListener('focus', function(e) {
-            if (e.target.value.length > 0) {
+            if (e.target.value.length >= 2) {
                 showAutocomplete('destination', e.target.value);
             }
         });
@@ -1994,10 +2478,15 @@
         async function showAutocomplete(field, query) {
             const dropdown = document.getElementById(field + '-suggestions');
             
-            if (query.length < 3) {
+// Show autocomplete suggestions - Dynamic as user types
+            if (query.length < 1) {
                 dropdown.classList.remove('active');
                 return;
             }
+            
+            // Show loading indicator
+            dropdown.innerHTML = '<div class="autocomplete-item" style="color: #999; font-size: 0.85rem;">Searching...</div>';
+            dropdown.classList.add('active');
             
             try {
                 const response = await fetch(`/api/autocomplete?q=${encodeURIComponent(query)}`);
@@ -2406,6 +2895,149 @@ const destLng = ride.destLng || -74.006 + (index * 0.01);
             const selected = document.querySelector(`[data-index="${index}"]`);
             if (selected) selected.classList.add('selected');
             selectedRide = { index, rideId };
+            
+            // Show the booking confirmation modal
+            showBookingModal(index);
+        }
+        
+        // Show booking confirmation modal
+        function showBookingModal(index) {
+            const ride = allRides[index];
+            if (!ride) return;
+            
+            const modal = document.getElementById('bookingModal');
+            const modalBody = document.getElementById('bookingModalBody');
+            const modalHeader = document.getElementById('bookingModalHeader');
+            
+            // Reset header to default (not confirmed)
+            modalHeader.classList.remove('confirmed');
+            modalHeader.innerHTML = '<h2>🎫 Book This Ride</h2>';
+            
+            const seats = document.getElementById('seats').value;
+            const totalPrice = (ride.contribution || 0) * parseInt(seats);
+            
+            modalBody.innerHTML = `
+                <div class="booking-driver-info">
+                    <div class="booking-driver-avatar">${(ride.driverName || 'A').charAt(0).toUpperCase()}</div>
+                    <div class="booking-driver-details">
+                        <div class="booking-driver-name">👤 ${ride.driverName || 'Anonymous Driver'}</div>
+                        <div class="booking-driver-phone">📱 ${ride.driverPhone || 'N/A'}</div>
+                    </div>
+                </div>
+                
+                <div class="booking-ride-summary">
+                    <div class="route">
+                        📍 ${ride.pickupLocation} → 🏁 ${ride.destination}
+                    </div>
+                    <div class="details">
+                        <div>📅 ${new Date(ride.date).toLocaleDateString()}</div>
+                        <div>⏰ ${ride.time}</div>
+                        <div>💺 ${ride.availableSeats} seats available</div>
+                        <div>🚗 ${seats} seat(s) selected</div>
+                    </div>
+                </div>
+                
+                <div class="booking-price">
+                    <div class="label">Total Price</div>
+                    <div class="amount">$${totalPrice.toFixed(2)}</div>
+                </div>
+                
+                <div class="booking-question">
+                    <h3>🤔 Do you want to book this ride?</h3>
+                    <p>The driver will be notified of your booking request.</p>
+                </div>
+                
+                <div class="booking-buttons">
+                    <button class="booking-btn-cancel" onclick="closeBookingModal()">Cancel</button>
+                    <button class="booking-btn-confirm" onclick="confirmBooking('${ride._id}', ${index})">✅ Yes, Book!</button>
+                </div>
+                
+                <div class="booking-note">
+                    <strong>📝 Note:</strong> The driver will receive your contact information and can reach out to confirm the ride.
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+        
+        // Close booking modal
+        function closeBookingModal() {
+            const modal = document.getElementById('bookingModal');
+            modal.classList.remove('active');
+        }
+        
+        // Confirm booking
+        async function confirmBooking(rideId, index) {
+            if (!authToken || !userPhone) {
+                showAlert('error', '🔐 Please register to book rides');
+                window.location.href = '/register';
+                return;
+            }
+            
+            const ride = allRides[index];
+            const seats = document.getElementById('seats').value;
+            
+            // Show loading state
+            const modalBody = document.getElementById('bookingModalBody');
+            modalBody.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px;">
+                    <div class="spinner" style="margin: 0 auto 20px;"></div>
+                    <p style="color: #666;">Processing your booking...</p>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(`/api/rides/${rideId}/book`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'phoneNumber': userPhone,
+                        'token': authToken
+                    },
+                    body: JSON.stringify({
+                        phoneNumber: userPhone,
+                        passengerName: userName,
+                        seats: parseInt(seats)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success state
+                    const modalHeader = document.getElementById('bookingModalHeader');
+                    modalHeader.classList.add('confirmed');
+                    modalHeader.innerHTML = '<h2>🎉 Booking Sent!</h2>';
+                    
+                    modalBody.innerHTML = `
+                        <div class="booking-success">
+                            <div class="booking-success-icon">✅</div>
+                            <h3>Booking Request Sent!</h3>
+                            <p>Your booking request has been sent to the driver. They will contact you shortly to confirm.</p>
+                            <div class="booking-ride-summary" style="text-align: left;">
+                                <div class="route">
+                                    📍 ${ride.pickupLocation} → 🏁 ${ride.destination}
+                                </div>
+                                <div class="details">
+                                    <div>📅 ${new Date(ride.date).toLocaleDateString()}</div>
+                                    <div>⏰ ${ride.time}</div>
+                                    <div>💺 ${seats} seat(s)</div>
+                                    <div>💰 $${((ride.contribution || 0) * parseInt(seats)).toFixed(2)}</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="closeBookingModal()">Close</button>
+                        </div>
+                    `;
+                    
+                    showAlert('success', '🎉 Booking request sent to driver!');
+                } else {
+                    throw new Error(data.error || 'Failed to book ride');
+                }
+            } catch (error) {
+                console.error('Booking error:', error);
+                showAlert('error', error.message || 'Failed to book ride');
+                closeBookingModal();
+            }
         }
         
         // Save current route to recent searches
@@ -2498,7 +3130,7 @@ const destLng = ride.destLng || -74.006 + (index * 0.01);
         
         // Load favorite routes
         async function loadFavoriteRoutes() {
-            const container = document.getElementById('favoriteRoutes');
+            const container = document.getElementById('savedRoutesList');
             
             if (!authToken || !userPhone) {
                 container.innerHTML = '<p style="color: #999; font-size: 0.8rem; text-align: center; padding: 8px;">Login to save routes</p>';
@@ -2513,16 +3145,65 @@ const destLng = ride.destLng || -74.006 + (index * 0.01);
                     container.innerHTML = data.favoriteRoutes.map((route, i) => `
                         <div class="quick-route-item">
                             <span class="icon">⭐</span>
-                            <span class="route-text" onclick="useFavoriteRoute(${i})">${route.pickup} → ${route.destination}</span>
-                            <button class="delete-btn" onclick="deleteFavoriteRoute('${route._id}')">✕</button>
+                            <span class="route-text" onclick="useFavoriteRoute(${i})">${route.name || (route.pickup + ' → ' + route.destination)}</span>
+                            <button class="rename-btn" onclick="renameFavoriteRoute('${route._id}', '${route.name || ''}')" title="Rename" style="background:none;border:none;cursor:pointer;font-size:0.9rem;padding:2px 5px;opacity:0;">✏️</button>
+                            <button class="delete-btn" onclick="deleteFavoriteRoute('${route._id}')" title="Delete" style="background:none;border:none;cursor:pointer;font-size:0.9rem;padding:2px 5px;opacity:0;color:#c62828;">✕</button>
                         </div>
                     `).join('');
+                    // Show buttons on hover
+                    container.querySelectorAll('.quick-route-item').forEach(item => {
+                        item.addEventListener('mouseenter', () => {
+                            item.querySelectorAll('.rename-btn, .delete-btn').forEach(btn => btn.style.opacity = '1');
+                        });
+                        item.addEventListener('mouseleave', () => {
+                            item.querySelectorAll('.rename-btn, .delete-btn').forEach(btn => btn.style.opacity = '0');
+                        });
+                    });
                     window.favoriteRoutesData = data.favoriteRoutes;
                 } else {
                     container.innerHTML = '<p style="color: #999; font-size: 0.8rem; text-align: center; padding: 8px;">No saved routes</p>';
                 }
             } catch (error) {
                 console.error('Error loading favorites:', error);
+            }
+        }
+        
+        // Rename favorite route
+        async function renameFavoriteRoute(routeId, currentName) {
+            if (!authToken || !userPhone) {
+                showAlert('error', 'Please login to rename routes');
+                return;
+            }
+            
+            const newName = prompt('Enter a new name for this route:', currentName || '');
+            if (!newName || newName.trim() === '') {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/user/favorite-routes/${routeId}?phoneNumber=${userPhone}&token=${authToken}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'phoneNumber': userPhone,
+                        'token': authToken
+                    },
+                    body: JSON.stringify({
+                        name: newName.trim()
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('success', 'Route renamed successfully!');
+                    loadFavoriteRoutes();
+                } else {
+                    showAlert('error', data.error || 'Failed to rename route');
+                }
+            } catch (error) {
+                console.error('Error renaming route:', error);
+                showAlert('error', 'Failed to rename route');
             }
         }
         
@@ -2564,7 +3245,7 @@ const destLng = ride.destLng || -74.006 + (index * 0.01);
             }
             
             if (!authToken || !userPhone) {
-                window.location.href = '/login';
+window.location.href = '/register';
                 return;
             }
             
@@ -2709,7 +3390,262 @@ const destLng = ride.destLng || -74.006 + (index * 0.01);
             authToken = null;
             userPhone = null;
             userName = null;
-            window.location.href = '/login';
+            window.location.href = '/';
+        }
+        
+        // Handle Find Rides button click - requires login
+        function handleFindRides() {
+            if (!authToken || !userPhone) {
+                showAlert('error', '🔐 Please register to find rides');
+                window.location.href = '/register';
+                return;
+            }
+            findRides();
+        }
+        
+        // Handle Offer Ride button click - allows drivers to offer rides with or without locations
+        function handleOfferRide() {
+            if (!authToken || !userPhone) {
+                showAlert('error', '🔐 Please register to offer rides');
+                window.location.href = '/register';
+                return;
+            }
+            
+            // Check if user is registered as a driver first
+            checkDriverStatusAndProceed();
+        }
+        
+        // Check driver status and proceed to offer ride or show registration
+        async function checkDriverStatusAndProceed() {
+            try {
+                const response = await fetch(`/api/user/profile?phoneNumber=${userPhone}&token=${authToken}`);
+                const data = await response.json();
+                
+                if (data.success && data.profile) {
+                    const isDriver = data.profile.driverInfo && data.profile.driverInfo.isDriver;
+                    
+                    if (isDriver) {
+                        // User is registered as driver, proceed to offer ride
+                        proceedWithOfferRide();
+                    } else {
+                        // User is not registered as driver, show registration modal
+                        showDriverRegistrationModal();
+                    }
+                } else {
+                    // If profile fetch fails, assume not a driver and show registration
+                    showDriverRegistrationModal();
+                }
+            } catch (error) {
+                console.error('Error checking driver status:', error);
+                showDriverRegistrationModal();
+            }
+        }
+        
+        // Show driver registration modal
+        function showDriverRegistrationModal() {
+            // Get current locations to preserve
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            
+            const modalHtml = `
+                <div class="modal-overlay active" id="driverRegModal" onclick="closeDriverRegModal(event)">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <div class="modal-header" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);">
+                            <h2>🚙 Driver Registration</h2>
+                            <button class="modal-close" onclick="closeDriverRegModal()">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div style="background: #fff3e0; border: 1px solid #ffcc80; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                                <div style="font-weight: 600; color: #e65100; margin-bottom: 8px;">⚠️ Registration Required</div>
+                                <p style="font-size: 0.85rem; color: #666;">You are not registered as a driver. Please complete driver registration to offer rides.</p>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">🚗 Vehicle Make *</label>
+                                <input type="text" id="driverVehicleMake" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="e.g., Toyota, Honda, Ford" required>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">🚙 Vehicle Model *</label>
+                                <input type="text" id="driverVehicleModel" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="e.g., Camry, Civic, Accord" required>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">📅 Vehicle Year *</label>
+                                <input type="text" id="driverVehicleYear" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="e.g., 2020, 2021, 2022" required>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">🎨 Vehicle Color *</label>
+                                <input type="text" id="driverVehicleColor" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="e.g., Silver, Black, White" required>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">🔢 License Plate *</label>
+                                <input type="text" id="driverLicensePlate" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="e.g., ABC-1234" required>
+                            </div>
+                            
+                            <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;" onclick="registerAsDriver('${pickup}', '${destination}')">
+                                ✅ Complete Registration
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal if any
+            const existingModal = document.getElementById('driverRegModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+        
+        // Close driver registration modal
+        function closeDriverRegModal(event) {
+            if (!event || event.target === event.currentTarget) {
+                const modal = document.getElementById('driverRegModal');
+                if (modal) {
+                    modal.remove();
+                }
+            }
+        }
+        
+        // Register as driver
+        async function registerAsDriver(pickup, destination) {
+            const vehicleMake = document.getElementById('driverVehicleMake').value.trim();
+            const vehicleModel = document.getElementById('driverVehicleModel').value.trim();
+            const vehicleYear = document.getElementById('driverVehicleYear').value.trim();
+            const vehicleColor = document.getElementById('driverVehicleColor').value.trim();
+            const licensePlate = document.getElementById('driverLicensePlate').value.trim();
+            
+            // Validation
+            if (!vehicleMake || !vehicleModel || !vehicleYear || !vehicleColor || !licensePlate) {
+                showAlert('error', 'Please fill in all vehicle details');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/user/driver-info?phoneNumber=${userPhone}&token=${authToken}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'phoneNumber': userPhone,
+                        'token': authToken
+                    },
+                    body: JSON.stringify({
+                        vehicleMake: vehicleMake,
+                        vehicleModel: vehicleModel,
+                        vehicleYear: vehicleYear,
+                        vehicleColor: vehicleColor,
+                        licensePlate: licensePlate,
+                        isDriver: true
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Close modal
+                    closeDriverRegModal();
+                    
+                    showAlert('success', '🎉 You are now registered as a driver!');
+                    
+                    // Redirect to /map with original params after a short delay
+                    setTimeout(() => {
+                        let redirectUrl = '/map';
+                        if (pickup || destination) {
+                            redirectUrl += '?';
+                            const params = [];
+                            if (pickup) params.push(`pickup=${encodeURIComponent(pickup)}`);
+                            if (destination) params.push(`destination=${encodeURIComponent(destination)}`);
+                            redirectUrl += params.join('&');
+                        }
+                        window.location.href = redirectUrl;
+                    }, 1500);
+                } else {
+                    throw new Error(data.error || 'Failed to register as driver');
+                }
+            } catch (error) {
+                console.error('Error registering as driver:', error);
+                showAlert('error', error.message || 'Failed to register as driver');
+            }
+        }
+        
+        // Proceed with offer ride (after confirming driver status)
+        function proceedWithOfferRide() {
+            // Get current locations (can be empty)
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            
+            // Set mode to driver in URL for shareable links
+            userMode = 'driver';
+            localStorage.setItem('pdrides_mode', 'driver');
+            
+            // Update URL without refreshing
+            const url = new URL(window.location);
+            url.searchParams.set('mode', 'driver');
+            if (pickup) url.searchParams.set('pickup', pickup);
+            if (destination) url.searchParams.set('destination', destination);
+            window.history.replaceState({}, '', url);
+            
+            // Show the offer ride form - it will handle location input if needed
+            showOfferRideForm(pickup, destination);
+        }
+        
+        // Quick share to WhatsApp - directly share current route without creating ride
+        function shareToWhatsApp() {
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            
+            if (!pickup || !destination) {
+                showAlert('error', 'Please enter pickup and destination locations first');
+                return;
+            }
+            
+            if (!currentRoute) {
+                showAlert('error', 'Please calculate the route first');
+                return;
+            }
+            
+            const seats = document.getElementById('seats').value;
+            const price = (currentRoute.pricePerSeat || 0).toFixed(2);
+            
+            // Create WhatsApp message
+            const message = `🚗 *PDRides Ride*\n\n📍 From: ${pickup}\n🏁 To: ${destination}\n💺 Seats: ${seats}\n💰 Price: $${price} per seat\n\nBook now on PDRides!`;
+            
+            // Ask for phone number to share
+            const sharePhone = prompt('Enter phone number to share ride on WhatsApp (+1...):', userPhone || '');
+            
+            if (sharePhone) {
+                fetch('/api/whatsapp/send-message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phoneNumber: sharePhone,
+                        message: message
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('success', '📤 Ride details shared to WhatsApp!');
+                    } else {
+                        // Fallback: open WhatsApp directly
+                        const whatsappUrl = `https://wa.me/${sharePhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+                        window.open(whatsappUrl, '_blank');
+                        showAlert('success', '📤 Opening WhatsApp to share ride!');
+                    }
+                })
+                .catch(err => {
+                    // Fallback: open WhatsApp directly
+                    const whatsappUrl = `https://wa.me/${sharePhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+                    window.open(whatsappUrl, '_blank');
+                    showAlert('success', '📤 Opening WhatsApp to share ride!');
+                });
+            }
         }
     </script>
 </body>

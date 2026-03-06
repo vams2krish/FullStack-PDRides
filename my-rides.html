@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Rides - PDRides</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .profile-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #666;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .tab.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        /* Status Filter */
+        .status-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .status-filter {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .status-filter:hover {
+            border-color: #667eea;
+        }
+
+        .status-filter.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Rides List */
+        .rides-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rides-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ride-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+        }
+
+        .ride-card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        }
+
+        .ride-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .ride-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ride-type-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .ride-type-badge.offered {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .ride-type-badge.joined {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .ride-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .ride-status.active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .ride-status.completed {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .ride-status.cancelled {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .ride-status.full {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .ride-status.expired {
+            background: #f5f5f5;
+            color: #757575;
+        }
+
+        .ride-route {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ride-details {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .ride-details span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ride-price {
+            font-weight: 600;
+            color: #2e7d32;
+            font-size: 1rem;
+        }
+
+        .ride-driver {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .driver-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .driver-info {
+            flex: 1;
+        }
+
+        .driver-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .empty-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Login Required */
+        .login-required {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .login-required h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .login-required p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .login-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #5568d3;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .page-title {
+                font-size: 1.3rem;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tabs {
+                flex-wrap: nowrap;
+            }
+
+            .tab {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .ride-card {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div class="header-left">
+                <a href="/map" class="back-btn">←</a>
+                <div class="logo-text">🚗 PDRides</div>
+            </div>
+            <div class="header-right">
+                <button class="profile-btn" id="profileBtn" onclick="handleProfileClick()">
+                    👤 <span id="profileName">Profile</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1 class="page-title">📋 My Rides</h1>
+
+        <!-- Login Required (shown if not logged in) -->
+        <div id="loginRequired" class="login-required" style="display: none;">
+            <h3>🔐 Login Required</h3>
+            <p>Please login to view your rides</p>
+            <a href="/login" class="login-btn">Login / Register</a>
+        </div>
+
+        <!-- Stats -->
+        <div id="statsSection">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRides">0</div>
+                    <div class="stat-label">Total Rides</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="offeredRides">0</div>
+                    <div class="stat-label">Offered</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="joinedRides">0</div>
+                    <div class="stat-label">Joined</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs" id="tabsSection">
+            <button class="tab active" onclick="switchTab('all')">All Rides</button>
+            <button class="tab" onclick="switchTab('offered')">🚗 I Offered</button>
+            <button class="tab" onclick="switchTab('joined')">🚙 I Joined</button>
+        </div>
+
+        <!-- Status Filters -->
+        <div class="status-filters" id="filtersSection">
+            <button class="status-filter active" onclick="filterByStatus('all')">All</button>
+            <button class="status-filter" onclick="filterByStatus('active')">Active</button>
+            <button class="status-filter" onclick="filterByStatus('completed')">Completed</button>
+            <button class="status-filter" onclick="filterByStatus('cancelled')">Cancelled</button>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading your rides...</p>
+        </div>
+
+        <!-- Rides List -->
+        <div id="ridesList" class="rides-list"></div>
+    </div>
+
+    <script>
+        // Auth state
+        let authToken = localStorage.getItem('pdrides_token') || null;
+        let userPhone = localStorage.getItem('pdrides_phone') || null;
+        let userName = localStorage.getItem('pdrides_name') || 'User';
+
+        let allOfferedRides = [];
+        let allJoinedRides = [];
+        let currentTab = 'all';
+        let currentStatus = 'all';
+
+        // Initialize
+        window.onload = () => {
+            initUI();
+            loadRides();
+        };
+
+        // Initialize UI based on auth state
+        function initUI() {
+            if (authToken && userPhone) {
+                document.getElementById('loginRequired').style.display = 'none';
+                document.getElementById('profileName').textContent = userName;
+            } else {
+                document.getElementById('loginRequired').style.display = 'block';
+                document.getElementById('statsSection').style.display = 'none';
+                document.getElementById('tabsSection').style.display = 'none';
+                document.getElementById('filtersSection').style.display = 'none';
+                document.getElementById('profileName').textContent = 'Login';
+            }
+        }
+
+        // Handle profile click
+        function handleProfileClick() {
+            if (authToken && userPhone) {
+                window.location.href = '/settings';
+            } else {
+                window.location.href = '/login';
+            }
+        }
+
+        // Load rides from API
+        async function loadRides() {
+            if (!authToken || !userPhone) {
+                document.getElementById('loading').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('ridesList').innerHTML = '';
+
+            try {
+                const response = await fetch('/api/user/ride-history?limit=50', {
+                    headers: {
+                        'phoneNumber': userPhone,
+                        'token': authToken
+                    }
+                });
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load rides');
+                }
+
+                allOfferedRides = data.offeredRides || [];
+                allJoinedRides = data.joinedRides || [];
+
+                updateStats();
+                renderRides();
+
+            } catch (error) {
+                console.error('Error loading rides:', error);
+                showError('Failed to load rides. Please try again.');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('totalRides').textContent = allOfferedRides.length + allJoinedRides.length;
+            document.getElementById('offeredRides').textContent = allOfferedRides.length;
+            document.getElementById('joinedRides').textContent = allJoinedRides.length;
+        }
+
+        // Switch tab
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab UI
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            renderRides();
+        }
+
+        // Filter by status
+        function filterByStatus(status) {
+            currentStatus = status;
+            
+            // Update filter UI
+            document.querySelectorAll('.status-filter').forEach(f => f.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            renderRides();
+        }
+
+        // Get filtered rides
+        function getFilteredRides() {
+            let rides = [];
+
+            if (currentTab === 'all') {
+                rides = [
+                    ...allOfferedRides.map(r => ({ ...r, rideType: 'offered' })),
+                    ...allJoinedRides.map(r => ({ ...r, rideType: 'joined' }))
+                ];
+            } else if (currentTab === 'offered') {
+                rides = allOfferedRides.map(r => ({ ...r, rideType: 'offered' }));
+            } else if (currentTab === 'joined') {
+                rides = allJoinedRides.map(r => ({ ...r, rideType: 'joined' }));
+            }
+
+            // Filter by status
+            if (currentStatus !== 'all') {
+                rides = rides.filter(r => r.status === currentStatus);
+            }
+
+            // Sort by date (newest first)
+            rides.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            return rides;
+        }
+
+        // Render rides
+        function renderRides() {
+            const rides = getFilteredRides();
+            const ridesList = document.getElementById('ridesList');
+
+            if (rides.length === 0) {
+                ridesList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🚗</div>
+                        <div class="empty-title">No rides found</div>
+                        <div class="empty-text">${currentTab === 'all' ? 'You haven\'t offered or joined any rides yet' : 
+                            currentTab === 'offered' ? 'You haven\'t offered any rides yet' : 
+                            'You haven\'t joined any rides yet'}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            ridesList.innerHTML = rides.map(ride => {
+                const date = ride.date ? new Date(ride.date).toLocaleDateString() : 'N/A';
+                const time = ride.time || '';
+                const price = (ride.contribution || 0).toFixed(2);
+                const driverInitial = (ride.driverName || ride.type === 'offered' ? userName : 'D').charAt(0).toUpperCase();
+                const statusClass = ride.status || 'active';
+                
+                return `
+                    <div class="ride-card">
+                        <div class="ride-header">
+                            <div class="ride-type">
+                                <span class="ride-type-badge ${ride.rideType}">
+                                    ${ride.rideType === 'offered' ? '🚗 I Offered' : '🚙 I Joined'}
+                                </span>
+                            </div>
+                            <span class="ride-status ${statusClass}">${statusClass.charAt(0).toUpperCase() + statusClass.slice(1)}</span>
+                        </div>
+                        <div class="ride-route">
+                            📍 ${ride.pickup || 'Pickup'} → 🏁 ${ride.destination || 'Destination'}
+                        </div>
+                        <div class="ride-details">
+                            <span>📅 ${date}</span>
+                            <span>⏰ ${time}</span>
+                            ${ride.seats ? `<span>💺 ${ride.seats} seat${ride.seats !== 1 ? 's' : ''}</span>` : ''}
+                        </div>
+                        <div class="ride-driver">
+                            <div class="driver-avatar">${driverInitial}</div>
+                            <div class="driver-info">
+                                <div class="driver-name">
+                                    ${ride.rideType === 'offered' ? 'You (Driver)' : (ride.driverName || 'Driver')}
+                                </div>
+                            </div>
+                            <div class="ride-price">$${price}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show error
+        function showError(message) {
+            const ridesList = document.getElementById('ridesList');
+            ridesList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">⚠️</div>
+                    <div class="empty-title">Error</div>
+                    <div class="empty-text">${message}</div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
+

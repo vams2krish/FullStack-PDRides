@@ -238,6 +238,270 @@ router.post('/account/cancel-deletion', authenticate, async (req, res) => {
   }
 });
 
+// Change password
+router.put('/password', authenticate, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Current password and new password are required' 
+      });
+    }
+    
+    if (newPassword.length < 6) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Password must be at least 6 characters' 
+      });
+    }
+    
+    const user = await User.findOne({ phoneNumber: req.phoneNumber });
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'User not found' 
+      });
+    }
+    
+    // For WhatsApp-based auth, we don't have traditional passwords
+    // This is a placeholder for future implementation
+    // In production, you would verify the current password against passwordHash
+    
+    // Update password (in a real app, you would hash this)
+    user.passwordHash = newPassword; // In production: bcrypt.hashSync(newPassword, 10);
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Password changed successfully'
+    });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to change password' 
+    });
+  }
+});
+
+// Update driver preferences
+router.put('/driver-preferences', authenticate, async (req, res) => {
+  try {
+    const { smoking, music, chat, pets, food, phoneCharging, notes } = req.body;
+    
+    const user = await User.findOne({ phoneNumber: req.phoneNumber });
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'User not found' 
+      });
+    }
+    
+    // Initialize driverPreferences if not exists
+    if (!user.driverPreferences) {
+      user.driverPreferences = {};
+    }
+    
+    if (smoking !== undefined) user.driverPreferences.smoking = smoking;
+    if (music !== undefined) user.driverPreferences.music = music;
+    if (chat !== undefined) user.driverPreferences.chat = chat;
+    if (pets !== undefined) user.driverPreferences.pets = pets;
+    if (food !== undefined) user.driverPreferences.food = food;
+    if (phoneCharging !== undefined) user.driverPreferences.phoneCharging = phoneCharging;
+    if (notes !== undefined) user.driverPreferences.notes = notes;
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Driver preferences updated successfully',
+      driverPreferences: user.driverPreferences
+    });
+  } catch (error) {
+    console.error('Error updating driver preferences:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to update driver preferences' 
+    });
+  }
+});
+
+// Get driver preferences
+router.get('/driver-preferences', authenticate, async (req, res) => {
+  try {
+    const user = await User.findOne({ phoneNumber: req.phoneNumber });
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'User not found' 
+      });
+    }
+    
+    res.json({
+      success: true,
+      driverPreferences: user.driverPreferences || {
+        smoking: false,
+        music: true,
+        chat: true,
+        pets: false,
+        food: true,
+        phoneCharging: true,
+        notes: ''
+      }
+    });
+  } catch (error) {
+    console.error('Error getting driver preferences:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to get driver preferences' 
+    });
+  }
+});
+
+// Update privacy settings
+router.put('/privacy-settings', authenticate, async (req, res) => {
+  try {
+    const { showProfile, showPhone, showRating, showRideHistory, allowMessages, showOnlineStatus } = req.body;
+    
+    const user = await User.findOne({ phoneNumber: req.phoneNumber });
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'User not found' 
+      });
+    }
+    
+    // Initialize privacySettings if not exists
+    if (!user.privacySettings) {
+      user.privacySettings = {};
+    }
+    
+    if (showProfile !== undefined) user.privacySettings.showProfile = showProfile;
+    if (showPhone !== undefined) user.privacySettings.showPhone = showPhone;
+    if (showRating !== undefined) user.privacySettings.showRating = showRating;
+    if (showRideHistory !== undefined) user.privacySettings.showRideHistory = showRideHistory;
+    if (allowMessages !== undefined) user.privacySettings.allowMessages = allowMessages;
+    if (showOnlineStatus !== undefined) user.privacySettings.showOnlineStatus = showOnlineStatus;
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Privacy settings updated successfully',
+      privacySettings: user.privacySettings
+    });
+  } catch (error) {
+    console.error('Error updating privacy settings:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to update privacy settings' 
+    });
+  }
+});
+
+// Get privacy settings
+router.get('/privacy-settings', authenticate, async (req, res) => {
+  try {
+    const user = await User.findOne({ phoneNumber: req.phoneNumber });
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'User not found' 
+      });
+    }
+    
+    res.json({
+      success: true,
+      privacySettings: user.privacySettings || {
+        showProfile: true,
+        showPhone: true,
+        showRating: true,
+        showRideHistory: true,
+        allowMessages: true,
+        showOnlineStatus: false
+      }
+    });
+  } catch (error) {
+    console.error('Error getting privacy settings:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to get privacy settings' 
+    });
+  }
+});
+
+// Update notification settings
+router.put('/notification-settings', authenticate, async (req, res) => {
+  try {
+    const { rideRequests, rideUpdates, promotions, emailNotifications, smsNotifications } = req.body;
+    
+    const user = await User.findOne({ phoneNumber: req.phoneNumber });
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'User not found' 
+      });
+    }
+    
+    // Initialize notificationSettings if not exists
+    if (!user.notificationSettings) {
+      user.notificationSettings = {};
+    }
+    
+    if (rideRequests !== undefined) user.notificationSettings.rideRequests = rideRequests;
+    if (rideUpdates !== undefined) user.notificationSettings.rideUpdates = rideUpdates;
+    if (promotions !== undefined) user.notificationSettings.promotions = promotions;
+    if (emailNotifications !== undefined) user.notificationSettings.emailNotifications = emailNotifications;
+    if (smsNotifications !== undefined) user.notificationSettings.smsNotifications = smsNotifications;
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Notification settings updated successfully',
+      notificationSettings: user.notificationSettings
+    });
+  } catch (error) {
+    console.error('Error updating notification settings:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to update notification settings' 
+    });
+  }
+});
+
+// Get notification settings
+router.get('/notification-settings', authenticate, async (req, res) => {
+  try {
+    const user = await User.findOne({ phoneNumber: req.phoneNumber });
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'User not found' 
+      });
+    }
+    
+    res.json({
+      success: true,
+      notificationSettings: user.notificationSettings || {
+        rideRequests: true,
+        rideUpdates: true,
+        promotions: false,
+        emailNotifications: false,
+        smsNotifications: true
+      }
+    });
+  } catch (error) {
+    console.error('Error getting notification settings:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to get notification settings' 
+    });
+  }
+});
+
 // Get recent searches
 router.get('/recent-searches', authenticate, async (req, res) => {
   try {
@@ -440,6 +704,58 @@ router.delete('/favorite-routes/:id', authenticate, async (req, res) => {
     res.status(500).json({ 
       success: false, 
       error: 'Failed to remove favorite route' 
+    });
+  }
+});
+
+// Update favorite route (rename)
+router.put('/favorite-routes/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    
+    if (!name || name.trim() === '') {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Route name is required' 
+      });
+    }
+    
+    const user = await User.findOne({ phoneNumber: req.phoneNumber });
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'User not found' 
+      });
+    }
+    
+    // Find and update the route
+    const route = user.favoriteRoutes.find(f => f._id.toString() === id);
+    if (!route) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Route not found' 
+      });
+    }
+    
+    route.name = name.trim();
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Route renamed successfully',
+      route: {
+        id: route._id,
+        name: route.name,
+        pickup: route.pickup,
+        destination: route.destination
+      }
+    });
+  } catch (error) {
+    console.error('Error renaming favorite route:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to rename route' 
     });
   }
 });

@@ -80,19 +80,41 @@ app.get('/map', (req, res) => {
   res.sendFile(path.join(__dirname, '../map-view.html'));
 });
 
-// Serve login page
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, '../login.html'));
-});
+
 
 // Serve registration page
 app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, '../register.html'));
 });
 
+// Serve login page
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../login.html'));
+});
+
 // Serve settings page
 app.get('/settings', (req, res) => {
   res.sendFile(path.join(__dirname, '../settings.html'));
+});
+
+// Serve help center page
+app.get('/help-center', (req, res) => {
+  res.sendFile(path.join(__dirname, '../help-center.html'));
+});
+
+// Serve contact us page
+app.get('/contact-us', (req, res) => {
+  res.sendFile(path.join(__dirname, '../contact-us.html'));
+});
+
+// Serve browse all rides page
+app.get('/browse-all-rides', (req, res) => {
+  res.sendFile(path.join(__dirname, '../browse-rides.html'));
+});
+
+// Serve my rides page
+app.get('/my-rides', (req, res) => {
+  res.sendFile(path.join(__dirname, '../my-rides.html'));
 });
 
 // API: Uber-style fare estimate
@@ -431,7 +453,7 @@ app.post('/api/rides', async (req, res) => {
 // API: Book ride with real-time pricing
 app.post('/api/rides/:id/book', async (req, res) => {
   try {
-    const { phoneNumber, seats = 1 } = req.body;
+    const { phoneNumber, passengerName, seats = 1 } = req.body;
     const ride = await Ride.findById(req.params.id);
 
     if (!ride || ride.status !== 'active' || ride.availableSeats < seats) {
@@ -473,6 +495,24 @@ app.post('/api/whatsapp/send-ride', async (req, res) => {
     await sendButtonMessage(phoneNumber, message, buttons);
 
     res.json({ success: true, message: 'Ride details sent to WhatsApp' });
+  } catch (error) {
+    console.error('WhatsApp send error:', error);
+    res.status(500).json({ error: 'Failed to send WhatsApp message' });
+  }
+});
+
+// WhatsApp: Send direct message to user
+app.post('/api/whatsapp/send-message', async (req, res) => {
+  try {
+    const { phoneNumber, message, type = 'text' } = req.body;
+
+    if (!phoneNumber || !message) {
+      return res.status(400).json({ error: 'Phone number and message are required' });
+    }
+
+    await sendTextMessage(phoneNumber, message);
+
+    res.json({ success: true, message: 'Message sent successfully' });
   } catch (error) {
     console.error('WhatsApp send error:', error);
     res.status(500).json({ error: 'Failed to send WhatsApp message' });

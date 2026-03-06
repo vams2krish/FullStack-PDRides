@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse All Rides - PDRides</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .profile-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters select {
+            padding: 10px 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            background: white;
+            cursor: pointer;
+        }
+
+        .filters select:focus {
+            border-color: #667eea;
+        }
+
+        .refresh-btn {
+            padding: 10px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+
+        /* Rides List */
+        .rides-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ride-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .ride-card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .ride-route {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ride-meta {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .ride-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ride-driver {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .driver-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .driver-info {
+            flex: 1;
+        }
+
+        .driver-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .driver-rating {
+            color: #f9a825;
+            font-size: 0.85rem;
+        }
+
+        .ride-action {
+            padding: 10px 16px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .ride-action:hover {
+            background: #128C7E;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .empty-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        /* Login Required */
+        .login-required {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .login-required h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .login-required p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .login-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #5568d3;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .page-title {
+                font-size: 1.3rem;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filters select {
+                width: 100%;
+            }
+
+            .ride-card {
+                padding: 14px;
+            }
+
+            .ride-driver {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .ride-action {
+                width: 100%;
+            }
+        }
+
+        /* Booking Confirmation Modal */
+        .booking-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 20px;
+        }
+        
+        .booking-modal.active {
+            display: flex;
+        }
+        
+        .booking-modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 450px;
+            width: 100%;
+            animation: modalSlideIn 0.3s ease;
+            overflow: hidden;
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .booking-modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .booking-modal-header.confirmed {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+        }
+        
+        .booking-modal-header h2 {
+            font-size: 1.3rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .booking-modal-body {
+            padding: 20px;
+        }
+        
+        .booking-driver-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .booking-driver-avatar {
+            width: 45px;
+            height: 45px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .booking-driver-details {
+            flex: 1;
+        }
+        
+        .booking-driver-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .booking-driver-phone {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .booking-ride-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .booking-ride-summary .route {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .booking-ride-summary .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .booking-ride-summary .details div {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .booking-price {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .booking-price .label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .booking-price .amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #25D366;
+        }
+        
+        .booking-question {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .booking-question h3 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .booking-question p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .booking-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .booking-buttons button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .booking-btn-confirm {
+            background: #25D366;
+            color: white;
+        }
+        
+        .booking-btn-confirm:hover {
+            background: #128C7E;
+        }
+        
+        .booking-btn-cancel {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        .booking-btn-cancel:hover {
+            background: #e0e0e0;
+        }
+        
+        .booking-success {
+            text-align: center;
+        }
+        
+        .booking-success-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+        
+        .booking-success h3 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .booking-success p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        
+        .booking-note {
+            background: #fff3e0;
+            border: 1px solid #ffcc80;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .booking-note strong {
+            color: #e65100;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div class="header-left">
+                <a href="/map" class="back-btn">←</a>
+                <div class="logo-text">🚗 PDRides</div>
+            </div>
+            <div class="header-right">
+                <button class="profile-btn" id="profileBtn" onclick="handleProfileClick()">
+                    👤 <span id="profileName">Profile</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1 class="page-title">All Available Car Rides</h1>
+        
+        <!-- Filters -->
+        <div class="filters">
+            <select id="filterLocation" onchange="filterRides()">
+                <option value="">All Locations</option>
+            </select>
+            <select id="filterPrice" onchange="filterRides()">
+                <option value="">Price: Any</option>
+                <option value="low">Price: Low to High</option>
+                <option value="high">Price: High to Low</option>
+            </select>
+            <select id="filterSeats" onchange="filterRides()">
+                <option value="">Seats: Any</option>
+                <option value="1">1 Seat</option>
+                <option value="2">2 Seats</option>
+                <option value="3">3+ Seats</option>
+            </select>
+            <button class="refresh-btn" onclick="loadRides()">
+                🔄 Refresh
+            </button>
+        </div>
+
+        <!-- Alert -->
+        <div class="alert" id="alertBox"></div>
+
+        <!-- Login Required (shown if not logged in) -->
+        <div id="loginRequired" class="login-required" style="display: none;">
+            <h3>🔐 Login Required</h3>
+            <p>Please login to view and book rides</p>
+            <a href="/login" class="login-btn">Login / Register</a>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading available rides...</p>
+        </div>
+
+        <!-- Rides List -->
+        <div id="ridesList" class="rides-list"></div>
+    </div>
+
+    <!-- Booking Confirmation Modal -->
+    <div class="booking-modal" id="bookingModal">
+        <div class="booking-modal-content">
+            <div class="booking-modal-header" id="bookingModalHeader">
+                <h2>🎫 Book This Ride</h2>
+            </div>
+            <div class="booking-modal-body" id="bookingModalBody">
+                <!-- Booking content will be dynamically inserted -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auth state
+        let authToken = localStorage.getItem('pdrides_token') || null;
+        let userPhone = localStorage.getItem('pdrides_phone') || null;
+        let userName = localStorage.getItem('pdrides_name') || 'User';
+
+        let allRides = [];
+
+        // Initialize
+        window.onload = () => {
+            initUI();
+            loadRides();
+        };
+
+        // Initialize UI based on auth state
+        function initUI() {
+            if (authToken && userPhone) {
+                document.getElementById('loginRequired').style.display = 'none';
+                document.getElementById('profileName').textContent = userName;
+            } else {
+                document.getElementById('loginRequired').style.display = 'block';
+                document.getElementById('profileName').textContent = 'Login';
+            }
+        }
+
+        // Handle profile click
+        function handleProfileClick() {
+            if (authToken && userPhone) {
+                window.location.href = '/settings';
+            } else {
+                window.location.href = '/login';
+            }
+        }
+
+        // Load rides from API
+        async function loadRides() {
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('ridesList').innerHTML = '';
+            hideAlert();
+
+            try {
+                const response = await fetch('/api/rides');
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load rides');
+                }
+
+                allRides = data.rides || [];
+                
+                if (allRides.length === 0) {
+                    showEmptyState();
+                } else {
+                    populateFilters();
+                    renderRides(allRides);
+                }
+
+            } catch (error) {
+                console.error('Error loading rides:', error);
+                showAlert('error', 'Failed to load rides. Please try again.');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+
+        // Populate filters
+        function populateFilters() {
+            const locationFilter = document.getElementById('filterLocation');
+            
+            const locations = new Set();
+            
+            allRides.forEach(ride => {
+                if (ride.pickupLocation) {
+                    const city = ride.pickupLocation.split(',')[0].trim();
+                    locations.add(city);
+                }
+                if (ride.destination) {
+                    const city = ride.destination.split(',')[0].trim();
+                    locations.add(city);
+                }
+            });
+
+            locationFilter.innerHTML = '<option value="">All Locations</option>' + 
+                Array.from(locations).map(loc => `<option value="${loc}">${loc}</option>`).join('');
+        }
+
+        // Filter rides
+        function filterRides() {
+            const locationFilter = document.getElementById('filterLocation').value;
+            const priceFilter = document.getElementById('filterPrice').value;
+            const seatsFilter = document.getElementById('filterSeats').value;
+
+            let filtered = [...allRides];
+
+            if (locationFilter) {
+                filtered = filtered.filter(ride => 
+                    ride.pickupLocation?.includes(locationFilter) || 
+                    ride.destination?.includes(locationFilter)
+                );
+            }
+
+            if (seatsFilter) {
+                filtered = filtered.filter(ride => {
+                    const seats = ride.availableSeats || 0;
+                    if (seatsFilter === '1') return seats === 1;
+                    if (seatsFilter === '2') return seats === 2;
+                    if (seatsFilter === '3') return seats >= 3;
+                    return true;
+                });
+            }
+
+            if (priceFilter === 'low') {
+                filtered.sort((a, b) => (a.contribution || 0) - (b.contribution || 0));
+            } else if (priceFilter === 'high') {
+                filtered.sort((a, b) => (b.contribution || 0) - (a.contribution || 0));
+            }
+
+            if (filtered.length === 0) {
+                showEmptyState();
+            } else {
+                renderRides(filtered);
+            }
+        }
+
+        // Render rides
+        function renderRides(rides) {
+            const ridesList = document.getElementById('ridesList');
+            
+            ridesList.innerHTML = rides.map((ride) => {
+                const date = ride.date ? new Date(ride.date).toLocaleDateString() : 'N/A';
+                const time = ride.time || '';
+                const seats = ride.availableSeats || 0;
+                const price = (ride.contribution || 0).toFixed(2);
+                const driverInitial = (ride.driverName || 'A').charAt(0).toUpperCase();
+                
+                return `
+                    <div class="ride-card" onclick="handleRideClick('${ride._id}')">
+                        <div class="ride-route">
+                            📍 ${ride.pickupLocation || 'Pickup'} → 🏁 ${ride.destination || 'Destination'}
+                        </div>
+                        <div class="ride-meta">
+                            <span>📅 ${date}</span>
+                            <span>⏰ ${time}</span>
+                            <span>💺 ${seats} seat${seats !== 1 ? 's' : ''} available</span>
+                        </div>
+                        <div class="ride-driver">
+                            <div class="driver-avatar">${driverInitial}</div>
+                            <div class="driver-info">
+                                <div class="driver-name">${ride.driverName || 'Anonymous Driver'}</div>
+                                <div class="driver-rating">⭐ ${ride.driverRating || '5.0'}</div>
+                            </div>
+                            <button class="ride-action" onclick="event.stopPropagation(); bookRide('${ride._id}')">
+                                Book Ride
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            const ridesList = document.getElementById('ridesList');
+            ridesList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🚗</div>
+                    <div class="empty-title">No rides available</div>
+                    <div class="empty-text">Try adjusting your filters or check back later</div>
+                </div>
+            `;
+        }
+
+        // Handle ride click - show booking modal
+        function handleRideClick(rideId) {
+            if (!authToken || !userPhone) {
+                showAlert('error', 'Please login to book a ride');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1500);
+                return;
+            }
+            
+            // Find the ride data
+            const rideIndex = allRides.findIndex(r => r._id === rideId);
+            if (rideIndex !== -1) {
+                showBookingModal(rideIndex);
+            }
+        }
+
+        // Book ride - just trigger modal (kept for button compatibility)
+        function bookRide(rideId) {
+            if (!authToken || !userPhone) {
+                showAlert('error', 'Please login to book a ride');
+                window.location.href = '/login';
+                return;
+            }
+            
+            // Find the ride data and show modal
+            const rideIndex = allRides.findIndex(r => r._id === rideId);
+            if (rideIndex !== -1) {
+                showBookingModal(rideIndex);
+            }
+        }
+
+        // Show booking confirmation modal
+        function showBookingModal(index) {
+            const ride = allRides[index];
+            if (!ride) return;
+            
+            const modal = document.getElementById('bookingModal');
+            const modalBody = document.getElementById('bookingModalBody');
+            const modalHeader = document.getElementById('bookingModalHeader');
+            
+            // Reset header to default (not confirmed)
+            modalHeader.classList.remove('confirmed');
+            modalHeader.innerHTML = '<h2>🎫 Book This Ride</h2>';
+            
+            const seats = 1;
+            const totalPrice = (ride.contribution || 0) * seats;
+            
+            modalBody.innerHTML = `
+                <div class="booking-driver-info">
+                    <div class="booking-driver-avatar">${(ride.driverName || 'A').charAt(0).toUpperCase()}</div>
+                    <div class="booking-driver-details">
+                        <div class="booking-driver-name">👤 ${ride.driverName || 'Anonymous Driver'}</div>
+                        <div class="booking-driver-phone">📱 ${ride.driverPhone || 'N/A'}</div>
+                    </div>
+                </div>
+                
+                <div class="booking-ride-summary">
+                    <div class="route">
+                        📍 ${ride.pickupLocation} → 🏁 ${ride.destination}
+                    </div>
+                    <div class="details">
+                        <div>📅 ${new Date(ride.date).toLocaleDateString()}</div>
+                        <div>⏰ ${ride.time}</div>
+                        <div>💺 ${ride.availableSeats} seats available</div>
+                        <div>🚗 ${seats} seat(s) selected</div>
+                    </div>
+                </div>
+                
+                <div class="booking-price">
+                    <div class="label">Total Price</div>
+                    <div class="amount">$${totalPrice.toFixed(2)}</div>
+                </div>
+                
+                <div class="booking-question">
+                    <h3>🤔 Do you want to book this ride?</h3>
+                    <p>The driver will be notified of your booking request.</p>
+                </div>
+                
+                <div class="booking-buttons">
+                    <button class="booking-btn-cancel" onclick="closeBookingModal()">Cancel</button>
+                    <button class="booking-btn-confirm" onclick="confirmBooking('${ride._id}', ${index})">✅ Yes, Book!</button>
+                </div>
+                
+                <div class="booking-note">
+                    <strong>📝 Note:</strong> The driver will receive your contact information and can reach out to confirm the ride.
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+        
+        // Close booking modal
+        function closeBookingModal() {
+            const modal = document.getElementById('bookingModal');
+            modal.classList.remove('active');
+        }
+        
+        // Confirm booking
+        async function confirmBooking(rideId, index) {
+            if (!authToken || !userPhone) {
+                showAlert('error', '🔐 Please register to book rides');
+                window.location.href = '/register';
+                return;
+            }
+            
+            const ride = allRides[index];
+            const seats = 1;
+            
+            // Show loading state
+            const modalBody = document.getElementById('bookingModalBody');
+            modalBody.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px;">
+                    <div class="spinner" style="margin: 0 auto 20px;"></div>
+                    <p style="color: #666;">Processing your booking...</p>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(`/api/rides/${rideId}/book`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'phoneNumber': userPhone,
+                        'token': authToken
+                    },
+                    body: JSON.stringify({
+                        phoneNumber: userPhone,
+                        passengerName: userName,
+                        seats: parseInt(seats)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success state
+                    const modalHeader = document.getElementById('bookingModalHeader');
+                    modalHeader.classList.add('confirmed');
+                    modalHeader.innerHTML = '<h2>🎉 Booking Sent!</h2>';
+                    
+                    modalBody.innerHTML = `
+                        <div class="booking-success">
+                            <div class="booking-success-icon">✅</div>
+                            <h3>Booking Request Sent!</h3>
+                            <p>Your booking request has been sent to the driver. They will contact you shortly to confirm.</p>
+                            <div class="booking-ride-summary" style="text-align: left;">
+                                <div class="route">
+                                    📍 ${ride.pickupLocation} → 🏁 ${ride.destination}
+                                </div>
+                                <div class="details">
+                                    <div>📅 ${new Date(ride.date).toLocaleDateString()}</div>
+                                    <div>⏰ ${ride.time}</div>
+                                    <div>💺 ${seats} seat(s)</div>
+                                    <div>💰 $${((ride.contribution || 0) * parseInt(seats)).toFixed(2)}</div>
+                                </div>
+                            </div>
+                            <button class="booking-btn-confirm" style="width: 100%; margin-top: 20px;" onclick="closeBookingModal()">Close</button>
+                        </div>
+                    `;
+                    
+                    showAlert('success', '🎉 Booking request sent to driver!');
+                } else {
+                    throw new Error(data.error || 'Failed to book ride');
+                }
+            } catch (error) {
+                console.error('Booking error:', error);
+                showAlert('error', error.message || 'Failed to book ride');
+                closeBookingModal();
+            }
+        }
+
+        // Show alert
+        function showAlert(type, message) {
+            const alert = document.getElementById('alertBox');
+            alert.className = 'alert alert-' + type + ' show';
+            alert.textContent = message;
+            
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+
+        function hideAlert() {
+            document.getElementById('alertBox').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
+

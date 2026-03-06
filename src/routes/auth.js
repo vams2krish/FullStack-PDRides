@@ -94,6 +94,7 @@ router.post('/verify-otp', async (req, res) => {
     res.json({
       success: true,
       message: result.message,
+      isNewUser: result.isNewUser,
       token: loginResult.token,
       expiresAt: loginResult.expiresAt,
       user: loginResult.user

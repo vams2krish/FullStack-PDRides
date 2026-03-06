@@ -10,146 +10,209 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #25D366;
+            --accent-dark: #128C7E;
+            --danger: #dc3545;
+            --success: #28a745;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--gradient);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #333;
+            line-height: 1.6;
             padding: 20px;
         }
-        
+
         .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 420px;
             width: 100%;
-            max-width: 480px;
-            overflow: hidden;
         }
-        
+
         .header {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            color: white;
-            padding: 25px 30px;
             text-align: center;
+            padding: 30px 20px;
+            color: white;
         }
-        
+
         .header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
-        
+
         .header p {
             opacity: 0.9;
-            font-size: 0.9rem;
+            font-size: 1.1rem;
         }
-        
-        /* Role Toggle */
-        .role-toggle {
-            display: flex;
-            background: rgba(255,255,255,0.2);
-            border-radius: 25px;
-            padding: 4px;
-            margin: 15px auto 0;
-            max-width: 250px;
-        }
-        
-        .role-btn {
-            flex: 1;
-            padding: 8px 16px;
-            border: none;
-            background: transparent;
-            color: white;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .role-btn.active {
+
+        .card {
             background: white;
-            color: #25D366;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
-        
-        .form-container {
-            padding: 25px 30px;
+
+        .card-body {
+            padding: 30px;
         }
-        
+
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
-        
+
         .form-group label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             color: #333;
             font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
             font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
             transition: all 0.3s;
+            font-family: inherit;
         }
-        
-        .form-group input:focus, .form-group select:focus {
+
+        .form-group input:focus {
             outline: none;
-            border-color: #25D366;
-            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.15);
         }
-        
+
         .form-group input::placeholder {
             color: #999;
         }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        
+
         .btn {
-            width: 100%;
-            padding: 13px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
             border: none;
-            border-radius: 10px;
-            font-size: 0.95rem;
+            border-radius: 12px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            width: 100%;
+            text-decoration: none;
         }
-        
+
         .btn-primary {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
             color: white;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
         }
-        
+
         .btn-primary:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
-        
+
         .btn-secondary {
-            background: #667eea;
-            color: white;
-            margin-top: 10px;
+            background: #f0f0f0;
+            color: #333;
         }
-        
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #bbdefb;
+        }
+
+        .otp-section {
+            display: none;
+        }
+
+        .otp-section.active {
+            display: block;
+        }
+
+        .otp-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .otp-input-group input {
+            text-align: center;
+            font-size: 1.2rem;
+            letter-spacing: 0.3em;
+        }
+
+        .resend-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .resend-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .resend-link a:hover {
+            text-decoration: underline;
+        }
+
         .divider {
             display: flex;
             align-items: center;
@@ -157,181 +220,36 @@
             color: #999;
             font-size: 0.85rem;
         }
-        
-        .divider::before, .divider::after {
+
+        .divider::before,
+        .divider::after {
             content: '';
             flex: 1;
             height: 1px;
             background: #e0e0e0;
         }
-        
+
         .divider span {
             padding: 0 15px;
         }
-        
-        .info-box {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 18px;
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .info-box strong {
-            color: #333;
-        }
-        
-        .alert {
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            display: none;
-        }
-        
-        .alert.show {
-            display: block;
-        }
-        
-        .alert-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-        
-        .alert-error {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
-        }
-        
-        .alert-info {
-            background: #e3f2fd;
-            color: #1565c0;
-            border: 1px solid #bbdefb;
-        }
-        
-        .otp-inputs {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin-bottom: 18px;
-        }
-        
-        .otp-inputs input {
-            width: 45px;
-            height: 50px;
+
+        .register-link {
             text-align: center;
-            font-size: 1.3rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            transition: all 0.3s;
-        }
-        
-        .otp-inputs input:focus {
-            outline: none;
-            border-color: #25D366;
-        }
-        
-        .resend-link {
-            text-align: center;
-            margin-top: 14px;
-            font-size: 0.85rem;
+            margin-top: 20px;
             color: #666;
-        }
-        
-        .resend-link a {
-            color: #25D366;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        
-        .resend-link a:hover {
-            text-decoration: underline;
-        }
-        
-        .user-info {
-            text-align: center;
-            padding: 15px;
-        }
-        
-        .user-avatar {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 12px;
-            font-size: 1.8rem;
-            color: white;
-        }
-        
-        .user-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 4px;
-        }
-        
-        .user-phone {
-            color: #666;
-            font-size: 0.85rem;
-            margin-bottom: 15px;
-        }
-        
-        .role-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-        
-        .role-badge.rider {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-        
-        .role-badge.driver {
-            background: #fff3e0;
-            color: #e65100;
-        }
-        
-        .menu-items {
-            list-style: none;
-        }
-        
-        .menu-items li {
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .menu-items li:last-child {
-            border-bottom: none;
-        }
-        
-        .menu-items a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px;
-            color: #333;
-            text-decoration: none;
-            transition: background 0.2s;
             font-size: 0.95rem;
         }
-        
-        .menu-items a:hover {
-            background: #f8f9fa;
+
+        .register-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
         }
-        
-        .menu-items .icon {
-            font-size: 1.2rem;
+
+        .register-link a:hover {
+            text-decoration: underline;
         }
-        
+
         .loading {
             display: inline-block;
             width: 18px;
@@ -342,567 +260,403 @@
             animation: spin 0.8s linear infinite;
             margin-right: 8px;
         }
-        
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
-        
+
+        .info-box {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: #1565c0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
         .hidden {
             display: none !important;
         }
-        
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            color: #666;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.85rem;
-            margin-bottom: 12px;
-        }
-        
-        .back-btn:hover {
-            color: #333;
-        }
-        
-        /* Driver Registration Section */
-        .driver-fields {
-            display: none;
-        }
-        
-        .driver-fields.active {
-            display: block;
-        }
-        
-        .section-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .register-link {
+
+        .privacy-note {
             text-align: center;
-            margin-top: 15px;
-            color: #666;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+            margin-top: 20px;
+            line-height: 1.5;
         }
-        
-        .register-link a {
-            color: #25D366;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .register-link a:hover {
+
+        .privacy-note a {
+            color: white;
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Login Form -->
-        <div id="loginSection">
-            <div class="header">
-                <h1>🚗 PDRides</h1>
-                <p>Welcome! Login or register to continue</p>
-                
-                <div class="role-toggle">
-                    <button class="role-btn active" id="riderRoleBtn" onclick="setLoginRole('passenger')">👤 Passenger</button>
-                    <button class="role-btn" id="driverRoleBtn" onclick="setLoginRole('driver')">🚙 Driver</button>
-                </div>
-            </div>
-            
-            <div class="form-container">
-                <div class="alert" id="loginAlert"></div>
-                
-                <div class="info-box" id="loginInfoBox">
-                    <strong>How it works:</strong><br>
-                    Enter your phone number and we'll send you a verification code via WhatsApp.
-                </div>
-                
-                <form id="loginForm">
+        <div class="header">
+            <h1>🚗 PDRides</h1>
+            <p id="headerSubtitle">Welcome back! Login with your phone</p>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="alert" id="alertBox"></div>
+
+                <!-- Phone Number Section -->
+                <div id="phoneSection">
+                    <div class="info-box">
+                        ℹ️ Enter your phone number to login or create a new account.
+                    </div>
+
                     <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" placeholder="+1 (555) 123-4567" required>
+                        <label>Phone Number</label>
+                        <input type="tel" id="phoneNumber" placeholder="+1 (555) 123-4567" required>
                     </div>
-                    
-                    <!-- Driver Registration Fields -->
-                    <div class="driver-fields" id="driverFields">
-                        <div class="section-title">🚙 Driver Information</div>
-                        
-                        <div class="form-group">
-                            <label for="driverName">Full Name</label>
-                            <input type="text" id="driverName" placeholder="Your full name">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="vehicleMake">Vehicle Make</label>
-                            <input type="text" id="vehicleMake" placeholder="e.g., Toyota, Honda">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="vehicleModel">Vehicle Model</label>
-                            <input type="text" id="vehicleModel" placeholder="e.g., Camry, Accord">
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="vehicleYear">Year</label>
-                                <input type="text" id="vehicleYear" placeholder="e.g., 2020">
-                            </div>
-                            <div class="form-group">
-                                <label for="licensePlate">License Plate</label>
-                                <input type="text" id="licensePlate" placeholder="e.g., ABC-1234">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="vehicleColor">Vehicle Color</label>
-                            <input type="text" id="vehicleColor" placeholder="e.g., Silver, Black">
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary" id="loginBtn">
-                        Send Verification Code
+
+                    <button class="btn btn-primary" id="sendOtpBtn" onclick="sendOTP()">
+                        📱 Send Verification Code
                     </button>
-                    
-                    <p class="register-link">
-                        New to PDRides? <a href="/register">Create Account</a>
-                    </p>
-                </form>
+                </div>
+
+                <!-- OTP Verification Section -->
+                <div id="otpSection" class="otp-section">
+                    <div class="back-link" onclick="showPhoneSection()">
+                        ← Change phone number
+                    </div>
+
+                    <div class="form-group">
+                        <label>Enter Verification Code</label>
+                        <input type="text" id="otpCode" placeholder="123456" maxlength="6" autocomplete="one-time-code">
+                    </div>
+
+                    <button class="btn btn-primary" id="verifyOtpBtn" onclick="verifyOTP()">
+                        ✓ Verify & Login
+                    </button>
+
+                    <div class="resend-link">
+                        Didn't receive the code? 
+                        <a onclick="resendOTP()">Resend</a>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <!-- OTP Verification -->
-        <div id="otpSection" class="hidden">
-            <div class="header">
-                <h1>🔐 Verify</h1>
-                <p>Enter the code sent to your phone</p>
-            </div>
-            
-            <div class="form-container">
-                <div class="alert alert-info" id="otpInfo">
-                    We sent a 6-digit code to <strong id="sentToPhone"></strong>
-                </div>
-                
-                <div class="otp-inputs">
-                    <input type="text" maxlength="1" class="otp-digit" data-index="0">
-                    <input type="text" maxlength="1" class="otp-digit" data-index="1">
-                    <input type="text" maxlength="1" class="otp-digit" data-index="2">
-                    <input type="text" maxlength="1" class="otp-digit" data-index="3">
-                    <input type="text" maxlength="1" class="otp-digit" data-index="4">
-                    <input type="text" maxlength="1" class="otp-digit" data-index="5">
-                </div>
-                
-                <button class="btn btn-primary" id="verifyBtn" onclick="verifyOTP()">
-                    Verify & Login
-                </button>
-                
-                <div class="resend-link">
-                    Didn't receive the code? <a onclick="resendOTP()">Resend</a>
-                </div>
-                
-                <button class="back-btn" onclick="showLogin()">
-                    ← Change phone number
-                </button>
-            </div>
+
+        <div class="register-link">
+            Don't have an account? <a href="/register">Register here</a>
         </div>
-        
-        <!-- Dashboard (after login) -->
-        <div id="dashboardSection" class="hidden">
-            <div class="header">
-                <h1>🚗 PDRides</h1>
-                <p>Your Account</p>
-            </div>
-            
-            <div class="form-container">
-                <div class="user-info">
-                    <div class="user-avatar" id="userAvatar">👤</div>
-                    <div class="user-name" id="userName">User</div>
-                    <div class="user-phone" id="userPhone">+1 555 123 4567</div>
-                    <span class="role-badge" id="userRoleBadge">🚗 Rider</span>
-                </div>
-                
-                <ul class="menu-items">
-                    <li>
-                        <a href="/map">
-                            <span class="icon">🗺️</span>
-                            Open Map View
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="showMyRides()">
-                            <span class="icon">🚗</span>
-                            My Rides
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="showSavedRoutes()">
-                            <span class="icon">⭐</span>
-                            Saved Routes
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="showRideHistory()">
-                            <span class="icon">📋</span>
-                            Ride History
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="showDriverProfile()">
-                            <span class="icon">🚙</span>
-                            Driver Profile
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="switchRole()">
-                            <span class="icon">🔄</span>
-                            Switch to <span id="switchRoleText">Driver</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="showSettings()">
-                            <span class="icon">⚙️</span>
-                            Settings
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="logout()">
-                            <span class="icon">🚪</span>
-                            Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+
+        <p class="privacy-note">
+            Your data is secure. Read our <a href="/privacy-policy">Privacy Policy</a> and <a href="/terms-of-service">Terms of Service</a>.
+        </p>
     </div>
 
     <script>
         // State
         let currentPhone = '';
-        let authToken = localStorage.getItem('pdrides_token') || null;
-        let userPhone = localStorage.getItem('pdrides_phone') || null;
-let loginRole = 'passenger'; // 'passenger' or 'driver'
-        
-        // Check URL params for role (new standardized parameter)
+        let isNewUser = false;
+
+        // Get URL parameters
         const urlParams = new URLSearchParams(window.location.search);
-        const role = urlParams.get('role');
-        const mode = urlParams.get('mode'); // Backward compatibility
-        
-        if (role === 'driver') {
-            loginRole = 'driver';
-            setLoginRole('driver', false);
-        } else if (mode === 'driver' || mode === 'offer') {
-            // Backward compatibility with old mode parameter
-            loginRole = 'driver';
-            setLoginRole('driver', false);
-        } else {
-            setLoginRole('passenger', false);
-        }
+        const registered = urlParams.get('registered');
+        const verifyMode = urlParams.get('mode');
+        const verifyPhone = urlParams.get('phone');
         
         // Check if already logged in
+        const authToken = localStorage.getItem('pdrides_token') || null;
+        const userPhone = localStorage.getItem('pdrides_phone') || null;
+
+        // Redirect if already logged in
         if (authToken && userPhone) {
-            showDashboard();
+            window.location.href = '/map';
+            // Don't return - let the script continue to redirect
         }
         
-        // Set login role
-        function setLoginRole(role, updateUI = true) {
-            loginRole = role;
-            const driverFields = document.getElementById('driverFields');
-            const infoBox = document.getElementById('loginInfoBox');
-            
-            if (role === 'driver') {
-                driverFields.classList.add('active');
-                infoBox.innerHTML = '<strong>Driver Registration:</strong><br>Enter your details below. You can offer rides after verification.';
-                if (updateUI) {
-                    document.getElementById('riderRoleBtn').classList.remove('active');
-                    document.getElementById('driverRoleBtn').classList.add('active');
-                }
-            } else {
-                driverFields.classList.remove('active');
-                infoBox.innerHTML = '<strong>How it works:</strong><br>Enter your phone number and we\'ll send you a verification code via WhatsApp.';
-                if (updateUI) {
-                    document.getElementById('driverRoleBtn').classList.remove('active');
-                    document.getElementById('riderRoleBtn').classList.add('active');
-                }
-            }
+        // Handle successful registration
+        if (registered === 'true') {
+            showAlert('success', 'Account created successfully! Please login.');
         }
         
-        // Login form submit
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const phone = document.getElementById('phone').value.trim();
-            
-            if (!phone) {
-                showAlert('loginAlert', 'error', 'Please enter your phone number');
-                return;
-            }
-            
-            await sendOTP(phone);
-        });
+        // Handle verification mode from registration
+        if (verifyMode === 'verify' && verifyPhone) {
+            // Pre-fill phone and auto-send OTP for registration verification
+            document.getElementById('phoneNumber').value = decodeURIComponent(verifyPhone);
+            // Automatically send OTP after a short delay
+            setTimeout(() => {
+                // Use the stored pending data from registration
+                sendOTPFromRegistration(decodeURIComponent(verifyPhone));
+            }, 500);
+        }
         
-        // Send OTP
-        async function sendOTP(phone) {
-            const btn = document.getElementById('loginBtn');
+        // Send OTP from registration (uses pending registration data)
+        async function sendOTPFromRegistration(phone) {
+            currentPhone = phone;
+            
+            const btn = document.getElementById('sendOtpBtn');
             btn.disabled = true;
             btn.innerHTML = '<span class="loading"></span>Sending...';
-            
-            // Collect driver details if registering as driver
-            let driverData = null;
-            if (loginRole === 'driver') {
-                driverData = {
-                    name: document.getElementById('driverName').value,
-                    vehicleMake: document.getElementById('vehicleMake').value,
-                    vehicleModel: document.getElementById('vehicleModel').value,
-                    vehicleYear: document.getElementById('vehicleYear').value,
-                    licensePlate: document.getElementById('licensePlate').value,
-                    vehicleColor: document.getElementById('vehicleColor').value
-                };
-            }
-            
+
             try {
                 const response = await fetch('/api/auth/request-otp', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         phoneNumber: phone,
-                        role: loginRole,
-                        driverData: driverData
+                        isRegistrationVerification: true  // Flag to indicate this is for registration verification
                     })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
-                    currentPhone = phone;
-                    document.getElementById('sentToPhone').textContent = phone;
+                    // Store phone for verification
+                    localStorage.setItem('pdrides_login_phone', phone);
                     
-                    // Store role preference
-                    localStorage.setItem('pdrides_pending_role', loginRole);
-                    if (driverData) {
-                        localStorage.setItem('pdrides_driver_data', JSON.stringify(driverData));
-                    }
+                    // Show OTP section
+                    document.getElementById('phoneSection').classList.add('hidden');
+                    document.getElementById('otpSection').classList.remove('hidden');
+                    document.getElementById('otpSection').classList.add('active');
+                    document.getElementById('headerSubtitle').textContent = 'Verify your phone to complete registration';
                     
-                    // If OTP is returned in response (WhatsApp failed), show it
+                    // Show success message
+                    showAlert('info', 'Please enter the verification code sent to your phone.');
+                    
+                    // For testing: show OTP
+                    console.log('OTP:', data.otp);
                     if (data.otp) {
-                        document.getElementById('otpInfo').innerHTML = 
-                            `We sent a 6-digit code to <strong>${phone}</strong><br><br>` +
-                            `<span style="color: #c62828; font-size: 0.9rem;">WhatsApp unavailable - Code: <strong>${data.otp}</strong></span>`;
-                        // Pre-fill OTP for testing
-                        const otpDigits = data.otp.split('');
-                        otpInputs.forEach((input, i) => {
-                            if (otpDigits[i]) input.value = otpDigits[i];
-                        });
-                        if (otpDigits.length > 0) {
-                            otpInputs[Math.min(otpDigits.length, 5)].focus();
-                        }
+                        showAlert('info', 'Verification code: ' + data.otp + ' (for testing)');
                     }
-                    showOTPSection();
+                    
+                    // Focus on OTP input
+                    setTimeout(() => {
+                        document.getElementById('otpCode').focus();
+                    }, 100);
                 } else {
-                    showAlert('loginAlert', 'error', data.error || 'Failed to send OTP');
+                    throw new Error(data.error || 'Failed to send OTP');
                 }
             } catch (error) {
-                console.error('OTP error:', error);
-                showAlert('loginAlert', 'error', 'Failed to send OTP. Please try again.');
-            } finally {
+                console.error('Send OTP error:', error);
+                showAlert('error', error.message || 'Failed to send verification code. Please try again.');
                 btn.disabled = false;
-                btn.innerHTML = 'Send Verification Code';
+                btn.innerHTML = '📱 Send Verification Code';
             }
         }
-        
-        // OTP input handling
-        const otpInputs = document.querySelectorAll('.otp-digit');
-        otpInputs.forEach((input, index) => {
-            input.addEventListener('input', (e) => {
-                if (e.target.value.length === 1) {
-                    if (index < otpInputs.length - 1) {
-                        otpInputs[index + 1].focus();
-                    }
-                }
-            });
+
+        // Show alert
+        function showAlert(type, message) {
+            const alert = document.getElementById('alertBox');
+            alert.className = 'alert alert-' + type + ' show';
+            alert.textContent = message;
+            window.scrollTo(0, 0);
+        }
+
+        function hideAlert() {
+            document.getElementById('alertBox').classList.remove('show');
+        }
+
+        // Show phone section
+        function showPhoneSection() {
+            document.getElementById('phoneSection').classList.remove('hidden');
+            document.getElementById('otpSection').classList.remove('active');
+            document.getElementById('otpSection').classList.add('hidden');
+            document.getElementById('headerSubtitle').textContent = 'Welcome back! Login with your phone';
+        }
+
+        // Send OTP
+        async function sendOTP() {
+            const phone = document.getElementById('phoneNumber').value.trim();
             
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && e.target.value.length === 0) {
-                    if (index > 0) {
-                        otpInputs[index - 1].focus();
-                    }
-                }
-            });
-            
-            input.addEventListener('paste', (e) => {
-                e.preventDefault();
-                const pasteData = e.clipboardData.getData('text');
-                const digits = pasteData.replace(/\D/g, '').split('').slice(0, 6);
-                digits.forEach((digit, i) => {
-                    if (otpInputs[i]) {
-                        otpInputs[i].value = digit;
-                    }
-                });
-                if (digits.length > 0) {
-                    otpInputs[Math.min(digits.length, 5)].focus();
-                }
-            });
-        });
-        
-        // Verify OTP
-        async function verifyOTP() {
-            let otp = '';
-            otpInputs.forEach(input => otp += input.value);
-            
-            if (otp.length !== 6) {
-                alert('Please enter the 6-digit code');
+            if (!phone) {
+                showAlert('error', 'Please enter your phone number');
                 return;
             }
+
+            // Validate phone format (basic validation)
+            const cleanedPhone = phone.replace(/\D/g, '');
+            if (cleanedPhone.length < 10) {
+                showAlert('error', 'Please enter a valid phone number');
+                return;
+            }
+
+            const btn = document.getElementById('sendOtpBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>Sending...';
+
+            try {
+                const response = await fetch('/api/auth/request-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phoneNumber: phone
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentPhone = phone;
+                    isNewUser = data.isNewUser;
+                    
+                    // Store phone for verification
+                    localStorage.setItem('pdrides_login_phone', phone);
+                    
+                    // Show OTP section
+                    document.getElementById('phoneSection').classList.add('hidden');
+                    document.getElementById('otpSection').classList.remove('hidden');
+                    document.getElementById('otpSection').classList.add('active');
+                    document.getElementById('headerSubtitle').textContent = 'Enter the code sent to ' + formatPhone(phone);
+                    
+                    // Focus on OTP input
+                    setTimeout(() => {
+                        document.getElementById('otpCode').focus();
+                    }, 100);
+                    
+                    // If new user, show info
+                    if (data.isNewUser) {
+                        showAlert('info', 'New account detected. Complete registration after verification.');
+                    }
+                    
+                    // For testing: show OTP in console and alert
+                    console.log('OTP:', data.otp);
+                    if (data.otp) {
+                        // Development mode: show OTP for testing
+                        showAlert('info', 'Verification code: ' + data.otp + ' (for testing)');
+                    }
+                } else {
+                    throw new Error(data.error || 'Failed to send OTP');
+                }
+            } catch (error) {
+                console.error('Send OTP error:', error);
+                showAlert('error', error.message || 'Failed to send verification code. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = '📱 Send Verification Code';
+            }
+        }
+
+        // Verify OTP
+        async function verifyOTP() {
+            const otp = document.getElementById('otpCode').value.trim();
             
-            const btn = document.getElementById('verifyBtn');
+            if (!otp) {
+                showAlert('error', 'Please enter the verification code');
+                return;
+            }
+
+            if (otp.length !== 6) {
+                showAlert('error', 'Please enter a 6-digit verification code');
+                return;
+            }
+
+            const btn = document.getElementById('verifyOtpBtn');
             btn.disabled = true;
             btn.innerHTML = '<span class="loading"></span>Verifying...';
-            
+
             try {
                 const response = await fetch('/api/auth/verify-otp', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         phoneNumber: currentPhone,
                         otpCode: otp
                     })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
-                    localStorage.setItem('pdrides_token', data.token);
-                    localStorage.setItem('pdrides_phone', currentPhone);
-                    localStorage.setItem('pdrides_role', localStorage.getItem('pdrides_pending_role') || 'rider');
-                    
-                    // Save driver data if applicable
-                    const driverData = localStorage.getItem('pdrides_driver_data');
-                    if (driverData) {
-                        localStorage.setItem('pdrides_name', JSON.parse(driverData).name || 'User');
+                    // Check if this is a new user from server response
+                    if (data.isNewUser) {
+                        // New user - redirect to registration
+                        localStorage.setItem('pdrides_pending_phone', currentPhone);
+                        localStorage.setItem('pdrides_pending_token', data.token);
+                        window.location.href = '/register?mode=verify&phone=' + encodeURIComponent(currentPhone);
+                    } else {
+                        // Existing user - complete login
+                        // Store token and user info
+                        localStorage.setItem('pdrides_token', data.token);
+                        localStorage.setItem('pdrides_phone', currentPhone);
+                        
+                        // Store user data including name for display across the app
+                        if (data.user && data.user.name) {
+                            localStorage.setItem('pdrides_name', data.user.name);
+                        }
+                        localStorage.setItem('pdrides_user', JSON.stringify(data.user));
+                        
+                        // Store user name in localStorage for display across the app
+                        if (data.user && data.user.name) {
+                            localStorage.setItem('pdrides_name', data.user.name);
+                        }
+                        
+                        // Redirect to map
+                        window.location.href = '/map';
                     }
-                    
-                    authToken = data.token;
-                    userPhone = currentPhone;
-                    showDashboard();
                 } else {
-                    alert(data.error || 'Invalid OTP');
+                    throw new Error(data.error || 'Verification failed');
                 }
             } catch (error) {
-                console.error('Verify error:', error);
-                alert('Failed to verify. Please try again.');
-            } finally {
+                console.error('Verify OTP error:', error);
+                showAlert('error', error.message || 'Verification failed. Please try again.');
                 btn.disabled = false;
-                btn.innerHTML = 'Verify & Login';
+                btn.innerHTML = '✓ Verify & Login';
             }
         }
-        
+
         // Resend OTP
         async function resendOTP() {
-            await sendOTP(currentPhone);
+            await sendOTP();
         }
-        
-        // Show login section
-        function showLogin() {
-            document.getElementById('loginSection').classList.remove('hidden');
-            document.getElementById('otpSection').classList.add('hidden');
-            document.getElementById('dashboardSection').classList.add('hidden');
-        }
-        
-        // Show OTP section
-        function showOTPSection() {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('otpSection').classList.remove('hidden');
-            document.getElementById('dashboardSection').classList.add('hidden');
-            otpInputs[0].focus();
-        }
-        
-        // Show dashboard
-        function showDashboard() {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('otpSection').classList.add('hidden');
-            document.getElementById('dashboardSection').classList.remove('hidden');
-            
-            document.getElementById('userPhone').textContent = userPhone;
-            
-            // Get user role
-            const userRole = localStorage.getItem('pdrides_role') || 'rider';
-            document.getElementById('userRoleBadge').textContent = userRole === 'driver' ? '🚙 Driver' : '🚗 Rider';
-            document.getElementById('userRoleBadge').className = 'role-badge ' + userRole;
-            
-            // Switch role text
-            document.getElementById('switchRoleText').textContent = userRole === 'driver' ? 'Rider' : 'Driver';
-            
-            // Extract name from storage or use default
-            const name = localStorage.getItem('pdrides_name') || 'User';
-            document.getElementById('userName').textContent = name;
-            document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
-        }
-        
-        // Switch role
-        function switchRole() {
-            const currentRole = localStorage.getItem('pdrides_role') || 'rider';
-            const newRole = currentRole === 'driver' ? 'rider' : 'driver';
-            localStorage.setItem('pdrides_role', newRole);
-            showDashboard();
-            alert(`You are now in ${newRole === 'driver' ? 'Driver' : 'Rider'} mode!`);
-        }
-        
-        // Show driver profile
-        function showDriverProfile() {
-            const driverData = localStorage.getItem('pdrides_driver_data');
-            if (driverData) {
-                const data = JSON.parse(driverData);
-                alert(`🚙 Driver Profile\n\nName: ${data.name || 'N/A'}\nVehicle: ${data.vehicleYear || ''} ${data.vehicleMake || ''} ${data.vehicleModel || ''}\nColor: ${data.vehicleColor || 'N/A'}\nLicense: ${data.licensePlate || 'N/A'}`);
-            } else {
-                alert('No driver profile found. Register as a driver to add your vehicle details.');
+
+        // Format phone for display
+        function formatPhone(phone) {
+            const cleaned = phone.replace(/\D/g, '');
+            if (cleaned.length === 10) {
+                return '(' + cleaned.slice(0,3) + ') ' + cleaned.slice(3,6) + '-' + cleaned.slice(6);
             }
+            return phone;
         }
-        
-        // Show alert
-        function showAlert(elementId, type, message) {
-            const el = document.getElementById(elementId);
-            el.className = `alert alert-${type} show`;
-            el.textContent = message;
-            setTimeout(() => el.classList.remove('show'), 5000);
-        }
-        
-        // Menu functions
-        function showMyRides() {
-            window.location.href = '/map?tab=rides';
-        }
-        
-        function showSavedRoutes() {
-            window.location.href = '/map?tab=saved';
-        }
-        
-        function showRideHistory() {
-            window.location.href = '/map?tab=history';
-        }
-        
-        function showSettings() {
-            window.location.href = '/settings';
-        }
-        
-        // Logout
-        function logout() {
-            localStorage.removeItem('pdrides_token');
-            localStorage.removeItem('pdrides_phone');
-            localStorage.removeItem('pdrides_name');
-            localStorage.removeItem('pdrides_role');
-            localStorage.removeItem('pdrides_driver_data');
-            localStorage.removeItem('pdrides_pending_role');
-            authToken = null;
-            userPhone = null;
-            
-            // Clear OTP inputs
-            otpInputs.forEach(input => input.value = '');
-            
-            showLogin();
+
+        // Handle Enter key
+        document.getElementById('phoneNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendOTP();
+            }
+        });
+
+        document.getElementById('otpCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyOTP();
+            }
+        });
+
+        // Auto-focus OTP input on mobile
+        if (window.innerWidth < 500) {
+            document.getElementById('otpCode').addEventListener('focus', function() {
+                // Scroll to input on mobile
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            });
         }
     </script>
 </body>

@@ -213,6 +213,17 @@
             background: var(--gray-100);
         }
 
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
         /* Hero Section */
         .hero {
             padding: 8rem 0 6rem;
@@ -761,8 +772,8 @@
                 </nav>
                 
                 <div class="nav-buttons">
-                    <a href="/login" class="btn btn-outline">🔐 Login</a>
-                    <a href="/map" class="btn btn-primary">🚀 Get Started</a>
+<a href="/login" class="btn btn-outline">🔐 Login</a>
+                    <a href="/register" class="btn btn-primary">📝 Register</a>
                 </div>
                 
                 <button class="mobile-menu-btn">☰</button>
@@ -783,23 +794,9 @@
                 <p>Connect with fellow commuters, save money on transportation, and reduce your carbon footprint. Join thousands of happy riders today!</p>
                 
                 <div class="hero-buttons">
-                    <a href="/map" class="btn btn-white">🗺️ Find a Ride</a>
-                    <a href="/register?role=driver" class="btn btn-accent">🚙 Offer a Ride</a>
-                </div>
-                
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">50K+</span>
-                        <span class="stat-label">Happy Riders</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">100K+</span>
-                        <span class="stat-label">Rides Completed</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">4.9⭐</span>
-                        <span class="stat-label">Average Rating</span>
-                    </div>
+                    <a href="#" onclick="handleFindRide()" class="btn btn-white">🗺️ Find a Ride</a>
+                    <a href="#" onclick="handleOfferRide()" class="btn btn-accent">🚙 Offer a Ride</a>
+                    <a href="https://wa.me/15551758507" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">📱 WhatsApp Bot</a>
                 </div>
             </div>
         </div>
@@ -932,7 +929,7 @@
                 <div class="step-card">
                     <div class="step-number">1</div>
                     <h3>📍 Enter Your Trip</h3>
-                    <p>Input your pickup location and destination on our interactive map</p>
+                    <p>Input your pickup location and destination on Your Maps</p>
                     <div class="step-connector"></div>
                 </div>
                 
@@ -987,8 +984,7 @@
                     <ul class="footer-links">
                         <li><a href="/map">🗺️ Find a Ride</a></li>
                         <li><a href="/register?role=driver">🚙 Offer a Ride</a></li>
-                        <li><a href="/login">🔐 Login</a></li>
-                        <li><a href="/register">📝 Register</a></li>
+                        <li><a href="/register">🔐 Register</a></li>
                     </ul>
                 </div>
                 
@@ -997,8 +993,8 @@
                     <ul class="footer-links">
                         <li><a href="/terms-of-service">📜 Terms of Service</a></li>
                         <li><a href="/privacy-policy">🔒 Privacy Policy</a></li>
-                        <li><a href="#">❓ Help Center</a></li>
-                        <li><a href="#">📧 Contact Us</a></li>
+                        <li><a href="/help-center">❓ Help Center</a></li>
+                        <li><a href="/contact-us">📧 Contact Us</a></li>
                     </ul>
                 </div>
                 
@@ -1078,6 +1074,34 @@
                 navButtons.style.boxShadow = 'var(--shadow-lg)';
             }
         });
+        
+        // Handle Find Ride button - check login status
+        function handleFindRide() {
+            const authToken = localStorage.getItem('pdrides_token');
+            const userPhone = localStorage.getItem('pdrides_phone');
+            
+            if (authToken && userPhone) {
+                // User is logged in, go to map
+                window.location.href = '/map';
+            } else {
+                // User is not logged in, go to login
+                window.location.href = '/login';
+            }
+        }
+        
+        // Handle Offer Ride button - check login status
+        function handleOfferRide() {
+            const authToken = localStorage.getItem('pdrides_token');
+            const userPhone = localStorage.getItem('pdrides_phone');
+            
+            if (authToken && userPhone) {
+                // User is logged in, go to map (driver mode)
+                window.location.href = '/map';
+            } else {
+                // User is not logged in, go to login
+                window.location.href = '/login';
+            }
+        }
     </script>
 </body>
 </html>

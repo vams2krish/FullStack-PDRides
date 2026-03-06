@@ -75,6 +75,7 @@
             margin-bottom: 20px;
             color: #25D366;
             text-decoration: none;
+            cursor: pointer;
         }
         .back-link:hover {
             text-decoration: underline;
@@ -83,7 +84,7 @@
 </head>
 <body>
     <div class="container">
-        <a href="/" class="back-link">← Back to PDRides</a>
+        <a href="#" class="back-link" onclick="goBack()">← Back</a>
         
         <h1>📋 Terms of Service</h1>
         <p class="last-updated">Last Updated: March 2025</p>
@@ -186,5 +187,21 @@
         <h2>15. Independent Service</h2>
         <p>PDRides is an independent service and is not affiliated with, endorsed by, or partnered with WhatsApp, Meta Platforms, Inc., or any other third-party services used for communication.</p>
     </div>
+
+    <script>
+        // Check if user is logged in
+        const authToken = localStorage.getItem('pdrides_token');
+        const userPhone = localStorage.getItem('pdrides_phone');
+
+        function goBack() {
+            if (authToken && userPhone) {
+                // User is logged in, go to map
+                window.location.href = '/map';
+            } else {
+                // User is not logged in, go to landing page
+                window.location.href = '/';
+            }
+        }
+    </script>
 </body>
 </html>
