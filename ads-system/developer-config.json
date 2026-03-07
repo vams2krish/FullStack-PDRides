@@ -1,0 +1,165 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2024-01-15",
+  "description": "Ads System Developer Configuration - Meta/Google Ads Style Configuration for PDRides",
+  "developerSettings": {
+    "enableDebug": false,
+    "logLevel": "info",
+    "adLoadTimeout": 5000,
+    "maxRetries": 3,
+    "retryDelay": 1000
+  },
+  "adPlacements": {
+    "in-feed-top-banner": {
+      "id": "in-feed-top-banner",
+      "name": "In-Feed Top Banner Ad",
+      "description": "Banner ad displayed ABOVE the map on map-view page",
+      "page": "map-view.html",
+      "position": "above-map",
+      "insertBefore": "#map",
+      "priority": 1,
+      "supportedAdUnits": ["banner-320x50", "banner-300x250", "banner-728x90", "banner-320x100"],
+      "defaultAdUnit": "banner-320x50",
+      "responsive": true,
+      "breakpoints": {
+        "mobile": { "maxWidth": 480, "adUnit": "banner-320x50" },
+        "tablet": { "maxWidth": 768, "adUnit": "banner-300x250" },
+        "desktop": { "minWidth": 769, "adUnit": "banner-728x90" }
+      }
+    },
+    "in-feed-middle-banner": {
+      "id": "in-feed-middle-banner",
+      "name": "In-Feed Middle Banner Ad",
+      "description": "Banner ad displayed AFTER the pricing card window on map-view page",
+      "page": "map-view.html",
+      "position": "after-pricing-card",
+      "insertAfter": "#pricingCard",
+      "priority": 2,
+      "supportedAdUnits": ["banner-300x250", "banner-320x50", "banner-320x100"],
+      "defaultAdUnit": "banner-300x250",
+      "responsive": true,
+      "breakpoints": {
+        "mobile": { "maxWidth": 480, "adUnit": "banner-320x50" },
+        "tablet": { "maxWidth": 768, "adUnit": "banner-300x250" },
+        "desktop": { "minWidth": 769, "adUnit": "banner-300x250" }
+      }
+    }
+  },
+  "adUnitTypes": [
+    {
+      "type": "interstitial",
+      "name": "Interstitial Ads",
+      "description": "Full-screen ads that appear between content",
+      "dimensions": [
+        { "id": "interstitial-320x480", "width": 320, "height": 480, "name": "Mobile Interstitial" },
+        { "id": "interstitial-300x250", "width": 300, "height": 250, "name": "Square Interstitial" },
+        { "id": "interstitial-320x568", "width": 320, "height": 568, "name": "iPhone X Interstitial" }
+      ]
+    },
+    {
+      "type": "banner",
+      "name": "Banner Ads",
+      "description": "Rectangular display ads in various sizes",
+      "dimensions": [
+        { "id": "banner-320x50", "width": 320, "height": 50, "name": "Mobile Banner" },
+        { "id": "banner-320x100", "width": 320, "height": 100, "name": "Large Mobile Banner" },
+        { "id": "banner-300x250", "width": 300, "height": 250, "name": "Medium Rectangle" },
+        { "id": "banner-728x90", "width": 728, "height": 90, "name": "Leaderboard" },
+        { "id": "banner-300x600", "width": 300, "height": 600, "name": "Half Page" },
+        { "id": "banner-970x250", "width": 970, "height": 250, "name": "Billboard" }
+      ]
+    },
+    {
+      "type": "native",
+      "name": "Native Ads",
+      "description": "In-feed ads that match the look and feel of the content",
+      "dimensions": [
+        { "id": "native-in-feed", "width": "fluid", "height": "auto", "name": "In-Feed Native Ad" },
+        { "id": "native-search", "width": "fluid", "height": "auto", "name": "Search Native Ad" },
+        { "id": "native-content", "width": "fluid", "height": "auto", "name": "Content Native Ad" }
+      ]
+    }
+  ],
+  "geoTargeting": {
+    "enabled": true,
+    "defaultLocation": "US",
+    "targetingLevels": [
+      {
+        "level": "country",
+        "name": "Country Targeting",
+        "description": "Target ads by country",
+        "priority": 0
+      },
+      {
+        "level": "state",
+        "name": "State Targeting",
+        "description": "Target ads by US state",
+        "priority": 1,
+        "supportedEntities": ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
+      },
+      {
+        "level": "zipcode",
+        "name": "Zip Code Targeting",
+        "description": "Target ads by specific zip codes",
+        "priority": 2,
+        "matchTypes": [
+          { "type": "exact", "description": "Exact 5-digit zip code match", "example": "08830" },
+          { "type": "prefix", "description": "3-digit zip code prefix match", "example": "088" }
+        ]
+      },
+      {
+        "level": "radius",
+        "name": "Radius Targeting",
+        "description": "Target ads within a radius of a specific location",
+        "priority": 3,
+        "maxRadiusMiles": 50,
+        "minRadiusMiles": 1
+      }
+    ]
+  },
+  "fallbackSettings": {
+    "enabled": true,
+    "showOnNoAds": true,
+    "content": {
+      "title": "Promote Your Local Business",
+      "description": "Reach thousands of commuters in your area with targeted advertising",
+      "ctaText": "Advertise Here",
+      "ctaUrl": "/contact-us",
+      "businessEnquiryEmail": "ads@pdrides.com"
+    },
+    "variations": {
+      "default": {
+        "title": "Promote Your Local Business",
+        "description": "Reach thousands of commuters in your area with targeted advertising",
+        "icon": "📢"
+      },
+      "restaurant": {
+        "title": "Promote Your Restaurant",
+        "description": "Get discovered by hungry commuters in your area",
+        "icon": "🍔"
+      },
+      "service": {
+        "title": "Promote Your Services",
+        "description": "Connect with people who need your services",
+        "icon": "🔧"
+      },
+      "retail": {
+        "title": "Promote Your Store",
+        "description": "Attract more customers to your business",
+        "icon": "🛒"
+      }
+    }
+  },
+  "tracking": {
+    "impressionTracking": true,
+    "clickTracking": true,
+    "viewabilityTracking": true,
+    "conversionTracking": false
+  },
+  "apiEndpoints": {
+    "getAds": "/api/ads/placement/{placementId}",
+    "recordImpression": "/api/ads/{adId}/impression",
+    "recordClick": "/api/ads/{adId}/click"
+  }
+}
+

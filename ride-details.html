@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ride Details - PDRides</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .ride-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .ride-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .ride-header h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .ride-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .ride-status.active {
+            background: #25D366;
+        }
+
+        .ride-status.full {
+            background: #ff9800;
+        }
+
+        .ride-status.completed {
+            background: #2196F3;
+        }
+
+        .ride-body {
+            padding: 20px;
+        }
+
+        .route-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .route-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .pickup-icon {
+            background: #e8f5e9;
+        }
+
+        .dropoff-icon {
+            background: #ffebee;
+        }
+
+        .route-details {
+            flex: 1;
+        }
+
+        .route-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .route-address {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .route-line {
+            width: 2px;
+            height: 30px;
+            background: #ddd;
+            margin-left: 19px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .info-item span {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .driver-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .driver-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .driver-info {
+            flex: 1;
+        }
+
+        .driver-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .driver-phone {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .price-section {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .price-section h3 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .price-total {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .price-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #25D366;
+        }
+
+        .price-per-seat {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .price-breakdown {
+            border-top: 1px solid #c8e6c9;
+            padding-top: 15px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .price-row.total {
+            border-top: 1px solid #c8e6c9;
+            margin-top: 8px;
+            padding-top: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .share-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .share-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .share-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+
+        .share-whatsapp:hover {
+            background: #128C7E;
+        }
+
+        .share-telegram {
+            background: #0088cc;
+            color: white;
+        }
+
+        .share-telegram:hover {
+            background: #006699;
+        }
+
+        .share-copy {
+            background: #667eea;
+            color: white;
+        }
+
+        .share-copy:hover {
+            background: #5568d3;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .map-container {
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            color: #c62828;
+        }
+
+        .error-message h2 {
+            margin-bottom: 10px;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        @media (max-width: 480px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .share-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 PDRides</h1>
+    </div>
+
+    <div class="container" id="content">
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading ride details...</p>
+        </div>
+
+        <div class="error-message" id="error" style="display: none;">
+            <h2>😕 Ride Not Found</h2>
+            <p>This ride may have expired or been removed.</p>
+            <a href="/map" class="btn btn-primary" style="margin-top: 20px; display: inline-block; text-decoration: none;">Find New Rides</a>
+        </div>
+
+        <div id="rideDetails" style="display: none;">
+            <!-- Ride Card -->
+            <div class="ride-card">
+                <div class="ride-header">
+                    <h2>🚗 Ride Details</h2>
+                    <span class="ride-status" id="rideStatus">Active</span>
+                </div>
+                <div class="ride-body">
+                    <!-- Route -->
+                    <div class="route-section">
+                        <div class="route-icon pickup-icon">📍</div>
+                        <div class="route-details">
+                            <div class="route-label">Pickup Location</div>
+                            <div class="route-address" id="pickupLocation">-</div>
+                        </div>
+                    </div>
+                    <div class="route-line"></div>
+                    <div class="route-section">
+                        <div class="route-icon dropoff-icon">🏁</div>
+                        <div class="route-details">
+                            <div class="route-label">Drop-off Location</div>
+                            <div class="route-address" id="destination">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Info Grid -->
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>📅 Date</label>
+                            <span id="rideDate">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>⏰ Time</label>
+                            <span id="rideTime">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>💺 Total Seats</label>
+                            <span id="totalSeats">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>🪑 Available</label>
+                            <span id="availableSeats">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Driver Info -->
+                    <div class="driver-section">
+                        <div class="driver-avatar" id="driverAvatar">👤</div>
+                        <div class="driver-info">
+                            <div class="driver-name" id="driverName">-</div>
+                            <div class="driver-phone" id="driverPhone">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Map -->
+                    <div class="map-container">
+                        <div id="map"></div>
+                    </div>
+
+                    <!-- Price Section -->
+                    <div class="price-section">
+                        <h3>💰 Fare Breakdown</h3>
+                        <div class="price-total">
+                            <div class="price-amount" id="totalPrice">$0.00</div>
+                            <div class="price-per-seat" id="pricePerSeat">$0.00 per seat</div>
+                        </div>
+                        <div class="price-breakdown" id="priceBreakdown">
+                            <!-- Dynamic price breakdown -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Share Section -->
+            <div class="alert alert-success" id="shareAlert"></div>
+            
+            <div class="share-section">
+                <button class="share-btn share-whatsapp" onclick="shareToWhatsApp()">
+                    📱 WhatsApp
+                </button>
+                <button class="share-btn share-telegram" onclick="shareToTelegram()">
+                    ✈️ Telegram
+                </button>
+                <button class="share-btn share-copy" onclick="copyLink()">
+                    🔗 Copy Link
+                </button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="/register" class="btn btn-primary" id="bookBtn">
+                    🔐 Register to Book This Ride
+                </a>
+                <a href="/map" class="btn btn-secondary">
+                    🗺️ View All Rides
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get ride ID from URL
+        const rideId = window.location.pathname.split('/').pop();
+        let rideData = null;
+        let map = null;
+
+        // Initialize
+        window.onload = async () => {
+            await loadRideDetails();
+        };
+
+        // Load ride details from API
+        async function loadRideDetails() {
+            try {
+                const response = await fetch(`/api/rides/${rideId}`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    showError();
+                    return;
+                }
+
+                rideData = data.ride;
+                displayRideDetails(rideData);
+                
+            } catch (error) {
+                console.error('Error loading ride:', error);
+                showError();
+            }
+        }
+
+        // Display ride details
+        function displayRideDetails(ride) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('rideDetails').style.display = 'block';
+
+            // Set status
+            const statusEl = document.getElementById('rideStatus');
+            statusEl.textContent = ride.status.charAt(0).toUpperCase() + ride.status.slice(1);
+            statusEl.className = 'ride-status ' + ride.status;
+
+            // Route
+            document.getElementById('pickupLocation').textContent = formatAddress(ride.pickupLocation);
+            document.getElementById('destination').textContent = formatAddress(ride.destination);
+
+            // Date & Time
+            const date = new Date(ride.date);
+            document.getElementById('rideDate').textContent = date.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+            });
+            document.getElementById('rideTime').textContent = ride.time;
+
+            // Seats
+            document.getElementById('totalSeats').textContent = ride.totalSeats;
+            document.getElementById('availableSeats').textContent = ride.availableSeats;
+
+            // Driver
+            document.getElementById('driverName').textContent = ride.driverName || 'Anonymous Driver';
+            document.getElementById('driverPhone').textContent = ride.driverPhone || 'Contact via app';
+            document.getElementById('driverAvatar').textContent = (ride.driverName || 'A').charAt(0).toUpperCase();
+
+            // Price
+            document.getElementById('totalPrice').textContent = `$${ride.contribution.toFixed(2)}`;
+            document.getElementById('pricePerSeat').textContent = `$${ride.contribution.toFixed(2)} per seat`;
+
+            // Price breakdown
+            const breakdownHtml = `
+                <div class="price-row">
+                    <span>Base Fare</span>
+                    <span>$${(ride.fareBreakdown?.baseFare || 5).toFixed(2)}</span>
+                </div>
+                <div class="price-row">
+                    <span>Distance (${ride.fareBreakdown?.distanceMiles || 0} mi)</span>
+                    <span>$${(ride.fareBreakdown?.distanceFare || ride.contribution - 5).toFixed(2)}</span>
+                </div>
+                <div class="price-row total">
+                    <span>Total per seat</span>
+                    <span>$${ride.contribution.toFixed(2)}</span>
+                </div>
+            `;
+            document.getElementById('priceBreakdown').innerHTML = breakdownHtml;
+
+            // Initialize map
+            initMap(ride);
+
+            // Update button based on login status
+            const authToken = localStorage.getItem('pdrides_token');
+            if (authToken) {
+                document.getElementById('bookBtn').textContent = '✅ Book This Ride';
+                document.getElementById('bookBtn').href = `/map?ride=${ride._id}`;
+            }
+        }
+
+        // Initialize map
+        function initMap(ride) {
+            // Default center (US)
+            let center = [39.8283, -98.5795];
+            let zoom = 4;
+
+            if (ride.pickupLat && ride.pickupLng) {
+                center = [ride.pickupLat, ride.pickupLng];
+                zoom = 10;
+            }
+
+            map = L.map('map').setView(center, zoom);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Add markers
+            const pickupIcon = L.divIcon({
+                className: 'custom-marker',
+                html: '<div style="background: #25D366; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white;">📍</div>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30]
+            });
+
+            const destIcon = L.divIcon({
+                className: 'custom-marker',
+                html: '<div style="background: #e74c3c; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white;">🏁</div>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30]
+            });
+
+            if (ride.pickupLat && ride.pickupLng) {
+                L.marker([ride.pickupLat, ride.pickupLng], { icon: pickupIcon })
+                    .addTo(map)
+                    .bindPopup('📍 Pickup');
+            }
+
+            if (ride.destLat && ride.destLng) {
+                L.marker([ride.destLat, ride.destLng], { icon: destIcon })
+                    .addTo(map)
+                    .bindPopup('🏁 Destination');
+
+                // Fit bounds
+                if (ride.pickupLat && ride.pickupLng) {
+                    map.fitBounds([
+                        [ride.pickupLat, ride.pickupLng],
+                        [ride.destLat, ride.destLng]
+                    ], { padding: [50, 50] });
+                }
+            }
+        }
+
+        // Format address for display
+        function formatAddress(address) {
+            if (!address) return '-';
+            const parts = address.split(',');
+            if (parts.length > 2) {
+                return parts.slice(0, 2).join(',');
+            }
+            return address;
+        }
+
+        // Show error
+        function showError() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+        }
+
+        // Share to WhatsApp
+        async function shareToWhatsApp() {
+            if (!rideData) return;
+
+            const message = `🚗 *PDRides Ride*\n\n` +
+                `📍 From: ${formatAddress(rideData.pickupLocation)}\n` +
+                `🏁 To: ${formatAddress(rideData.destination)}\n` +
+                `📅 Date: ${new Date(rideData.date).toLocaleDateString()}\n` +
+                `⏰ Time: ${rideData.time}\n` +
+                `💺 Seats: ${rideData.availableSeats} available\n` +
+                `💰 Price: $${rideData.contribution.toFixed(2)} per seat\n\n` +
+                `👤 Driver: ${rideData.driverName}\n\n` +
+                `Book now: ${window.location.href}`;
+
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Share to Telegram
+        function shareToTelegram() {
+            if (!rideData) return;
+
+            const message = `🚗 *PDRides Ride*\n\n` +
+                `📍 From: ${formatAddress(rideData.pickupLocation)}\n` +
+                `🏁 To: ${formatAddress(rideData.destination)}\n` +
+                `📅 Date: ${new Date(rideData.date).toLocaleDateString()}\n` +
+                `⏰ Time: ${rideData.time}\n` +
+                `💺 Seats: ${rideData.availableSeats} available\n` +
+                `💰 Price: $${rideData.contribution.toFixed(2)} per seat\n\n` +
+                `👤 Driver: ${rideData.driverName}`;
+
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(message)}`;
+            window.open(telegramUrl, '_blank');
+        }
+
+        // Copy link
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const alert = document.getElementById('shareAlert');
+                alert.textContent = '✅ Link copied to clipboard!';
+                alert.classList.add('active');
+                setTimeout(() => alert.classList.remove('active'), 3000);
+            });
+        }
+    </script>
+</body>
+</html>
+

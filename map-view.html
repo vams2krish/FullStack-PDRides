@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDRides - Your Maps</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="ads-system/ads-loader.js"></script>
     <style>
         * {
             margin: 0;
@@ -275,681 +276,6 @@
             color: #25D366;
         }
         
-        /* Saved Route Card */
-        .saved-route-card {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .saved-route-card:hover {
-            border-color: #f9a825;
-            background: #fffde7;
-        }
-        
-        .saved-route-card .route-name {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .saved-route-card .route-path {
-            color: #666;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .saved-route-card .route-actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 8px;
-        }
-        
-        .route-action-btn {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-        
-        .route-action-btn.use {
-            background: #25D366;
-            color: white;
-        }
-        
-        .route-action-btn.delete {
-            background: #ffebee;
-            color: #c62828;
-        }
-        
-        /* Profile Settings */
-        .profile-menu-items {
-            list-style: none;
-            padding: 10px 0;
-        }
-        
-        .profile-menu-items li {
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .profile-menu-items li:last-child {
-            border-bottom: none;
-        }
-        
-        .profile-menu-items a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            color: #333;
-            text-decoration: none;
-            transition: background 0.2s;
-            font-size: 0.95rem;
-        }
-        
-        .profile-menu-items a:hover {
-            background: #f8f9fa;
-        }
-        
-        .profile-menu-items .icon {
-            font-size: 1.2rem;
-            width: 24px;
-            text-align: center;
-        }
-        
-        .logout-btn {
-            color: #c62828 !important;
-        }
-        
-        .role-toggle {
-            display: flex;
-            background: rgba(255,255,255,0.2);
-            border-radius: 20px;
-            padding: 3px;
-            margin-right: 10px;
-        }
-        
-        .role-btn {
-            padding: 6px 14px;
-            border: none;
-            background: transparent;
-            color: white;
-            border-radius: 18px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-        
-        .role-btn.active {
-            background: white;
-            color: #667eea;
-        }
-        
-        /* Route Title */
-        .route-title-bar {
-            background: white;
-            padding: 12px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .route-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .route-title .location {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .route-title .arrow {
-            color: #25D366;
-            font-size: 1.2rem;
-        }
-        
-        .route-title .start-loc {
-            color: #25D366;
-        }
-        
-        .route-title .dest-loc {
-            color: #e74c3c;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 15px auto;
-            padding: 0 15px;
-        }
-        
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 15px;
-        }
-        
-        @media (max-width: 1024px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .map-section {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .map-header {
-            background: #25D366;
-            color: white;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .map-header h2 {
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        #map {
-            height: 450px;
-            width: 100%;
-        }
-        
-        .controls {
-            padding: 15px;
-            background: #f9f9f9;
-            border-top: 1px solid #eee;
-        }
-        
-        .location-row {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr auto;
-            gap: 10px;
-            margin-bottom: 12px;
-            align-items: center;
-        }
-        
-        .location-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .location-label.start {
-            color: #25D366;
-        }
-        
-        .location-label.dest {
-            color: #e74c3c;
-        }
-        
-        .input-wrapper {
-            position: relative;
-        }
-        
-        .input-wrapper input {
-            width: 100%;
-            padding: 11px 14px;
-            padding-left: 32px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        
-        .input-wrapper input:focus {
-            border-color: #25D366;
-        }
-        
-        .input-wrapper .input-icon {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.1rem;
-        }
-        
-        .swap-btn {
-            width: 38px;
-            height: 38px;
-            border: 2px solid #25D366;
-            background: white;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            margin-top: 20px;
-        }
-        
-        .swap-btn:hover {
-            background: #25D366;
-            color: white;
-            transform: rotate(180deg);
-        }
-        
-        .my-location-btn {
-            width: 38px;
-            height: 38px;
-            border: 2px solid #667eea;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            margin-top: 20px;
-        }
-        
-        .my-location-btn:hover {
-            background: #667eea;
-            color: white;
-        }
-        
-        .btn-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .btn-row select {
-            padding: 10px 14px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.3s;
-            background: white;
-        }
-        
-        .btn-row select:focus {
-            border-color: #25D366;
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .btn-primary {
-            background: #25D366;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #128C7E;
-        }
-        
-        .btn-secondary {
-            background: #667eea;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background: #5568d3;
-        }
-        
-        .btn-outline {
-            background: white;
-            border: 2px solid #ddd;
-            color: #333;
-        }
-        
-        .btn-outline:hover {
-            border-color: #25D366;
-            color: #25D366;
-        }
-        
-        /* Autocomplete */
-        .autocomplete-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-height: 220px;
-            overflow-y: auto;
-            z-index: 1000;
-            display: none;
-        }
-        
-        .autocomplete-dropdown.active {
-            display: block;
-        }
-        
-        .autocomplete-item {
-            padding: 10px 14px;
-            cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
-            transition: background 0.2s;
-        }
-        
-        .autocomplete-item:hover {
-            background: #f5f5f5;
-        }
-        
-        .autocomplete-item:last-child {
-            border-bottom: none;
-        }
-        
-        .autocomplete-item .main-text {
-            font-weight: 500;
-            color: #333;
-            font-size: 0.95rem;
-        }
-        
-        .autocomplete-item .sub-text {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 2px;
-        }
-        
-        /* Sidebar */
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .info-panel {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            padding: 18px;
-        }
-        
-        .info-panel h3 {
-            color: #333;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.1rem;
-        }
-        
-        .quick-actions {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .quick-action-btn {
-            flex: 1;
-            padding: 8px;
-            background: #f8f9fa;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s;
-            text-align: center;
-        }
-        
-        .quick-action-btn:hover {
-            border-color: #25D366;
-            background: #e8f5e9;
-        }
-        
-        /* Pricing Card */
-        .pricing-card {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            color: white;
-            padding: 18px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-        
-        .pricing-card h4 {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            margin-bottom: 5px;
-        }
-        
-        .pricing-card .price {
-            font-size: 2.2rem;
-            font-weight: bold;
-            line-height: 1.1;
-        }
-        
-        .pricing-card .price-detail {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            margin-top: 5px;
-        }
-        
-        /* Tip Section */
-        .tip-section {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.3);
-        }
-        
-        .tip-section label {
-            font-size: 0.8rem;
-            opacity: 0.9;
-            display: block;
-            margin-bottom: 6px;
-        }
-        
-        .tip-options {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 8px;
-        }
-        
-        .tip-btn {
-            flex: 1;
-            padding: 6px;
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-        
-        .tip-btn:hover, .tip-btn.active {
-            background: white;
-            color: #25D366;
-        }
-        
-        .tip-custom {
-            display: flex;
-            gap: 6px;
-        }
-        
-        .tip-custom input {
-            flex: 1;
-            padding: 6px 10px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-        
-        /* Info Grid */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        .info-card {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
-            border-left: 4px solid #25D366;
-        }
-        
-        .info-card label {
-            display: block;
-            font-size: 0.7rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 3px;
-        }
-        
-        .info-card span {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .route-info {
-            margin-top: 12px;
-            padding: 12px;
-            background: #e8f5e9;
-            border-radius: 10px;
-            display: none;
-        }
-        
-        .route-info.active {
-            display: block;
-        }
-        
-        /* Rides Panel */
-        .rides-panel {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            padding: 18px;
-            max-height: 450px;
-            overflow-y: auto;
-        }
-        
-        .rides-panel h3 {
-            margin-bottom: 12px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.1rem;
-        }
-        
-        .rides-filters {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .rides-filters select {
-            padding: 8px 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            outline: none;
-            background: white;
-        }
-        
-        .rides-filters select:focus {
-            border-color: #25D366;
-        }
-        
-        .ride-list {
-            display: grid;
-            gap: 10px;
-        }
-        
-        .ride-item {
-            background: #f8f9fa;
-            padding: 14px;
-            border-radius: 10px;
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .ride-item:hover {
-            border-color: #25D366;
-            background: #e8f5e9;
-        }
-        
-        .ride-item.selected {
-            border-color: #25D366;
-            background: #e8f5e9;
-        }
-        
-        .ride-route {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .ride-meta {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        
-        .ride-price-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .price-tag {
-            background: #25D366;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-        
         /* Quick Routes */
         .section-title {
             font-size: 0.85rem;
@@ -961,86 +287,11 @@
             justify-content: space-between;
         }
         
-        .section-title button {
-            background: none;
-            border: none;
-            color: #25D366;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        
-        .section-title button:hover {
-            text-decoration: underline;
-        }
-        
         .quick-route-list {
             display: flex;
             flex-direction: column;
             gap: 6px;
             margin-bottom: 15px;
-        }
-        
-        .quick-route-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .quick-route-item:hover {
-            background: #e8f5e9;
-        }
-        
-        .quick-route-item .icon {
-            font-size: 1rem;
-        }
-        
-        .quick-route-item .route-text {
-            flex: 1;
-            font-size: 0.85rem;
-            color: #333;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .quick-route-item .delete-btn {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 0.9rem;
-            padding: 2px 5px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .quick-route-item:hover .delete-btn {
-            opacity: 1;
-        }
-        
-        .quick-route-item .delete-btn:hover {
-            color: #c62828;
-        }
-        
-        .save-route-btn {
-            width: 100%;
-            padding: 10px;
-            background: white;
-            border: 2px dashed #25D366;
-            border-radius: 8px;
-            color: #25D366;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-        
-        .save-route-btn:hover {
-            background: #e8f5e9;
         }
         
         /* WhatsApp */
@@ -1136,6 +387,13 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        
+        /* Map */
+        #map {
+            height: 450px;
+            width: 100%;
+            border-radius: 0 0 15px 15px;
         }
         
         /* Responsive */
@@ -1629,6 +887,655 @@
         .booking-note strong {
             color: #e65100;
         }
+        
+        /* Container and Grid Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 15px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .left-column {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .rides-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .rides-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .rides-filters select {
+            flex: 1;
+            min-width: 100px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            background: white;
+        }
+        
+        .ride-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .ride-item {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .ride-item:hover {
+            border-color: #25D366;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ride-item.selected {
+            border-color: #25D366;
+            background: #e8f5e9;
+        }
+        
+        .ride-route {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        
+        .ride-meta {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .ride-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .price-tag {
+            background: #25D366;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Map Section */
+        .map-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .map-header h2 {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Controls */
+        .controls {
+            padding: 20px;
+        }
+        
+        .location-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .location-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .location-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .location-label.start {
+            color: #25D366;
+        }
+        
+        .location-label.dest {
+            color: #e74c3c;
+        }
+        
+        .my-location-btn, .swap-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: #f0f0f0;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .my-location-btn:hover, .swap-btn:hover {
+            background: #e0e0e0;
+            transform: scale(1.1);
+        }
+        
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+        
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 12px 12px 38px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+        
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+        
+        .autocomplete-dropdown.active {
+            display: block;
+        }
+        
+        .autocomplete-item {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+        
+        .autocomplete-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .autocomplete-item .main-text {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .autocomplete-item .sub-text {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-row select {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: white;
+            min-width: 100px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-offer {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+        }
+        
+        .btn-offer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+        }
+        
+        /* Route Info */
+        .route-info {
+            display: none;
+        }
+        
+        .route-info.active {
+            display: block;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .info-card label {
+            display: block;
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .info-card span {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        /* Role Toggle */
+        .role-toggle {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .role-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .role-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .role-btn.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        /* Pricing Card */
+        .pricing-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .pricing-card h4 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .pricing-card .price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #25D366;
+        }
+        
+        .pricing-card .price-detail {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        /* Profile Menu Items */
+        .profile-menu-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .profile-menu-items li {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .profile-menu-items li:last-child {
+            border-bottom: none;
+        }
+        
+        .profile-menu-items a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .profile-menu-items a:hover {
+            background: #f8f9fa;
+        }
+        
+        .profile-menu-items .logout-btn {
+            color: #c62828;
+        }
+        
+        .profile-menu-items .icon {
+            font-size: 1.1rem;
+        }
+        
+        /* =========================================
+           ADVERTISEMENT STYLES
+           ========================================= */
+        
+        /* Ad Container */
+        .ad-container {
+            margin: 10px 0;
+            padding: 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        /* Banner Ad Styles */
+        .ad-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 10px 0;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .ad-banner:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .ad-banner-320x50 {
+            height: 50px;
+            width: 100%;
+            max-width: 320px;
+        }
+        
+        .ad-banner-300x250 {
+            height: 250px;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        
+        .ad-banner-728x90 {
+            height: 90px;
+            width: 100%;
+            max-width: 728px;
+            margin: 0 auto;
+        }
+        
+        .ad-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .ad-banner a {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            text-decoration: none;
+        }
+        
+        /* Fallback Ad Content */
+        .ad-fallback {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            margin: 10px 0;
+        }
+        
+        .ad-fallback-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .ad-fallback-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .ad-fallback-description {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        
+        .ad-fallback-cta {
+            display: inline-block;
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .ad-fallback-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .ad-fallback-contact {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .ad-fallback-contact a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .ad-fallback-contact a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Native Ad Styles */
+        .ad-native {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin: 10px 0;
+        }
+        
+        .ad-native-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .ad-native-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ad-native-sponsored {
+            font-size: 0.7rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .ad-native-headline {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        
+        .ad-native-description {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            flex: 1;
+        }
+        
+        .ad-native-cta {
+            display: inline-block;
+            padding: 6px 14px;
+            background: #667eea;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            align-self: flex-start;
+        }
+        
+        /* Ad Label */
+        .ad-label {
+            font-size: 0.65rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            padding: 4px 0;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .ad-fallback {
+                padding: 15px;
+            }
+            
+            .ad-fallback-title {
+                font-size: 1rem;
+            }
+            
+            .ad-native {
+                flex-direction: column;
+            }
+            
+            .ad-native-image {
+                width: 100%;
+                height: 120px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1668,8 +1575,8 @@
     <!-- Welcome Banner -->
     <div class="welcome-banner" id="welcomeBanner" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);">
         <div style="max-width: 1400px; margin: 0 auto; text-align: center;">
-            <h2 style="font-size: 1.5rem; color: white; margin-bottom: 5px; font-weight: 700;">👋 Welcome back! <span id="welcomeUserName">User</span> 😊</h2>
-            <p style="color: rgba(255,255,255,0.95); font-size: 1rem; font-weight: 500;">Book your Community Car Rides Now</p>
+            <h2 style="font-size: 1.5rem; color: white; margin-bottom: 5px; font-weight: 700;" id="welcomeHeading">👋 Welcome back! <span id="welcomeUserName">User</span> 😊</h2>
+            <p style="color: rgba(255,255,255,0.95); font-size: 1rem; font-weight: 500;" id="welcomeSubtext">Book your Community Car Rides Now</p>
         </div>
     </div>
     
@@ -1683,6 +1590,13 @@
     <div class="container">
         <div class="main-grid">
             <div class="left-column">
+    <!-- AD PLACEMENT 1: In-Feed Top Banner Ad (ABOVE Map) -->
+                <div id="ad-placement-top" class="ad-container" data-placement="in-feed-top-banner">
+                    <div class="ad-loading" style="padding: 20px; text-align: center; color: #999;">
+                        <span style="font-size: 0.8rem;">Loading advertisement...</span>
+                    </div>
+                </div>
+                
                 <div class="map-section">
                     <div class="map-header">
                         <h2>🗺️ Your Maps</h2>
@@ -1714,17 +1628,42 @@
                             </div>
                         </div>
                         
-                        <div class="btn-row">
-                            <select id="seats">
-                                <option value="1">1 Seat</option>
-                                <option value="2">2 Seats</option>
-                                <option value="3">3 Seats</option>
-                                <option value="4">4 Seats</option>
-                            </select>
+                        <div class="btn-row" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+                            <!-- Adults Seats -->
+                            <div style="flex: 1; min-width: 120px;">
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #333; margin-bottom: 5px;">👤 Adults</label>
+                                <select id="adultSeats" onchange="updateSeatSelection()" style="width: 100%; padding: 12px; border: 2px solid #667eea; border-radius: 8px; font-size: 0.95rem; background: white;">
+                                    <option value="1" selected>1 Adult</option>
+                                    <option value="2">2 Adults</option>
+                                    <option value="3">3 Adults</option>
+                                    <option value="4">4 Adults</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Kids Seats -->
+                            <div style="flex: 1; min-width: 120px;">
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #333; margin-bottom: 5px;">👶 Kids</label>
+                                <select id="kidsSeats" onchange="updateSeatSelection()" style="width: 100%; padding: 12px; border: 2px solid #25D366; border-radius: 8px; font-size: 0.95rem; background: white;">
+                                    <option value="0" selected>No Kids</option>
+                                    <option value="1">1 Kid</option>
+                                    <option value="2">2 Kids</option>
+                                    <option value="3">3 Kids</option>
+                                    <option value="4">4 Kids</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Child Seat Type (shown when kids > 0) -->
+                            <div id="childSeatTypeDiv" style="flex: 1; min-width: 150px; display: none;">
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #333; margin-bottom: 5px;">🧸 Child Seat</label>
+                                <select id="childSeatType" style="width: 100%; padding: 12px; border: 2px solid #ff9800; border-radius: 8px; font-size: 0.95rem; background: white;">
+                                    <option value="none">No Special Seat</option>
+                                    <option value="infant">Infant Car Seat</option>
+                                    <option value="booster">Booster Seat</option>
+                                </select>
+                            </div>
+                            
                             <button class="btn btn-primary" onclick="calculateRoute()">🚗 Calculate Price</button>
-                            <button class="btn btn-secondary" onclick="handleFindRides()">🔍 Find Rides</button>
                             <button class="btn btn-offer" id="offerRideBtn" onclick="handleOfferRide()" style="display: none;">🚙 Offer Ride</button>
-                            <button class="btn btn-share" id="shareBtn" onclick="shareToWhatsApp()" style="background: #25D366; color: white;">📤 Share</button>
                         </div>
                         
                         <div class="loading" id="loading">
@@ -1757,18 +1696,8 @@
             </div>
             
               <div class="sidebar">
-                  <div class="info-panel">
-                      <div class="section-title">
-                          <span>⭐ Saved Routes</span>
-                          <button onclick="showSaveRouteModal()" id="addRouteBtn" style="display: none;">+ Add</button>
-                      </div>
-                      <div id="savedRoutesList" class="quick-route-list">
-                          <p style="color: #999; font-size: 0.8rem; text-align: center; padding: 8px;">No saved routes</p>
-                      </div>
-                  </div>
-                    
                     <div id="loggedOutContent" class="login-prompt" style="display: none;">
-                        <p>Login to save your searches and routes</p>
+                        <p>Login to access more features</p>
                         <a href="/register" class="btn btn-primary">🔐 Register</a>
                     </div>
                     
@@ -1777,58 +1706,46 @@
                         <h4>Estimated Price</h4>
                         <div class="price" id="mainPrice">$0.00</div>
                         <div class="price-detail" id="priceBreakdown">Based on distance</div>
-                        
-                        <div class="tip-section">
-                            <label>💵 Add a tip for the driver</label>
-                            <div class="tip-options">
-                                <button class="tip-btn" onclick="setTip(0)">$0</button>
-                                <button class="tip-btn" onclick="setTip(2)">$2</button>
-                                <button class="tip-btn" onclick="setTip(5)">$5</button>
-                                <button class="tip-btn" onclick="setTip(10)">$10</button>
-                            </div>
-                            <div class="tip-custom">
-                                <input type="number" id="customTip" placeholder="Custom amount" min="0" step="1">
-                                <button class="btn btn-primary" style="padding: 6px 12px;" onclick="applyCustomTip()">Add</button>
-                            </div>
-                        </div>
                     </div>
                     
-                    <button class="save-route-btn" id="saveRouteBtn" onclick="saveCurrentRoute()" style="display: none; margin-top: 10px;">
-                        ⭐ Save This Route
-                    </button>
-                    
+                    <!-- AD PLACEMENT 2: In-Feed Middle Banner Ad (AFTER Pricing Card) -->
+                    <div id="ad-placement-middle" class="ad-container" data-placement="in-feed-middle-banner" style="margin-top: 10px;">
+                        <div class="ad-loading" style="padding: 20px; text-align: center; color: #999;">
+                            <span style="font-size: 0.8rem;">Loading advertisement...</span>
+                        </div>
+                    </div>
+
                     <div class="whatsapp-section">
-                        <h4>📱 Send to WhatsApp</h4>
-                        <input type="tel" id="phoneNumber" class="whatsapp-input" placeholder="Enter phone number (+1...)">
-                        <button class="whatsapp-btn" onclick="sendToWhatsApp()">
-                            📲 Send Ride Details
+                        <button class="whatsapp-btn" onclick="findRides()">
+                            🔍 Find Rides
                         </button>
+                    </div>
+                    
+                    <!-- Rides Panel -->
+                    <div class="rides-panel" style="margin-top: 15px;">
+                        <h3>🚗 Available Driver Rides</h3>
+                        <div class="rides-filters">
+                            <select id="filterLocation" onchange="filterRides()">
+                                <option value="">All Locations</option>
+                            </select>
+                            <select id="filterPrice" onchange="filterRides()">
+                                <option value="">Price: Any</option>
+                                <option value="low">Price: Low to High</option>
+                                <option value="high">Price: High to Low</option>
+                            </select>
+                            <select id="filterState" onchange="filterRides()">
+                                <option value="">All States</option>
+                            </select>
+                        </div>
+                        <div class="ride-list" id="ridesList">
+                            <p style="color: #666; text-align: center; padding: 20px; font-size: 0.9rem;">
+                                Enter locations and click "Find Rides" to see available rides
+                            </p>
+                        </div>
                     </div>
                     
                     <div class="alert alert-success" id="successAlert"></div>
                     <div class="alert alert-error" id="errorAlert"></div>
-                </div>
-                
-                <div class="rides-panel">
-                    <h3>🚗 Available Rides</h3>
-                    <div class="rides-filters">
-                        <select id="filterLocation" onchange="filterRides()">
-                            <option value="">All Locations</option>
-                        </select>
-                        <select id="filterPrice" onchange="filterRides()">
-                            <option value="">Price: Any</option>
-                            <option value="low">Price: Low to High</option>
-                            <option value="high">Price: High to Low</option>
-                        </select>
-                        <select id="filterState" onchange="filterRides()">
-                            <option value="">All States</option>
-                        </select>
-                    </div>
-                    <div class="ride-list" id="ridesList">
-                        <p style="color: #666; text-align: center; padding: 20px; font-size: 0.9rem;">
-                            Click "Find Rides" to see available rides
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1860,8 +1777,9 @@
     </div>
 
     <script>
-        // Initialize the map
-        const map = L.map('map').setView([40.7128, -74.0060], 10);
+
+        // Initialize the map FIRST before using it
+        const map = L.map('map').setView([42.3601, -71.0589], 12); // Default to Boston
         
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
@@ -1873,7 +1791,7 @@
         let routeLine = null;
         let currentRoute = null;
         let selectedRide = null;
-        let currentTip = 0;
+        
         let allRides = [];
         
         // Auth state
@@ -1881,6 +1799,10 @@
         let userPhone = localStorage.getItem('pdrides_phone') || null;
         let userName = localStorage.getItem('pdrides_name') || 'User';
         let userMode = localStorage.getItem('pdrides_mode') || 'passenger';
+        
+        // Get user's driver status from registration - this determines if they can toggle
+        let isDriver = localStorage.getItem('pdrides_isDriver') === 'true';
+        let userRoles = JSON.parse(localStorage.getItem('pdrides_roles') || '{"passenger":true,"driver":false}');
         
         // Debounce timer for autocomplete - faster response for dynamic suggestions
         let autocompleteTimer = null;
@@ -1915,12 +1837,15 @@
         // Initialize
         window.onload = () => {
             initUserInterface();
-            loadRecentSearches();
-            loadFavoriteRoutes();
             checkUrlParams();
             
-            // NEW: Auto-handle location for first-time users or returning users
-            handleInitialLocation();
+            // Initialize ads system
+            if (window.adsSystem) {
+                window.adsSystem.init();
+            }
+            
+            // Get user location
+            getMyLocation();
             
             // Listen for profile name updates from settings page
             window.addEventListener('profileNameUpdated', function(e) {
@@ -1937,44 +1862,6 @@
                 }
             });
         };
-        
-        // NEW: Handle initial location based on user login status and history
-        async function handleInitialLocation() {
-            // Check if user has recent searches in localStorage or server
-            const hasRecentSearches = window.recentSearchesData && window.recentSearchesData.length > 0;
-            
-            if (authToken && userPhone) {
-                // User is logged in - fetch their recent searches from server
-                try {
-                    const response = await fetch(`/api/user/recent-searches?phoneNumber=${userPhone}&token=${authToken}`);
-                    const data = await response.json();
-                    
-                    if (data.success && data.recentSearches && data.recentSearches.length > 0) {
-                        // User has history - load the most recent route
-                        const lastSearch = data.recentSearches[0];
-                        document.getElementById('pickup').value = lastSearch.pickup;
-                        document.getElementById('destination').value = lastSearch.destination;
-                        updateRouteTitle();
-                        
-                        // Calculate route with the saved locations
-                        calculateRoute();
-                        console.log('Loaded previous route from history:', lastSearch.pickup, '->', lastSearch.destination);
-                    } else {
-                        // First-time user (no history) - auto-get device location for start point
-                        console.log('First-time user - getting device location for pickup');
-                        getMyLocation();
-                    }
-                } catch (error) {
-                    console.error('Error loading recent searches:', error);
-                    // On error, try to get device location
-                    getMyLocation();
-                }
-            } else {
-                // Not logged in - still try to get device location for better UX
-                console.log('User not logged in - getting device location');
-                getMyLocation();
-            }
-        }
         
         // Initialize UI based on auth state
         function initUserInterface() {
@@ -1994,14 +1881,66 @@
                 } else {
                     document.getElementById('profileAvatar').textContent = userName.charAt(0).toUpperCase();
                 }
+                
+                // Set mode based on user's registration - driver status is now enforced
+                // If user is registered as driver, they start in driver mode
+                // If user is registered as passenger only, they stay in passenger mode
+                if (isDriver) {
+                    userMode = 'driver';
+                } else {
+                    userMode = 'passenger';
+                }
+                localStorage.setItem('pdrides_mode', userMode);
             } else {
                 document.getElementById('loggedInContent').style.display = 'none';
                 document.getElementById('loggedOutContent').style.display = 'block';
                 document.getElementById('profileName').textContent = 'Login';
+                // Non-logged in users are in passenger mode
+                userMode = 'passenger';
             }
             
-            // Set user mode
+            // Set user mode - this will also handle disabling toggle based on registration
             setUserMode(userMode, false);
+            
+            // Update toggle visibility based on user roles
+            updateRoleToggleVisibility();
+        }
+        
+        // Update role toggle visibility based on user registration
+        function updateRoleToggleVisibility() {
+            const passengerBtn = document.getElementById('passengerModeBtn');
+            const driverBtn = document.getElementById('driverModeBtn');
+            
+            // If user is logged in and registered, show appropriate toggle
+            if (authToken && userPhone) {
+                // Both passenger and driver roles available - show both buttons
+                if (userRoles && userRoles.passenger && userRoles.driver) {
+                    passengerBtn.style.display = 'block';
+                    driverBtn.style.display = 'block';
+                }
+                // Only driver registered - show only driver button
+                else if (userRoles && userRoles.driver && !userRoles.passenger) {
+                    passengerBtn.style.display = 'none';
+                    driverBtn.style.display = 'block';
+                    driverBtn.classList.add('active');
+                    driverBtn.disabled = true;
+                    driverBtn.title = 'You are registered as a driver';
+                }
+                // Only passenger registered (default) - show only passenger button
+                else {
+                    passengerBtn.style.display = 'block';
+                    driverBtn.style.display = 'none';
+                    passengerBtn.classList.add('active');
+                    passengerBtn.disabled = true;
+                    passengerBtn.title = 'You are registered as a passenger';
+                }
+            } else {
+                // Not logged in - show both buttons as passenger mode
+                passengerBtn.style.display = 'block';
+                driverBtn.style.display = 'block';
+                passengerBtn.disabled = false;
+                driverBtn.disabled = false;
+            }
         }
         
 // Set user mode (passenger/driver)
@@ -2029,11 +1968,17 @@
                 header.classList.add('driver-mode');
                 // Update welcome banner to driver colors (green)
                 welcomeBanner.style.background = 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)';
+                // Update welcome text for driver mode
+                document.getElementById('welcomeHeading').innerHTML = '🚙 Welcome Driver! <span id="welcomeUserName">' + userName + '</span>';
+                document.getElementById('welcomeSubtext').textContent = 'Schedule Your Car Rides';
                 showAlert('success', '🚙 You are now in Driver mode. You can offer rides!');
             } else {
                 header.classList.remove('driver-mode');
                 // Update welcome banner to passenger colors (purple)
                 welcomeBanner.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                // Update welcome text for passenger mode
+                document.getElementById('welcomeHeading').innerHTML = '👋 Welcome Passenger! <span id="welcomeUserName">' + userName + '</span>';
+                document.getElementById('welcomeSubtext').textContent = 'Book Your Car Rides';
                 showAlert('success', '👤 You are now in Passenger mode. You can find rides!');
             }
             
@@ -2399,22 +2344,30 @@ if (!authToken || !userPhone) {
         
         // Update route title
         function updateRouteTitle() {
-            const pickup = document.getElementById('pickup').value;
-            const destination = document.getElementById('destination').value;
-            const title = document.getElementById('routeTitle');
-            
-            if (pickup && destination) {
-                const pickupShort = pickup.split(',')[0];
-                const destShort = destination.split(',')[0];
-                title.innerHTML = `<span class="location start-loc">📍 ${pickupShort}</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 ${destShort}</span>`;
-            } else if (pickup) {
-                const pickupShort = pickup.split(',')[0];
-                title.innerHTML = `<span class="location start-loc">📍 ${pickupShort}</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 Enter destination</span>`;
-            } else if (destination) {
-                const destShort = destination.split(',')[0];
-                title.innerHTML = `<span class="location start-loc">📍 Enter start location</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 ${destShort}</span>`;
-            } else {
-                title.innerHTML = `<span class="location start-loc">📍 Enter start location</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 Enter destination</span>`;
+            // This function is kept for future use when routeTitle element is added
+            // Currently not used but kept for potential future features
+            try {
+                const pickup = document.getElementById('pickup').value;
+                const destination = document.getElementById('destination').value;
+                const title = document.getElementById('routeTitle');
+                
+                if (!title) return; // Element doesn't exist, skip
+                
+                if (pickup && destination) {
+                    const pickupShort = pickup.split(',')[0];
+                    const destShort = destination.split(',')[0];
+                    title.innerHTML = `<span class="location start-loc">📍 ${pickupShort}</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 ${destShort}</span>`;
+                } else if (pickup) {
+                    const pickupShort = pickup.split(',')[0];
+                    title.innerHTML = `<span class="location start-loc">📍 ${pickupShort}</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 Enter destination</span>`;
+                } else if (destination) {
+                    const destShort = destination.split(',')[0];
+                    title.innerHTML = `<span class="location start-loc">📍 Enter start location</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 ${destShort}</span>`;
+                } else {
+                    title.innerHTML = `<span class="location start-loc">📍 Enter start location</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 Enter destination</span>`;
+                }
+            } catch (e) {
+                // Silently ignore if element doesn't exist
             }
         }
         
@@ -2581,14 +2534,12 @@ if (!authToken || !userPhone) {
             );
         }
         
-        // Clear form
+// Clear form
         function clearForm() {
             document.getElementById('pickup').value = '';
             document.getElementById('destination').value = '';
             document.getElementById('routeInfo').classList.remove('active');
             document.getElementById('pricingCard').style.display = 'none';
-            document.getElementById('saveRouteBtn').style.display = 'none';
-            currentTip = 0;
             updateRouteTitle();
             
             if (pickupMarker) map.removeLayer(pickupMarker);
@@ -2609,11 +2560,52 @@ if (!authToken || !userPhone) {
             setTimeout(() => alert.classList.remove('active'), 5000);
         }
         
+        // Update seat selection - show/hide child seat type based on kids selection
+        function updateSeatSelection() {
+            const kidsSeats = document.getElementById('kidsSeats');
+            const childSeatTypeDiv = document.getElementById('childSeatTypeDiv');
+            
+            if (kidsSeats && childSeatTypeDiv) {
+                if (parseInt(kidsSeats.value) > 0) {
+                    childSeatTypeDiv.style.display = 'block';
+                } else {
+                    childSeatTypeDiv.style.display = 'none';
+                }
+            }
+        }
+        
+        // Get total seats (adults + kids)
+        function getTotalSeats() {
+            const adults = parseInt(document.getElementById('adultSeats')?.value || 1);
+            const kids = parseInt(document.getElementById('kidsSeats')?.value || 0);
+            return adults + kids;
+        }
+        
+        // Get seat breakdown for display
+        function getSeatBreakdown() {
+            const adults = parseInt(document.getElementById('adultSeats')?.value || 1);
+            const kids = parseInt(document.getElementById('kidsSeats')?.value || 0);
+            const childSeatType = document.getElementById('childSeatType')?.value || 'none';
+            
+            return {
+                adults,
+                kids,
+                childSeatType,
+                total: adults + kids
+            };
+        }
+        
         // Calculate route
         async function calculateRoute() {
             const pickup = document.getElementById('pickup').value;
             const destination = document.getElementById('destination').value;
-            const seats = document.getElementById('seats').value;
+            
+            // Get seat selection using the new functions
+            const seatInfo = getSeatBreakdown();
+            const totalSeats = seatInfo.total;
+            const adults = seatInfo.adults;
+            const kids = seatInfo.kids;
+            const childSeatType = seatInfo.childSeatType;
             
             if (!pickup || !destination) {
                 showAlert('error', 'Please enter both pickup and destination locations');
@@ -2629,7 +2621,8 @@ if (!authToken || !userPhone) {
             if (routeLine) map.removeLayer(routeLine);
             
             try {
-                const response = await fetch(`/api/route?pickup=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(destination)}&seats=${seats}`);
+                // Call API with adults and children parameters
+                const response = await fetch(`/api/route?pickup=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(destination)}&seats=${totalSeats}&adults=${adults}&children=${kids}&childSeatType=${childSeatType}`);
                 const data = await response.json();
                 
                 if (!data.success) {
@@ -2673,22 +2666,31 @@ if (!authToken || !userPhone) {
                     map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
                 }
                 
-                // Calculate price with tip
-                const basePrice = data.price;
-                const totalPrice = basePrice + currentTip;
+                // Calculate price with adult/kids breakdown
+                const adultPrice = data.pricePerAdult || data.pricePerSeat;
+                const kidPrice = data.pricePerChild || (data.pricePerSeat * 0.5); // 50% discount for kids by default
+                const basePrice = data.totalPrice || (adultPrice * adults + kidPrice * kids);
+                
+                // Build price breakdown text
+                let priceBreakdownText = '';
+                if (kids > 0) {
+                    priceBreakdownText = `👤 ${adults} Adult${adults > 1 ? 's' : ''} @ $${adultPrice.toFixed(2)} = $${(adultPrice * adults).toFixed(2)}`;
+                    priceBreakdownText += `\n👶 ${kids} Kid${kids > 1 ? 's' : ''} @ $${kidPrice.toFixed(2)} = $${(kidPrice * kids).toFixed(2)}`;
+                    priceBreakdownText += `\n📍 ${data.distanceFormatted}`;
+                } else {
+                    priceBreakdownText = `$${adultPrice.toFixed(2)} × ${totalSeats} seat${totalSeats > 1 ? 's' : ''} • ${data.distanceFormatted}`;
+                }
                 
                 // Update UI with 2 decimal places
                 document.getElementById('distance').textContent = data.distanceFormatted;
                 document.getElementById('duration').textContent = data.durationFormatted;
-                document.getElementById('pricePerSeat').textContent = `$${data.pricePerSeat.toFixed(2)}`;
-                document.getElementById('totalPrice').textContent = `$${totalPrice.toFixed(2)}`;
+                document.getElementById('pricePerSeat').textContent = `$${adultPrice.toFixed(2)}`;
+                document.getElementById('totalPrice').textContent = `$${basePrice.toFixed(2)}`;
                 document.getElementById('routeInfo').classList.add('active');
                 
-                document.getElementById('mainPrice').textContent = `$${totalPrice.toFixed(2)}`;
-                document.getElementById('priceBreakdown').textContent = `$${data.pricePerSeat.toFixed(2)} × ${seats} seat${seats > 1 ? 's' : ''} • ${data.distanceFormatted}${currentTip > 0 ? ` • +$${currentTip.toFixed(2)} tip` : ''}`;
+                document.getElementById('mainPrice').textContent = `$${basePrice.toFixed(2)}`;
+                document.getElementById('priceBreakdown').textContent = priceBreakdownText;
                 document.getElementById('pricingCard').style.display = 'block';
-                
-                document.getElementById('saveRouteBtn').style.display = 'block';
                 
                 pickupMarker.openPopup();
                 
@@ -2721,36 +2723,24 @@ if (!authToken || !userPhone) {
             }
         }
         
-        // Set tip amount
-        function setTip(amount) {
-            currentTip = amount;
-            document.querySelectorAll('.tip-btn').forEach(btn => {
-                btn.classList.toggle('active', parseInt(btn.textContent.replace('$', '')) === amount);
-            });
-            
-            if (currentRoute) {
-                const basePrice = currentRoute.price;
-                const totalPrice = basePrice + currentTip;
-                const seats = document.getElementById('seats').value;
-                
-                document.getElementById('mainPrice').textContent = `$${totalPrice.toFixed(2)}`;
-                document.getElementById('priceBreakdown').textContent = `$${currentRoute.pricePerSeat.toFixed(2)} × ${seats} seat${seats > 1 ? 's' : ''} • ${currentRoute.distanceFormatted}${currentTip > 0 ? ` • +$${currentTip.toFixed(2)} tip` : ''}`;
-            }
-        }
-        
-        // Apply custom tip
-        function applyCustomTip() {
-            const customTip = parseFloat(document.getElementById('customTip').value) || 0;
-            setTip(customTip);
-        }
-        
-        // Find rides
+        // Find rides - searches for available rides matching the route
         async function findRides() {
             const pickup = document.getElementById('pickup').value;
             const destination = document.getElementById('destination').value;
-            const seats = document.getElementById('seats').value;
+            const seats = getTotalSeats(); // Use the new function to get total seats
+            
+            if (!pickup || !destination) {
+                showAlert('error', 'Please enter both pickup and destination locations');
+                return;
+            }
             
             document.getElementById('loading').classList.add('active');
+            document.getElementById('routeInfo').classList.remove('active');
+            document.getElementById('pricingCard').style.display = 'none';
+            
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            if (destinationMarker) map.removeLayer(destinationMarker);
+            if (routeLine) map.removeLayer(routeLine);
             
             try {
                 const response = await fetch(`/api/rides?pickup=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(destination)}&seats=${seats}`);
@@ -2758,7 +2748,7 @@ if (!authToken || !userPhone) {
                 
                 const ridesList = document.getElementById('ridesList');
                 
-                if (!data.success || data.rides.length === 0) {
+                if (!data.success || !data.rides || data.rides.length === 0) {
                     ridesList.innerHTML = `
                         <div style="text-align: center; padding: 30px; color: #666;">
                             <p>😕 No rides found</p>
@@ -2913,8 +2903,14 @@ const destLng = ride.destLng || -74.006 + (index * 0.01);
             modalHeader.classList.remove('confirmed');
             modalHeader.innerHTML = '<h2>🎫 Book This Ride</h2>';
             
-            const seats = document.getElementById('seats').value;
+            const seats = getTotalSeats(); // Use the new function to get total seats
+            const seatInfo = getSeatBreakdown();
             const totalPrice = (ride.contribution || 0) * parseInt(seats);
+            
+            // Calculate price breakdown
+            const pricePerSeat = ride.contribution || 0;
+            const adultPrice = pricePerSeat;
+            const kidPrice = pricePerSeat * 0.5;
             
             modalBody.innerHTML = `
                 <div class="booking-driver-info">
@@ -2940,6 +2936,22 @@ const destLng = ride.destLng || -74.006 + (index * 0.01);
                 <div class="booking-price">
                     <div class="label">Total Price</div>
                     <div class="amount">$${totalPrice.toFixed(2)}</div>
+                    <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+                        $${pricePerSeat.toFixed(2)} per seat × ${seats} seat(s)
+                    </div>
+                </div>
+                
+                <!-- Share Section -->
+                <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                    <button class="booking-btn-cancel" style="flex: 1; padding: 10px; font-size: 0.85rem;" onclick="shareRideDetails('${ride._id}', 'whatsapp')">
+                        📱 Share
+                    </button>
+                    <button class="booking-btn-cancel" style="flex: 1; padding: 10px; font-size: 0.85rem;" onclick="shareRideDetails('${ride._id}', 'telegram')">
+                        ✈️ Telegram
+                    </button>
+                    <button class="booking-btn-cancel" style="flex: 1; padding: 10px; font-size: 0.85rem;" onclick="copyRideLink('${ride._id}')">
+                        🔗 Copy Link
+                    </button>
                 </div>
                 
                 <div class="booking-question">
@@ -2960,6 +2972,61 @@ const destLng = ride.destLng || -74.006 + (index * 0.01);
             modal.classList.add('active');
         }
         
+        // Share ride details to WhatsApp/Telegram
+        async function shareRideDetails(rideId, platform) {
+            const ride = allRides.find(r => r._id === rideId);
+            if (!ride) return;
+            
+            const seats = getTotalSeats();
+            const totalPrice = (ride.contribution || 0) * parseInt(seats);
+            
+            // Build detailed fare breakdown message
+            const fareDetails = `
+🧾 *Ride Fare Breakdown*
+
+📍 From: ${ride.pickupLocation}
+🏁 To: ${ride.destination}
+📅 Date: ${new Date(ride.date).toLocaleDateString()}
+⏰ Time: ${ride.time}
+
+💰 *Price Details:*
+• Price per seat: $${ride.contribution.toFixed(2)}
+• Number of seats: ${seats}
+• Subtotal: $${totalPrice.toFixed(2)}
+
+👤 Driver: ${ride.driverName || 'Anonymous'}
+📱 Contact: ${ride.driverPhone || 'Via App'}
+
+🔗 Book now: ${window.location.origin}/ride/${ride._id}
+            `.trim();
+            
+            if (platform === 'whatsapp') {
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fareDetails)}`;
+                window.open(whatsappUrl, '_blank');
+            } else if (platform === 'telegram') {
+                const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.origin + '/ride/' + rideId)}&text=${encodeURIComponent(fareDetails)}`;
+                window.open(telegramUrl, '_blank');
+            }
+        }
+        
+        // Copy ride link to clipboard
+        async function copyRideLink(rideId) {
+            const rideUrl = `${window.location.origin}/ride/${rideId}`;
+            try {
+                await navigator.clipboard.writeText(rideUrl);
+                showAlert('success', '🔗 Ride link copied to clipboard!');
+            } catch (err) {
+                // Fallback
+                const input = document.createElement('input');
+                input.value = rideUrl;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showAlert('success', '🔗 Ride link copied to clipboard!');
+            }
+        }
+        
         // Close booking modal
         function closeBookingModal() {
             const modal = document.getElementById('bookingModal');
@@ -2975,7 +3042,8 @@ const destLng = ride.destLng || -74.006 + (index * 0.01);
             }
             
             const ride = allRides[index];
-            const seats = document.getElementById('seats').value;
+            const seats = getTotalSeats(); // Use the new function to get total seats
+            const seatInfo = getSeatBreakdown();
             
             // Show loading state
             const modalBody = document.getElementById('bookingModalBody');
@@ -3040,271 +3108,6 @@ const destLng = ride.destLng || -74.006 + (index * 0.01);
             }
         }
         
-        // Save current route to recent searches
-        async function saveRecentSearchToServer() {
-            if (!currentRoute) return;
-            
-            try {
-                await fetch('/api/user/recent-searches', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    },
-                    body: JSON.stringify({
-                        pickup: currentRoute.pickup.address,
-                        destination: currentRoute.destination.address,
-                        pickupLat: currentRoute.pickup.lat,
-                        pickupLng: currentRoute.pickup.lon,
-                        destLat: currentRoute.destination.lat,
-                        destLng: currentRoute.destination.lon,
-                        pickupAddress: currentRoute.pickup.address,
-                        destAddress: currentRoute.destination.address
-                    })
-                });
-                loadRecentSearches();
-            } catch (error) {
-                console.error('Error saving search:', error);
-            }
-        }
-        
-        // Load recent searches
-        async function loadRecentSearches() {
-            const container = document.getElementById('recentSearches');
-            
-            if (!authToken || !userPhone) {
-                container.innerHTML = '<p style="color: #999; font-size: 0.8rem; text-align: center; padding: 8px;">Login to save searches</p>';
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/api/user/recent-searches?phoneNumber=${userPhone}&token=${authToken}`);
-                const data = await response.json();
-                
-                if (data.success && data.recentSearches && data.recentSearches.length > 0) {
-                    container.innerHTML = data.recentSearches.slice(0, 5).map((search, i) => `
-                        <div class="quick-route-item" onclick="useRecentSearch(${i})">
-                            <span class="icon">🕐</span>
-                            <span class="route-text">${search.pickup} → ${search.destination}</span>
-                        </div>
-                    `).join('');
-                    window.recentSearchesData = data.recentSearches;
-                } else {
-                    container.innerHTML = '<p style="color: #999; font-size: 0.8rem; text-align: center; padding: 8px;">No recent searches</p>';
-                }
-            } catch (error) {
-                console.error('Error loading recent searches:', error);
-            }
-        }
-        
-        // Use recent search
-        function useRecentSearch(index) {
-            const search = window.recentSearchesData[index];
-            if (search) {
-                document.getElementById('pickup').value = search.pickup;
-                document.getElementById('destination').value = search.destination;
-                updateRouteTitle();
-                calculateRoute();
-            }
-        }
-        
-        // Clear recent searches
-        async function clearRecentSearches() {
-            if (!authToken || !userPhone) return;
-            
-            try {
-                await fetch('/api/user/recent-searches', {
-                    method: 'DELETE',
-                    headers: {
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    }
-                });
-                loadRecentSearches();
-                showAlert('success', 'Recent searches cleared');
-            } catch (error) {
-                console.error('Error clearing searches:', error);
-            }
-        }
-        
-        // Load favorite routes
-        async function loadFavoriteRoutes() {
-            const container = document.getElementById('savedRoutesList');
-            
-            if (!authToken || !userPhone) {
-                container.innerHTML = '<p style="color: #999; font-size: 0.8rem; text-align: center; padding: 8px;">Login to save routes</p>';
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/api/user/favorite-routes?phoneNumber=${userPhone}&token=${authToken}`);
-                const data = await response.json();
-                
-                if (data.success && data.favoriteRoutes && data.favoriteRoutes.length > 0) {
-                    container.innerHTML = data.favoriteRoutes.map((route, i) => `
-                        <div class="quick-route-item">
-                            <span class="icon">⭐</span>
-                            <span class="route-text" onclick="useFavoriteRoute(${i})">${route.name || (route.pickup + ' → ' + route.destination)}</span>
-                            <button class="rename-btn" onclick="renameFavoriteRoute('${route._id}', '${route.name || ''}')" title="Rename" style="background:none;border:none;cursor:pointer;font-size:0.9rem;padding:2px 5px;opacity:0;">✏️</button>
-                            <button class="delete-btn" onclick="deleteFavoriteRoute('${route._id}')" title="Delete" style="background:none;border:none;cursor:pointer;font-size:0.9rem;padding:2px 5px;opacity:0;color:#c62828;">✕</button>
-                        </div>
-                    `).join('');
-                    // Show buttons on hover
-                    container.querySelectorAll('.quick-route-item').forEach(item => {
-                        item.addEventListener('mouseenter', () => {
-                            item.querySelectorAll('.rename-btn, .delete-btn').forEach(btn => btn.style.opacity = '1');
-                        });
-                        item.addEventListener('mouseleave', () => {
-                            item.querySelectorAll('.rename-btn, .delete-btn').forEach(btn => btn.style.opacity = '0');
-                        });
-                    });
-                    window.favoriteRoutesData = data.favoriteRoutes;
-                } else {
-                    container.innerHTML = '<p style="color: #999; font-size: 0.8rem; text-align: center; padding: 8px;">No saved routes</p>';
-                }
-            } catch (error) {
-                console.error('Error loading favorites:', error);
-            }
-        }
-        
-        // Rename favorite route
-        async function renameFavoriteRoute(routeId, currentName) {
-            if (!authToken || !userPhone) {
-                showAlert('error', 'Please login to rename routes');
-                return;
-            }
-            
-            const newName = prompt('Enter a new name for this route:', currentName || '');
-            if (!newName || newName.trim() === '') {
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/api/user/favorite-routes/${routeId}?phoneNumber=${userPhone}&token=${authToken}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    },
-                    body: JSON.stringify({
-                        name: newName.trim()
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showAlert('success', 'Route renamed successfully!');
-                    loadFavoriteRoutes();
-                } else {
-                    showAlert('error', data.error || 'Failed to rename route');
-                }
-            } catch (error) {
-                console.error('Error renaming route:', error);
-                showAlert('error', 'Failed to rename route');
-            }
-        }
-        
-        // Use favorite route
-        function useFavoriteRoute(index) {
-            const route = window.favoriteRoutesData[index];
-            if (route) {
-                document.getElementById('pickup').value = route.pickup;
-                document.getElementById('destination').value = route.destination;
-                updateRouteTitle();
-                calculateRoute();
-            }
-        }
-        
-        // Delete favorite route
-        async function deleteFavoriteRoute(routeId) {
-            if (!authToken || !userPhone) return;
-            
-            try {
-                await fetch(`/api/user/favorite-routes/${routeId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    }
-                });
-                loadFavoriteRoutes();
-                showAlert('success', 'Route removed from favorites');
-            } catch (error) {
-                console.error('Error deleting favorite:', error);
-            }
-        }
-        
-        // Show save route modal
-        function showSaveRouteModal() {
-            if (!currentRoute) {
-                showAlert('error', 'Please calculate a route first');
-                return;
-            }
-            
-            if (!authToken || !userPhone) {
-window.location.href = '/register';
-                return;
-            }
-            
-            saveCurrentRoute();
-        }
-        
-        // Save current route
-        async function saveCurrentRoute() {
-            if (!currentRoute) return;
-            if (!authToken || !userPhone) {
-                showAlert('error', 'Please login to save routes');
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/user/favorite-routes', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    },
-                    body: JSON.stringify({
-                        name: `${currentRoute.pickup.address.split(',')[0]} → ${currentRoute.destination.address.split(',')[0]}`,
-                        pickup: currentRoute.pickup.address,
-                        destination: currentRoute.destination.address,
-                        pickupLat: currentRoute.pickup.lat,
-                        pickupLng: currentRoute.pickup.lon,
-                        destLat: currentRoute.destination.lat,
-                        destLng: currentRoute.destination.lon,
-                        pickupAddress: currentRoute.pickup.address,
-                        destAddress: currentRoute.destination.address
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showAlert('success', 'Route saved to favorites!');
-                    loadFavoriteRoutes();
-                } else {
-                    showAlert('error', data.error || 'Failed to save route');
-                }
-            } catch (error) {
-                console.error('Error saving route:', error);
-                showAlert('error', 'Failed to save route');
-            }
-        }
-        
-        // Show recent searches
-        function showRecentSearches() {
-            // Already visible
-        }
-        
-        // Show favorite routes
-        function showFavoriteRoutes() {
-            // Already visible
-        }
-        
         // Show profile settings
         function showProfileSettings() {
             document.getElementById('profileMenu').classList.remove('active');
@@ -3337,26 +3140,27 @@ window.location.href = '/register';
         
         // Send to WhatsApp
         async function sendToWhatsApp() {
-            const phoneNumber = document.getElementById('phoneNumber').value;
-            
-            if (!phoneNumber) {
-                showAlert('error', 'Please enter a phone number');
-                return;
-            }
-            
             if (!currentRoute) {
                 showAlert('error', 'Please calculate a route first');
                 return;
             }
+
+            // Ask for phone number to share
+            const sharePhone = prompt('Enter phone number to share ride on WhatsApp (+1...):', userPhone || '');
+
+            if (!sharePhone) {
+                showAlert('error', 'Please enter a phone number');
+                return;
+            }
             
-            const seats = document.getElementById('seats').value;
+            const seats = getTotalSeats();
             const data = {
-                phoneNumber: phoneNumber,
+                phoneNumber: sharePhone,
                 pickup: currentRoute.pickup.address,
                 destination: currentRoute.destination.address,
                 date: new Date().toLocaleDateString(),
                 time: new Date().toLocaleTimeString(),
-                price: (currentRoute.price + currentTip).toFixed(2),
+                price: (currentRoute.pricePerSeat || currentRoute.totalPrice / seats).toFixed(2),
                 seats: seats
             };
             
@@ -3380,7 +3184,7 @@ window.location.href = '/register';
             }
         }
         
-        // Logout
+// Logout
         function logout() {
             document.getElementById('profileMenu').classList.remove('active');
             localStorage.removeItem('pdrides_token');
@@ -3391,6 +3195,37 @@ window.location.href = '/register';
             userPhone = null;
             userName = null;
             window.location.href = '/';
+        }
+        
+        // Save recent search to server
+        async function saveRecentSearchToServer() {
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            
+            if (!pickup || !destination) {
+                return;
+            }
+            
+            try {
+                await fetch('/api/user/recent-searches', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'phoneNumber': userPhone,
+                        'token': authToken
+                    },
+                    body: JSON.stringify({
+                        pickup: pickup,
+                        destination: destination,
+                        pickupLat: currentRoute?.pickup?.lat,
+                        pickupLng: currentRoute?.pickup?.lng,
+                        destLat: currentRoute?.destination?.lat,
+                        destLng: currentRoute?.destination?.lng
+                    })
+                });
+            } catch (error) {
+                console.error('Error saving recent search:', error);
+            }
         }
         
         // Handle Find Rides button click - requires login

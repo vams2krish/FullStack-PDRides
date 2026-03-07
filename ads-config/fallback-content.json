@@ -1,0 +1,107 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2024-01-01",
+  "description": "Fallback Content Configuration - Shown when no geo-targeted ads are available",
+  "settings": {
+    "enabled": true,
+    "showOnEmptyAdSlots": true,
+    "allowUserDismiss": false,
+    "dismissTimeout": 0
+  },
+  "content": {
+    "title": "Promote Your Local Business",
+    "description": "Reach thousands of commuters in your area with targeted advertising",
+    "shortDescription": "Advertise your business to local commuters",
+    "ctaText": "Advertise With Us",
+    "ctaUrl": "/contact-us",
+    "secondaryCta": {
+      "text": "Learn More",
+      "url": "/advertising"
+    }
+  },
+  "contact": {
+    "email": "ads@pdrides.com",
+    "phone": "+1-555-PDR-ADS1",
+    "showEmail": true,
+    "showPhone": false
+  },
+  "styling": {
+    "backgroundColor": "#f8f9fa",
+    "backgroundGradient": "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+    "textColor": "#333333",
+    "accentColor": "#667eea",
+    "borderColor": "#dee2e6",
+    "borderRadius": "12px",
+    "shadow": "0 2px 8px rgba(0,0,0,0.08)"
+  },
+  "layout": {
+    "containerPadding": "20px",
+    "contentAlignment": "center",
+    "imagePosition": "top",
+    "showIcon": true,
+    "icon": "📢"
+  },
+  "adSlot": {
+    "in-feed-top-banner": {
+      "title": "Promote Your Local Business",
+      "description": "Reach local commuters in your area",
+      "compact": true,
+      "ctaText": "Advertise Here"
+    },
+    "in-feed-middle-banner": {
+      "title": "Promote Your Local Business",
+      "description": "Connect with thousands of daily commuters",
+      "compact": false,
+      "ctaText": "Get Started"
+    },
+    "interstitial-full": {
+      "title": "Advertise With PDRides",
+      "description": "Reach thousands of active commuters in your local area. Promote your business, event, or service.",
+      "compact": false,
+      "ctaText": "Contact Us"
+    },
+    "in-feed-native": {
+      "title": "Promote Your Business",
+      "description": "Reach local commuters",
+      "compact": true,
+      "ctaText": "Learn More"
+    }
+  },
+  "variations": [
+    {
+      "id": "default",
+      "title": "Promote Your Local Business",
+      "description": "Reach thousands of commuters in your area",
+      "ctaText": "Advertise With Us",
+      "icon": "📢"
+    },
+    {
+      "id": "food",
+      "title": "Promote Your Restaurant",
+      "description": "Get discovered by hungry commuters",
+      "ctaText": "List Your Restaurant",
+      "icon": "🍔"
+    },
+    {
+      "id": "service",
+      "title": "Promote Your Services",
+      "description": "Connect with people who need your services",
+      "ctaText": "Advertise Now",
+      "icon": "🔧"
+    },
+    {
+      "id": "event",
+      "title": "Promote Your Event",
+      "description": "Reach thousands of potential attendees",
+      "ctaText": "List Your Event",
+      "icon": "📅"
+    }
+  ],
+  "tracking": {
+    "trackImpressions": true,
+    "trackClicks": true,
+    "impressionCategory": "fallback_impression",
+    "clickCategory": "fallback_click"
+  }
+}
+

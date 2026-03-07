@@ -7,13 +7,30 @@ const router = express.Router();
 // Request OTP for login/registration
 router.post('/request-otp', async (req, res) => {
   try {
-    const { phoneNumber, role, driverData } = req.body;
+    const { phoneNumber, role, driverData, termsAccepted, privacyAccepted } = req.body;
     
     if (!phoneNumber) {
       return res.status(400).json({ 
         success: false, 
         error: 'Phone number is required' 
       });
+    }
+    
+    // Validate Terms of Service and Privacy Policy acceptance for registration
+    if (req.body.isRegistration) {
+      if (termsAccepted !== true) {
+        return res.status(400).json({
+          success: false,
+          error: 'You must agree to the Terms of Service to continue'
+        });
+      }
+      
+      if (privacyAccepted !== true) {
+        return res.status(400).json({
+          success: false,
+          error: 'You must agree to the Privacy Policy to continue'
+        });
+      }
     }
     
     // Validate phone number format
@@ -56,7 +73,7 @@ router.post('/request-otp', async (req, res) => {
 // Verify OTP and login/register
 router.post('/verify-otp', async (req, res) => {
   try {
-    const { phoneNumber, otpCode, name } = req.body;
+    const { phoneNumber, otpCode, name, role } = req.body;
     
     if (!phoneNumber || !otpCode) {
       return res.status(400).json({ 
@@ -64,6 +81,9 @@ router.post('/verify-otp', async (req, res) => {
         error: 'Phone number and OTP code are required' 
       });
     }
+    
+    // Get the login role (passenger or driver)
+    const loginRole = role || 'passenger';
     
     // Verify OTP
     const result = await verifyOTP(phoneNumber, otpCode);
@@ -81,14 +101,59 @@ router.post('/verify-otp', async (req, res) => {
       if (user) {
         user.name = name;
         user.onboardingComplete = true;
+        
+        // Set role based on login mode
+        if (loginRole === 'driver') {
+          user.roles = { passenger: true, driver: true };
+          // Initialize driverInfo if not exists
+          if (!user.driverInfo) {
+            user.driverInfo = {};
+          }
+          user.driverInfo.isDriver = true;
+        } else {
+          user.roles = { passenger: true, driver: false };
+        }
+        
         await user.save();
-        result.user.name = name;
-        result.user.onboardingComplete = true;
+        result.user = {
+          name: user.name,
+          onboardingComplete: user.onboardingComplete,
+          roles: user.roles,
+          driverInfo: user.driverInfo
+        };
       }
     }
     
     // Complete login and generate token
     const user = await User.findOne({ phoneNumber });
+    
+    // If user exists and logging in as driver, verify and set driver status
+    if (user && loginRole === 'driver') {
+      // Ensure driver role is enabled (for both new and existing users)
+      let needsSave = false;
+      if (!user.roles) {
+        user.roles = { passenger: true, driver: true };
+        needsSave = true;
+      } else if (!user.roles.driver) {
+        user.roles.driver = true;
+        needsSave = true;
+      }
+      
+      // Ensure driverInfo.isDriver is set
+      if (!user.driverInfo) {
+        user.driverInfo = { isDriver: true };
+        needsSave = true;
+      } else if (!user.driverInfo.isDriver) {
+        user.driverInfo.isDriver = true;
+        needsSave = true;
+      }
+      
+      if (needsSave) {
+        console.log('Setting driver role for user:', phoneNumber);
+        await user.save();
+      }
+    }
+    
     const loginResult = await completeLogin(user);
     
     res.json({

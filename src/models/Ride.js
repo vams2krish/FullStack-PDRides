@@ -121,6 +121,10 @@ const rideSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  },
   expiresAt: {
     type: Date,
     required: true,
@@ -192,3 +196,9 @@ rideSchema.statics.createRiderNotification = async function(phoneNumber, request
 };
 
 export default mongoose.model('Ride', rideSchema);
+
+// Auto-update updatedAt on save
+rideSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});

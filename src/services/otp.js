@@ -261,6 +261,9 @@ export async function completeLogin(user) {
   user.loginTokenExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
   await user.save();
   
+  // Check if user is registered as driver
+  const isDriver = user.driverInfo && user.driverInfo.isDriver === true;
+  
   return {
     token: sessionToken,
     expiresAt: user.loginTokenExpiry,
@@ -270,7 +273,10 @@ export async function completeLogin(user) {
       isVerified: user.isVerified,
       onboardingComplete: user.onboardingComplete,
       rating: user.rating,
-      rideCount: user.rideCount
+      rideCount: user.rideCount,
+      isDriver: isDriver,
+      roles: user.roles,
+      driverInfo: user.driverInfo
     }
   };
 }

@@ -2,12 +2,19 @@ import User from '../models/User.js';
 import Ride from '../models/Ride.js';
 import Conversation from '../models/Conversation.js';
 import { 
-  sendTextMessage, 
-  sendButtonMessage, 
-  sendListMessage,
-  sendTemplateMessage,
-  parseIncomingMessage 
+  sendTextMessage as waSendTextMessage, 
+  sendButtonMessage as waSendButtonMessage, 
+  sendListMessage as waSendListMessage,
+  sendTemplateMessage as waSendTemplateMessage,
+  parseIncomingMessage as parseWhatsAppMessage 
 } from './whatsapp.js';
+import {
+  sendTextMessage as tgSendTextMessage,
+  sendButtonMessage as tgSendButtonMessage,
+  editMessageText,
+  answerCallbackQuery,
+  parseIncomingMessage as parseTelegramMessage
+} from './telegram.js';
 import { 
   parseLocation, 
   calculateRoute, 
@@ -25,6 +32,43 @@ import {
   generateReceipt,
   TRIP_STATUS
 } from './rideTypes.js';
+
+// Platform abstraction layer
+const sendMessage = async (platform, chatId, text) => {
+  if (platform === 'telegram') {
+    return await tgSendTextMessage(chatId, text);
+  }
+  return await waSendTextMessage(chatId, text);
+};
+
+const sendButton = async (platform, chatId, text, buttons) => {
+  if (platform === 'telegram') {
+    return await tgSendButtonMessage(chatId, text, buttons);
+  }
+  return await waSendButtonMessage(chatId, text, buttons);
+};
+
+// Wrapper functions that use the abstraction (for backwards compatibility with existing code)
+const sendTextMessage = async (chatId, text) => {
+  return await waSendTextMessage(chatId, text);
+};
+
+const sendButtonMessage = async (chatId, text, buttons) => {
+  return await waSendButtonMessage(chatId, text, buttons);
+};
+
+const sendListMessage = async (chatId, text, sections) => {
+  return await waSendListMessage(chatId, text, sections);
+};
+
+// Telegram-specific send functions (to be used in Telegram handler)
+const tgSendMessage = async (chatId, text) => {
+  return await tgSendTextMessage(chatId, text);
+};
+
+const tgSendMessageButtons = async (chatId, text, buttons) => {
+  return await tgSendButtonMessage(chatId, text, buttons);
+};
 
 const MAX_RESULTS = parseInt(process.env.MAX_RIDE_RESULTS) || 5;
 
@@ -178,6 +222,40 @@ const showContactInfo = async (phoneNumber) => {
 };
 
 // ============================================
+// ONBOARDING FLOW - TELEGRAM SPECIFIC
+// ============================================
+
+const handleTelegramOnboarding = async (chatId, text, conversation) => {
+  if (conversation.state === 'onboarding_name') {
+    const name = text.trim();
+    if (name.length < 2) {
+      await tgSendMessageText(chatId, 'Please enter your name (at least 2 characters):');
+      return;
+    }
+    
+    // Update user name
+    await User.findOneAndUpdate(
+      { phoneNumber: chatId.toString() },
+      { name, onboardingComplete: true }
+    );
+    
+    await conversation.setState('idle');
+    
+    // Show welcome with features
+    await tgSendMessageText(chatId, 
+      `Nice to meet you, ${name}! 👋\n\nWelcome to PDRides! 🎉`
+    );
+    
+    // Show quick tour
+    await tgSendMessageText(chatId,
+      `*Here's how PDRides works:*\n\n🚗 *Offer Rides*\nShare your commute and earn for gas\n\n🔍 *Find Rides*\nConnect with neighbors going your way\n\n💰 *Save Money*\nSplit costs and reduce expenses\n\n🌍 *Help the Planet*\nLess cars = cleaner air!`
+    );
+    
+    await tgShowMainMenu(chatId);
+  }
+};
+
+// ============================================
 // ONBOARDING FLOW
 // ============================================
 
@@ -218,6 +296,844 @@ const handleOnboarding = async (phoneNumber, text, conversation) => {
     
     await showMainMenu(phoneNumber);
   }
+};
+
+// ============================================
+// TELEGRAM MESSAGE HANDLER
+// ============================================
+
+// Platform-specific send functions for Telegram
+const tgSendMessageText = async (chatId, text) => {
+  return await tgSendTextMessage(chatId, text);
+};
+
+const tgSendMessageButton = async (chatId, text, buttons) => {
+  return await tgSendButtonMessage(chatId, text, buttons);
+};
+
+// Telegram-specific main menu
+const tgShowMainMenu = async (chatId, customText = null) => {
+  const text = customText || `What would you like to do?`;
+  const buttons = [
+    { id: 'offer_ride', title: '🚗 Offer a Ride' },
+    { id: 'find_ride', title: '🔍 Find a Ride' },
+    { id: 'my_rides', title: '📋 My Rides' },
+    { id: 'help_menu', title: '❓ Help' }
+  ];
+  
+  await tgSendMessageButton(chatId, text, buttons);
+};
+
+// Telegram-specific help menu
+const tgShowHelpMenu = async (chatId) => {
+  const text = `❓ *How can I help?*\n\nChoose an option:`;
+  const buttons = [
+    { id: 'help_how_offer', title: '📤 Offer a Ride' },
+    { id: 'help_how_find', title: '🔍 Find a Ride' },
+    { id: 'help_rates', title: '💰 Pricing' },
+    { id: 'help_safety', title: '🛡️ Safety' },
+    { id: 'help_contact', title: '📞 Contact Us' },
+    { id: 'back_menu', title: '⬅️ Back to Menu' }
+  ];
+  
+  await tgSendMessageButton(chatId, text, buttons);
+};
+
+// Telegram: Handle incoming messages
+export const handleTelegramMessage = async (reqBody) => {
+  const messageData = parseTelegramMessage(reqBody);
+  
+  if (!messageData) {
+    console.log('No valid Telegram message in webhook');
+    return;
+  }
+  
+  const { chatId, messageId, text, data: callbackData, type } = messageData;
+  
+  // Handle callback query (button clicks)
+  if (type === 'callback' && callbackData) {
+    await answerCallbackQuery(messageData.callbackQueryId, 'Processing...');
+  }
+  
+  const inputText = callbackData || text || '';
+  
+  console.log(`Telegram message from ${chatId}: ${inputText}`);
+  
+  try {
+    // Find or create user (using chatId as identifier)
+    let user = await User.findOne({ phoneNumber: chatId.toString() });
+    if (!user) {
+      user = new User({ phoneNumber: chatId.toString() });
+      await user.save();
+    }
+    await user.updateLastActive();
+    
+    // Find or create conversation
+    let conversation = await Conversation.findOne({ phoneNumber: chatId.toString() });
+    if (!conversation) {
+      conversation = new Conversation({ phoneNumber: chatId.toString() });
+      await conversation.save();
+    }
+    
+    await conversation.addMessage('user', inputText);
+    
+    // Check if new user - start onboarding
+    if (!user.onboardingComplete && conversation.state === 'idle') {
+      await conversation.setState('onboarding_name');
+      await tgSendMessageText(chatId, 
+        `${WELCOME_MESSAGE}\n\nTo get started, what's your name?`
+      );
+      return;
+    }
+    
+    // Handle special commands
+    const lowerInput = inputText.toLowerCase().trim();
+    
+    // Quick commands - respond to "hi"
+    if (lowerInput === 'hi' || lowerInput === 'hello' || lowerInput === 'start' || lowerInput === 'menu') {
+      await conversation.reset();
+      await tgSendMessageText(chatId, WELCOME_MESSAGE);
+      await tgShowMainMenu(chatId);
+      return;
+    }
+    
+    if (lowerInput === 'bye' || lowerInput === 'goodbye' || lowerInput === 'good bye' || lowerInput === 'see you' || lowerInput === 'talk to you later') {
+      await conversation.reset();
+      await tgSendMessageText(chatId, 
+        `Thank you! Bye for now! 👋\n\nWe hope to see you again soon!\nHave a great day! 🌟`
+      );
+      return;
+    }
+    
+    if (lowerInput === 'help' || lowerInput === '?' || lowerInput === 'help menu') {
+      await tgShowMainMenu(chatId);
+      return;
+    }
+    
+    if (lowerInput === 'cancel' || lowerInput === 'stop') {
+      await conversation.reset();
+      await tgSendMessageText(chatId, 'Cancelled. What would you like to do?');
+      await tgShowMainMenu(chatId);
+      return;
+    }
+    
+    // Handle button/callback actions
+    if (callbackData) {
+      switch (callbackData) {
+        case 'offer_ride':
+          await tgStartOfferRide(chatId, conversation);
+          return;
+        case 'find_ride':
+          await tgStartFindRide(chatId, conversation);
+          return;
+        case 'my_rides':
+          await tgShowMyRides(chatId);
+          return;
+        case 'help_menu':
+          await tgShowHelpMenu(chatId);
+          return;
+        case 'help_how_offer':
+          await tgShowOfferRideHelp(chatId);
+          return;
+        case 'help_how_find':
+          await tgShowFindRideHelp(chatId);
+          return;
+        case 'help_rates':
+          await tgShowPricingInfo(chatId);
+          return;
+        case 'help_safety':
+          await tgShowSafetyInfo(chatId);
+          return;
+        case 'help_contact':
+          await tgShowContactInfo(chatId);
+          return;
+        case 'back_menu':
+          await tgShowMainMenu(chatId);
+          return;
+        case 'confirm_yes':
+        case 'confirm_no':
+        case 'contrib_free':
+        case 'contrib_5':
+        case 'contrib_10':
+        case 'contrib_other':
+          await tgHandleOfferRide(chatId, inputText, conversation, messageData);
+          return;
+        default:
+          if (callbackData && callbackData.startsWith('contrib_')) {
+            await tgHandleOfferRide(chatId, inputText, conversation, messageData);
+            return;
+          }
+          if (callbackData && callbackData.startsWith('join_')) {
+            await tgHandleFindRide(chatId, callbackData, conversation, messageData);
+            return;
+          }
+          if (callbackData === 'next_ride' || callbackData === 'prev_ride') {
+            await tgHandleFindRide(chatId, callbackData, conversation, messageData);
+            return;
+          }
+          // Default: show main menu
+          await tgShowMainMenu(chatId);
+          return;
+      }
+    }
+    
+    // Handle conversation states
+    if (conversation.state.startsWith('onboarding_')) {
+      await handleTelegramOnboarding(chatId, inputText, conversation);
+    } else if (conversation.state.startsWith('offering_')) {
+      await tgHandleOfferRide(chatId, inputText, conversation, messageData);
+    } else if (conversation.state.startsWith('requesting_') || conversation.state === 'browsing_results') {
+      await tgHandleFindRide(chatId, inputText, conversation, messageData);
+    } else if (conversation.state === 'awaiting_driver_response') {
+      await tgHandleDriverResponse(chatId, inputText, conversation);
+    } else {
+      // Default: show main menu
+      await tgShowMainMenu(chatId);
+    }
+    
+  } catch (error) {
+    console.error('Error handling Telegram message:', error);
+    await tgSendMessageText(chatId, 
+      `😕 Sorry, something went wrong.\n\nType "menu" to start over or "help" for assistance.`
+    );
+  }
+};
+
+// ============================================
+// TELEGRAM-SPECIFIC HANDLER FUNCTIONS
+// ============================================
+
+// Telegram-specific startOfferRide wrapper
+const tgStartOfferRide = async (chatId, conversation) => {
+  await conversation.setState('offering_pickup');
+  await tgSendMessageText(chatId, 
+    `🚗 *Offer a Ride*\n\n` +
+    `Let's list your ride!\n\n` +
+    `Where will you pick up passengers?\n\n` +
+    `📍 *Tips:*\n` +
+    `• Use a well-known address\n` +
+    `• Include city/area name\n` +
+    `• Or share your location`
+  );
+};
+
+// Telegram-specific startFindRide wrapper
+const tgStartFindRide = async (chatId, conversation) => {
+  await conversation.setState('requesting_pickup');
+  await tgSendMessageText(chatId, 
+    `🔍 *Find a Ride*\n\n` +
+    `Let's find you a ride!\n\n` +
+    `Where do you need to be picked up?\n\n` +
+    `📍 *Tips:*\n` +
+    `• Use a specific address\n` +
+    `• Include city name\n` +
+    `• Or share your location`
+  );
+};
+
+// Telegram-specific showMyRides wrapper
+const tgShowMyRides = async (chatId) => {
+  const phoneNumber = chatId.toString();
+  const offeredRides = await Ride.find({
+    driverPhone: phoneNumber,
+    status: { $in: ['active', 'full'] },
+    expiresAt: { $gt: new Date() }
+  }).sort({ date: 1 });
+  
+  const joinedRides = await Ride.find({
+    'passengers.phone': phoneNumber,
+    status: { $in: ['active', 'full'] }
+  }).sort({ date: 1 });
+  
+  if (offeredRides.length === 0 && joinedRides.length === 0) {
+    await tgSendMessageText(chatId, 
+      `📋 *Your Rides*\n\n` +
+      `You don't have any rides yet.\n\n` +
+      `🚗 Offer a ride to earn\n` +
+      `🔍 Find a ride to travel`
+    );
+    await tgShowMainMenu(chatId);
+    return;
+  }
+  
+  let message = '';
+  
+  if (offeredRides.length > 0) {
+    message += `*🚗 Your Offered Rides (${offeredRides.length}):*\n\n`;
+    offeredRides.forEach((ride, i) => {
+      message += `${i + 1}. ${ride.pickupLocation} → ${ride.destination}\n`;
+      message += `   📅 ${formatDate(ride.date)} at ${ride.time}\n`;
+      message += `   💺 ${ride.availableSeats}/${ride.totalSeats} seats left\n`;
+      message += `   💰 ${ride.contribution > 0 ? '$' + ride.contribution : 'Free'}\n\n`;
+    });
+  }
+  
+  if (joinedRides.length > 0) {
+    message += `*🔍 Your Joined Rides (${joinedRides.length}):*\n\n`;
+    joinedRides.forEach((ride, i) => {
+      message += `${i + 1}. ${ride.pickupLocation} → ${ride.destination}\n`;
+      message += `   📅 ${formatDate(ride.date)} at ${ride.time}\n`;
+      message += `   👤 Driver: ${ride.driverName || ride.driverPhone.slice(-4)}\n\n`;
+    });
+  }
+  
+  await tgSendMessageText(chatId, message);
+  
+  const buttons = [
+    { id: 'offer_ride', title: '🚗 Offer New Ride' },
+    { id: 'find_ride', title: '🔍 Find a Ride' }
+  ];
+  
+  await tgSendMessageButton(chatId, 'What would you like to do next?', buttons);
+};
+
+// Telegram handleOfferRide - uses tgSendMessageText/tgSendMessageButton
+const tgHandleOfferRide = async (chatId, text, conversation, messageData) => {
+  const phoneNumber = chatId.toString();
+  const { tempData } = conversation;
+  
+  switch (conversation.state) {
+    case 'offering_pickup':
+      await tgSendMessageText(chatId, '📍 Validating pickup location...');
+      const pickupResult = await parseLocation(text);
+      
+      if (!pickupResult.valid) {
+        await tgSendMessageText(chatId, 
+          `❌ ${pickupResult.error || 'Could not find that location. Please try again with a more specific address:\n\nExamples:\n• 123 Main St, Edison NJ\n• Rutgers Busch Campus\n• Downtown Metuchen'}`
+        );
+        return;
+      }
+      
+      const pickupLocation = extractCityState(pickupResult.location.address);
+      await conversation.setState('offering_destination', { 
+        pickup: pickupLocation,
+        pickupLat: pickupResult.location.lat,
+        pickupLng: pickupResult.location.lng,
+        pickupAddress: pickupResult.location.display_name
+      });
+      
+      await tgSendMessageText(chatId, 
+        `✅ Found: *${pickupResult.location.display_name}*\n\nNow, where are you heading?`
+      );
+      break;
+      
+    case 'offering_destination':
+      await tgSendMessageText(chatId, '📍 Validating destination...');
+      const destResult = await parseLocation(text);
+      
+      if (!destResult.valid) {
+        await tgSendMessageText(chatId, 
+          `❌ ${destResult.error || 'Could not find that location. Please try again:'}\n\nExamples:\n• Princeton University\n• 50 Hamilton St, New Brunswick\n• Newark Airport`
+        );
+        return;
+      }
+      
+      const route = await calculateRoute(
+        tempData.pickupLat, tempData.pickupLng,
+        destResult.location.lat, destResult.location.lon
+      );
+      
+      const destination = extractCityState(destResult.location.address);
+      
+      let suggestedPrice = 0;
+      if (route?.distance) {
+        const distanceMiles = route.distance / 1609.34;
+        suggestedPrice = Math.round(distanceMiles * 0.25);
+        if (suggestedPrice < 5) suggestedPrice = 5;
+        if (suggestedPrice > 50) suggestedPrice = 50;
+      }
+      
+      const routeInfo = route 
+        ? `\n\n📏 Distance: ${formatDistance(route.distance)}\n⏱️ Est. time: ${formatDuration(route.duration)}\n💰 Suggested: $${suggestedPrice}`
+        : '';
+      
+      await conversation.setState('offering_date', { 
+        ...tempData, 
+        destination,
+        destLat: destResult.location.lat,
+        destLng: destResult.location.lon,
+        destAddress: destResult.location.display_name,
+        routeDistance: route?.distance,
+        routeDuration: route?.duration,
+        suggestedPrice
+      });
+      
+      const dateText = routeInfo + `\n\nWhen is this ride?\n\nQuick options:\n• "Today" or "Now"\n• "Tomorrow"\n• Day of week (e.g., "Monday")`;
+      
+      await tgSendMessageText(chatId, 
+        `✅ Destination: *${destResult.location.display_name}*${dateText}`
+      );
+      break;
+      
+    case 'offering_date':
+      const date = parseDate(text);
+      if (!date) {
+        await tgSendMessageText(chatId, 
+          `Sorry, I didn't understand that date.\n\nPlease try:\n• "today" or "tomorrow"\n• Day name (e.g., "Monday")\n• Date (e.g., "12/25")`
+        );
+        return;
+      }
+      
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      if (date < now) {
+        await tgSendMessageText(chatId, 'Please choose a future date (today or later):');
+        return;
+      }
+      
+      await conversation.setState('offering_time', { ...tempData, date });
+      await tgSendMessageText(chatId, 
+        `📅 *${formatDate(date)}*\n\nWhat time? (e.g., "8:00 AM", "5:30 PM")`
+      );
+      break;
+      
+    case 'offering_time':
+      const time = parseTime(text);
+      if (!time) {
+        await tgSendMessageText(chatId, 
+          `I didn't understand that time.\n\nTry formats like:\n• "8:00 AM" or "8am"\n• "5:30 PM" or "5:30pm"\n• "14:00" (24-hour)`
+        );
+        return;
+      }
+      await conversation.setState('offering_seats', { ...tempData, time });
+      await tgSendMessageText(chatId, 
+        `⏰ *${formatTime12Hour(time)}*\n\nHow many seats are available?\n\n(1-7 passengers)`
+      );
+      break;
+      
+    case 'offering_seats':
+      const seats = parseInt(text);
+      if (isNaN(seats) || seats < 1 || seats > 7) {
+        await tgSendMessageText(chatId, 'Please enter a number between 1 and 7:');
+        return;
+      }
+      await conversation.setState('offering_contribution', { ...tempData, seats });
+      
+      const buttons = [
+        { id: 'contrib_free', title: '🙋 Free' }
+      ];
+      
+      if (tempData.suggestedPrice && tempData.suggestedPrice > 0) {
+        buttons.push({ id: `contrib_${tempData.suggestedPrice}`, title: `💰 $${tempData.suggestedPrice}` });
+      }
+      
+      buttons.push(
+        { id: 'contrib_5', title: '$5' },
+        { id: 'contrib_10', title: '$10' },
+        { id: 'contrib_other', title: '💵 Other' }
+      );
+      
+      const contributionText = tempData.suggestedPrice 
+        ? `💡 Route info available\n\nIs there a contribution for gas/parking?`
+        : `How much would you like to request?`;
+      
+      await tgSendMessageButton(chatId, contributionText, buttons);
+      break;
+      
+    case 'offering_contribution':
+      let contribution = parseContribution(text, tempData);
+      
+      if (contribution === -1) {
+        await tgSendMessageText(chatId, 'Enter your contribution amount (e.g., "$8" or "8"):');
+        return;
+      }
+      
+      await conversation.setState('offering_tags', { ...tempData, contribution });
+      
+      await tgSendMessageText(chatId, 
+        `Any preferences for passengers?\n\nReply with numbers (or "none"):\n\n1️⃣ Female only\n2️⃣ No smoking\n3️⃣ Pets OK\n4️⃣ Quiet ride`
+      );
+      break;
+      
+    case 'offering_tags':
+      const tags = [];
+      const lowerText = text.toLowerCase();
+      
+      if (lowerText === 'none' || lowerText === 'no' || lowerText === 'skip') {
+        // No tags
+      } else {
+        if (lowerText.includes('1')) tags.push('Female only');
+        if (lowerText.includes('2')) tags.push('No smoking');
+        if (lowerText.includes('3')) tags.push('Pets OK');
+        if (lowerText.includes('4')) tags.push('Quiet ride');
+      }
+      
+      await conversation.setState('offering_confirm', { ...tempData, tags });
+      
+      const tagsDisplay = tags.length > 0 ? `\n🏷️ ${tags.join(', ')}` : '\n🏷️ No preferences';
+      const confirmText = 
+        `*📋 Please Confirm Your Ride:*\n\n` +
+        `📍 From: ${tempData.pickup}\n` +
+        `🏁 To: ${tempData.destination}\n` +
+        `📅 Date: ${formatDate(tempData.date)}\n` +
+        `⏰ Time: ${formatTime12Hour(tempData.time)}\n` +
+        `💺 Seats: ${tempData.seats}\n` +
+        `💰 Contribution: ${tempData.contribution > 0 ? '$' + tempData.contribution : 'Free'}` +
+        tagsDisplay +
+        `\n\nIs this correct?`;
+      
+      await tgSendMessageButton(chatId, confirmText, [
+        { id: 'confirm_yes', title: '✅ Yes, Post It' },
+        { id: 'confirm_no', title: '❌ Cancel' }
+      ]);
+      break;
+      
+    case 'offering_confirm':
+      if (text.toLowerCase().includes('yes') || text.includes('✅')) {
+        const user = await User.findOne({ phoneNumber });
+        const expiresAt = new Date(tempData.date);
+        expiresAt.setHours(expiresAt.getHours() + 24);
+        
+        const ride = new Ride({
+          driverPhone: phoneNumber,
+          driverName: user?.name || 'Anonymous',
+          pickupLocation: tempData.pickup,
+          destination: tempData.destination,
+          date: tempData.date,
+          time: tempData.time,
+          totalSeats: tempData.seats,
+          availableSeats: tempData.seats,
+          contribution: tempData.contribution,
+          tags: tempData.tags || [],
+          expiresAt,
+          pickupLat: tempData.pickupLat,
+          pickupLng: tempData.pickupLng,
+          pickupAddress: tempData.pickupAddress,
+          destLat: tempData.destLat,
+          destLng: tempData.destLng,
+          destAddress: tempData.destAddress,
+          routeDistance: tempData.routeDistance,
+          routeDuration: tempData.routeDuration
+        });
+        
+        await ride.save();
+        await User.findOneAndUpdate({ phoneNumber }, { $inc: { rideCount: 1 } });
+        await conversation.reset();
+        
+        await tgSendMessageText(chatId, 
+          `✅ *Ride Posted Successfully!*\n\n` +
+          `📍 ${tempData.pickup} → ${tempData.destination}\n` +
+          `📅 ${formatDate(tempData.date)} at ${formatTime12Hour(tempData.time)}\n` +
+          `💺 ${tempData.seats} seats\n\n` +
+          `You'll be notified when someone wants to join!`
+        );
+        
+        const quickButtons = [
+          { id: 'my_rides', title: '📋 View My Rides' },
+          { id: 'offer_ride', title: '➕ Post Another' }
+        ];
+        await tgSendMessageButton(chatId, 'What would you like to do next?', quickButtons);
+      } else {
+        await conversation.reset();
+        await tgSendMessageText(chatId, 'No problem! Your ride was not posted.');
+        await tgShowMainMenu(chatId);
+      }
+      break;
+  }
+};
+
+// Telegram handleFindRide wrapper
+const tgHandleFindRide = async (chatId, text, conversation, messageData) => {
+  const phoneNumber = chatId.toString();
+  const { tempData } = conversation;
+  
+  switch (conversation.state) {
+    case 'requesting_pickup':
+      await tgSendMessageText(chatId, '📍 Validating pickup location...');
+      const pickupResult = await parseLocation(text);
+      
+      if (!pickupResult.valid) {
+        await tgSendMessageText(chatId, 
+          `❌ ${pickupResult.error || 'Could not find that location.'}\n\nTry a more specific address:\n• "104 Hana Rd, Edison NJ"\n• "Rutgers Busch Campus"`
+        );
+        return;
+      }
+      
+      const pickupLocation = extractCityState(pickupResult.location.address);
+      await conversation.setState('requesting_destination', { 
+        pickup: pickupLocation,
+        pickupLat: pickupResult.location.lat,
+        pickupLng: pickupResult.location.lng,
+        pickupAddress: pickupResult.location.display_name
+      });
+      
+      await tgSendMessageText(chatId, 
+        `✅ Pickup: *${pickupResult.location.display_name}*\n\nWhere are you going?`
+      );
+      break;
+      
+    case 'requesting_destination':
+      await tgSendMessageText(chatId, '📍 Validating destination...');
+      const destResult = await parseLocation(text);
+      
+      if (!destResult.valid) {
+        await tgSendMessageText(chatId, 
+          `❌ ${destResult.error || 'Could not find that location.'}\n\nExamples:\n• "Princeton University"\n• "Newark Airport"`
+        );
+        return;
+      }
+      
+      const route = await calculateRoute(
+        tempData.pickupLat, tempData.pickupLng,
+        destResult.location.lat, destResult.location.lon
+      );
+      
+      const destination = extractCityState(destResult.location.address);
+      const routeInfo = route 
+        ? `\n\n📏 Distance: ${formatDistance(route.distance)}\n⏱️ Trip time: ${formatDuration(route.duration)}`
+        : '';
+      
+      await conversation.setState('requesting_date', { 
+        ...tempData, 
+        destination,
+        destLat: destResult.location.lat,
+        destLng: destResult.location.lon,
+        destAddress: destResult.location.display_name,
+        routeDistance: route?.distance,
+        routeDuration: route?.duration
+      });
+      
+      const dateText = routeInfo + `\n\nWhen do you need a ride?\n\nQuick options:\n• "Today"\n• "Tomorrow"\n• "This week"`;
+      
+      await tgSendMessageText(chatId, 
+        `✅ Destination: *${destResult.location.display_name}*${dateText}`
+      );
+      break;
+      
+    case 'requesting_date':
+      const dateTextInput = text.toLowerCase();
+      let dateFilter = {};
+      let displayDate = '';
+      
+      if (dateTextInput === 'today') {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        dateFilter = { $gte: today, $lt: tomorrow };
+        displayDate = 'Today';
+      } else if (dateTextInput === 'tomorrow') {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        const dayAfter = new Date(tomorrow);
+        dayAfter.setDate(dayAfter.getDate() + 1);
+        dateFilter = { $gte: tomorrow, $lt: dayAfter };
+        displayDate = 'Tomorrow';
+      } else if (dateTextInput.includes('week')) {
+        const today = new Date();
+        const nextWeek = new Date(today);
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        dateFilter = { $gte: today, $lt: nextWeek };
+        displayDate = 'This Week';
+      } else {
+        const date = parseDate(text);
+        if (date) {
+          const nextDay = new Date(date);
+          nextDay.setDate(nextDay.getDate() + 1);
+          dateFilter = { $gte: date, $lt: nextDay };
+          displayDate = formatDate(date);
+        } else {
+          await tgSendMessageText(chatId, 
+            `I didn't understand that date.\n\nTry:\n• "today"\n• "tomorrow"\n• "Monday" or other day`
+          );
+          return;
+        }
+      }
+      
+      await conversation.setState('requesting_seats', { ...tempData, dateFilter, displayDate });
+      await tgSendMessageText(chatId, 
+        `📅 *${displayDate}*\n\nHow many seats do you need? (1-3)`
+      );
+      break;
+      
+    case 'requesting_seats':
+      const seats = parseInt(text);
+      if (isNaN(seats) || seats < 1 || seats > 3) {
+        await tgSendMessageText(chatId, 'Please enter 1, 2, or 3 seats:');
+        return;
+      }
+      
+      await tgSendMessageText(chatId, '🔍 Searching for rides...');
+      
+      const query = {
+        status: 'active',
+        expiresAt: { $gt: new Date() },
+        availableSeats: { $gte: seats },
+        date: tempData.dateFilter || { $gte: new Date() }
+      };
+      
+      const rides = await Ride.find({
+        ...query,
+        $or: [
+          { pickupLocation: { $regex: tempData.pickup, $options: 'i' } },
+          { destination: { $regex: tempData.destination, $options: 'i' } }
+        ]
+      }).limit(MAX_RESULTS);
+      
+      if (rides.length === 0) {
+        await Ride.createRiderNotification(phoneNumber, {
+          pickup: tempData.pickup,
+          destination: tempData.destination,
+          date: tempData.displayDate,
+          seats,
+          pickupLat: tempData.pickupLat,
+          pickupLng: tempData.pickupLng,
+          destLat: tempData.destLat,
+          destLng: tempData.destLng
+        });
+        
+        await conversation.reset();
+        
+        await tgSendMessageText(chatId,
+          `😕 *No Rides Found*\n\n` +
+          `Looking for:\n` +
+          `📍 ${tempData.pickup} → ${tempData.destination}\n` +
+          `📅 ${tempData.displayDate}\n` +
+          `💺 ${seats} seat${seats > 1 ? 's' : ''}\n\n` +
+          `*We saved your search!*\n` +
+          `We'll notify you when a matching ride is posted.`
+        );
+        
+        await tgShowMainMenu(chatId);
+        return;
+      }
+      
+      await conversation.setState('browsing_results', { 
+        ...tempData, 
+        seats,
+        searchResults: rides.map(r => ({ id: r._id.toString(), ...r.toObject() })),
+        currentResultIndex: 0
+      });
+      
+      await tgShowRideResult(chatId, rides, 0, tempData);
+      break;
+      
+    case 'browsing_results':
+      if (text.startsWith('join_')) {
+        const rideId = text.replace('join_', '');
+        const ride = await Ride.findById(rideId);
+        
+        if (!ride || ride.isExpired() || ride.isFull()) {
+          await tgSendMessageText(chatId, 'Sorry, this ride is no longer available.');
+          return;
+        }
+        
+        const user = await User.findOne({ phoneNumber });
+        
+        await sendTextMessage(ride.driverPhone,
+          `🚗 *Ride Request!*\n\n` +
+          `*${user?.name || 'Someone'}* wants to join your ride:\n\n` +
+          `📍 ${ride.pickupLocation} → ${ride.destination}\n` +
+          `📅 ${formatDate(ride.date)} at ${ride.time}\n` +
+          `💺 Seats needed: ${tempData.seats}\n\n` +
+          `Reply:\n• "YES" to accept\n• "NO" to decline`
+        );
+        
+        await conversation.setState('awaiting_driver_response', { 
+          ...tempData, 
+          pendingRideId: rideId,
+          driverPhone: ride.driverPhone
+        });
+        
+        await tgSendMessageText(chatId, 
+          `✅ *Request Sent!*\n\n` +
+          `📍 ${ride.pickupLocation} → ${ride.destination}\n` +
+          `📅 ${formatDate(ride.date)} at ${ride.time}\n\n` +
+          `Waiting for driver to confirm...`
+        );
+        
+      } else if (text === 'next_ride' || text === 'prev_ride') {
+        // Handle navigation
+        const rides = tempData.searchResults;
+        const currentIndex = tempData.currentResultIndex || 0;
+        let newIndex = currentIndex;
+        
+        if (text === 'next_ride') {
+          newIndex = (currentIndex + 1) % rides.length;
+        } else {
+          newIndex = currentIndex === 0 ? rides.length - 1 : currentIndex - 1;
+        }
+        
+        await conversation.setState('browsing_results', { 
+          ...tempData, 
+          currentResultIndex: newIndex 
+        });
+        
+        await tgShowRideResult(chatId, rides, newIndex, tempData);
+      }
+      break;
+  }
+};
+
+// Telegram show ride result
+const tgShowRideResult = async (chatId, rides, index, tempData) => {
+  const ride = rides[index];
+  if (!ride) return;
+  
+  const rideText = formatRideDetails(ride, index + 1, rides.length);
+  
+  const buttons = [
+    { id: `join_${ride._id}`, title: '✅ Join This Ride' }
+  ];
+  
+  if (rides.length > 1) {
+    buttons.push({ id: 'next_ride', title: '➡️ Next Ride' });
+  }
+  
+  if (index > 0) {
+    buttons.push({ id: 'prev_ride', title: '⬅️ Previous' });
+  }
+  
+  await tgSendMessageButton(chatId, rideText, buttons);
+};
+
+// Telegram handleDriverResponse wrapper
+const tgHandleDriverResponse = async (chatId, text, conversation) => {
+  const phoneNumber = chatId.toString();
+  const { tempData } = conversation;
+  
+  if (!tempData.pendingRideId) {
+    await conversation.reset();
+    await tgShowMainMenu(chatId);
+    return;
+  }
+  
+  const ride = await Ride.findById(tempData.pendingRideId);
+  if (!ride) {
+    await tgSendMessageText(chatId, 'Sorry, this ride is no longer available.');
+    await conversation.reset();
+    await tgShowMainMenu(chatId);
+    return;
+  }
+  
+  const lowerText = text.toLowerCase();
+  
+  if (lowerText === 'yes' || lowerText === 'accept') {
+    try {
+      const passengerPhone = tempData.passengerPhone || phoneNumber;
+      const user = await User.findOne({ phoneNumber });
+      
+      await ride.addPassenger(passengerPhone, user?.name || 'Passenger', tempData.seats || 1);
+      
+      await tgSendMessageText(chatId, 
+        `✅ *Ride Confirmed!*\n\nYou've accepted the request.`
+      );
+      
+    } catch (error) {
+      await tgSendMessageText(chatId, 'Sorry, this ride is now full.');
+    }
+  } else if (lowerText === 'no' || lowerText === 'decline') {
+    await tgSendMessageText(chatId, 'Request declined.');
+  } else {
+    await tgSendMessageText(chatId,
+      `Please reply with:\n• "YES" to accept\n• "NO" to decline`
+    );
+    return;
+  }
+  
+  await conversation.reset();
+  await tgShowMainMenu(chatId);
 };
 
 // ============================================

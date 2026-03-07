@@ -4,15 +4,20 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import webhookRoutes from './routes/webhook.js';
+import telegramWebhookRoutes from './routes/telegram-webhook.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
+import apiRoutes from './routes/api.js';
 import { startScheduledTasks } from './services/scheduler.js';
+import { connectDB, healthCheck, pingDB } from './services/database.js';
 import { 
   calculateRoute, 
   geocodeAddress, 
   formatDistance, 
   formatDuration,
   calculatePrice,
+  calculatePriceWithBreakdown,
+  calculateDetailedFare,
   searchLocations,
   reverseGeocode
 } from './services/maps.js';
@@ -33,12 +38,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
+const PORT = process.env.PORT || 3002;
 
 // Enable CORS for demo
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, phoneNumber, token');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
@@ -115,6 +121,74 @@ app.get('/browse-all-rides', (req, res) => {
 // Serve my rides page
 app.get('/my-rides', (req, res) => {
   res.sendFile(path.join(__dirname, '../my-rides.html'));
+});
+
+// Serve ad configuration tool (internal developer tool)
+app.get('/ads-config', (req, res) => {
+  res.sendFile(path.join(__dirname, '../ads-config.html'));
+});
+
+// Serve ride details page (for shareable links)
+app.get('/ride/:id', (req, res) => {
+  res.sendFile(path.join(__dirname, '../ride-details.html'));
+});
+
+// API: Get ride details for sharing
+app.get('/api/rides/:id', async (req, res) => {
+  try {
+    const ride = await Ride.findById(req.params.id);
+    
+    if (!ride) {
+      return res.status(404).json({ error: 'Ride not found' });
+    }
+    
+    // Calculate route and pricing if coordinates available
+    let routeDistance = ride.routeDistance;
+    let fareBreakdown = null;
+    
+    if (ride.pickupLat && ride.pickupLng && ride.destLat && ride.destLng) {
+      const route = await calculateRoute(
+        ride.pickupLat, ride.pickupLng,
+        ride.destLat, ride.destLng
+      );
+      
+      if (route) {
+        routeDistance = route.distance;
+        // Calculate detailed fare breakdown
+        fareBreakdown = calculateDetailedFare(route.distance, ride.totalSeats, 0, 'none');
+      }
+    }
+    
+    // Build shareable ride details
+    const rideDetails = {
+      id: ride._id,
+      driverName: ride.driverName,
+      driverPhone: ride.driverPhone,
+      pickupLocation: ride.pickupLocation,
+      destination: ride.destination,
+      date: ride.date,
+      time: ride.time,
+      totalSeats: ride.totalSeats,
+      availableSeats: ride.availableSeats,
+      contribution: ride.contribution,
+      status: ride.status,
+      routeDistance: routeDistance,
+      distanceFormatted: formatDistance(routeDistance || 0),
+      fareBreakdown: fareBreakdown,
+      createdAt: ride.createdAt,
+      // Shareable link info
+      shareUrl: `/ride/${ride._id}`,
+      expiresAt: ride.expiresAt
+    };
+    
+    res.json({
+      success: true,
+      ride: rideDetails
+    });
+  } catch (error) {
+    console.error('Error fetching ride details:', error);
+    res.status(500).json({ error: 'Failed to fetch ride details' });
+  }
 });
 
 // API: Uber-style fare estimate
@@ -218,10 +292,10 @@ app.post('/api/ride/book', async (req, res) => {
   }
 });
 
-// API: Calculate route with real-time pricing
+// API: Calculate route with real-time pricing (supports adult/kids separate pricing)
 app.get('/api/route', async (req, res) => {
   try {
-    const { pickup, destination, seats = 1 } = req.query;
+    const { pickup, destination, seats = 1, adults = 1, children = 0, childSeatType = 'none' } = req.query;
     
     if (!pickup || !destination) {
       return res.status(400).json({ error: 'Pickup and destination are required' });
@@ -245,8 +319,20 @@ app.get('/api/route', async (req, res) => {
       return res.status(400).json({ error: 'Could not calculate route' });
     }
 
-    const price = calculatePrice(route.distance, parseInt(seats) || 1);
-    const pricePerSeat = calculatePrice(route.distance, 1);
+    // Parse seat parameters
+    const adultsCount = parseInt(adults) || 1;
+    const childrenCount = parseInt(children) || 0;
+    const totalSeats = parseInt(seats) || (adultsCount + childrenCount);
+    
+    // Calculate price per seat for adults (full price)
+    const pricePerAdult = calculatePrice(route.distance, 1);
+    
+    // Calculate price per seat for children (50% discount)
+    const pricePerChild = pricePerAdult * 0.5;
+    
+    // Calculate total price with adult/kids breakdown
+    const totalPrice = (pricePerAdult * adultsCount) + (pricePerChild * childrenCount);
+    const pricePerSeat = pricePerAdult; // For backwards compatibility
 
     res.json({
       success: true,
@@ -264,11 +350,16 @@ app.get('/api/route', async (req, res) => {
       duration: route.duration,
       distanceFormatted: formatDistance(route.distance),
       durationFormatted: formatDuration(route.duration),
-      price: price,
+      totalPrice: totalPrice,
+      pricePerAdult: pricePerAdult,
+      pricePerChild: pricePerChild,
       pricePerSeat: pricePerSeat,
       currency: 'USD',
       geometry: route.geometry,
-      seats: parseInt(seats) || 1
+      seats: totalSeats,
+      adults: adultsCount,
+      children: childrenCount,
+      childSeatType: childSeatType
     });
   } catch (error) {
     console.error('Route calculation error:', error);
@@ -564,8 +655,18 @@ app.use('/api/auth', authRoutes);
 // User routes (protected)
 app.use('/api/user', userRoutes);
 
+// New unified API routes
+app.use('/api', apiRoutes);
+
 // Webhook routes
 app.use('/webhook', webhookRoutes);
+
+// Telegram webhook routes
+app.use('/telegram-webhook', telegramWebhookRoutes);
+
+// Ads API routes
+import adRoutes from './routes/ads.js';
+app.use('/api', adRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {
@@ -576,14 +677,16 @@ app.use((err, req, res, next) => {
 // Connect to MongoDB and start server
 const startServer = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/pdrides');
-    console.log('Connected to MongoDB');
+    // Use new database service with proper connection handling
+    await connectDB();
+    console.log('Database connection established');
 
     startScheduledTasks();
 
     app.listen(PORT, () => {
       console.log(`🚀 ${process.env.APP_NAME || 'PDRides'} server running on port ${PORT}`);
       console.log(`📱 Webhook endpoint: http://localhost:${PORT}/webhook`);
+      console.log(`📡 API endpoint: http://localhost:${PORT}/api`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

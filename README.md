@@ -2,7 +2,7 @@
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
 ║                        🚗 PDRides - Community Carpooling                     ║
-║                    WhatsApp Bot for Community Carpooling                     ║
+║              WhatsApp & Telegram Bot for Community Carpooling               ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 -->
@@ -15,6 +15,7 @@
 ![Express](https://img.shields.io/badge/Express-4.x-000000?style=flat-square&logo=express)
 ![MongoDB](https://img.shields.io/badge/MongoDB-7.x-47A248?style=flat-square&logo=mongodb)
 ![WhatsApp](https://img.shields.io/badge/WhatsApp-Cloud%20API-25D366?style=flat-square&logo=whatsapp)
+![Telegram](https://img.shields.io/badge/Telegram-Bot-2CA5E0?style=flat-square&logo=telegram)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 <!-- Logo -->
@@ -24,7 +25,7 @@
 
 ### Community Carpooling Made Easy
 
-_A WhatsApp-powered carpooling platform that connects commuters, reduces transportation costs, and promotes eco-friendly travel._
+_A messaging-powered carpooling platform (WhatsApp & Telegram) that connects commuters, reduces transportation costs, and promotes eco-friendly travel._
 
 </div>
 
@@ -40,7 +41,7 @@ _A WhatsApp-powered carpooling platform that connects commuters, reduces transpo
 |------------|-----------------|
 | 💰 **Cost Savings** | Split ride costs with fellow commuters |
 | 🌱 **Eco-Friendly** | Reduce carbon footprint by sharing rides |
-| 💬 **WhatsApp Integration** | Seamless communication via WhatsApp |
+| 💬 **Multi-Platform** | WhatsApp & Telegram bot integration |
 | 🗺️ **Interactive Maps** | Visual route planning with real-time pricing |
 | ⭐ **Trust System** | Verified users with ratings and reviews |
 | 🔒 **Secure** | Phone verification via OTP |
@@ -57,7 +58,8 @@ _A WhatsApp-powered carpooling platform that connects commuters, reduces transpo
 |-------------|---------|---------|
 | 🟢 **Node.js** | 18+ | JavaScript runtime |
 | 🍃 **MongoDB** | 7.x+ | Database |
-| 📱 **WhatsApp** | Business | Messaging platform |
+| 📱 **WhatsApp** | Business | Messaging platform (optional) |
+| ✈️ **Telegram** | Bot | Messaging platform (optional) |
 
 ### Installation
 
@@ -94,6 +96,11 @@ WHATSAPP_ACCESS_TOKEN=your_access_token
 WHATSAPP_WEBHOOK_VERIFY_TOKEN=your_custom_verify_token
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# ✈️ Telegram Bot (from BotFather)
+# ═══════════════════════════════════════════════════════════════════════════════
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # 🗄️ MongoDB Configuration
 # ═══════════════════════════════════════════════════════════════════════════════
 MONGODB_URI=mongodb://localhost:27017/pdrides
@@ -117,17 +124,20 @@ npm start
 | Endpoint | Description |
 |----------|-------------|
 | 🌎 `http://localhost:3000/` | Main landing page |
-| 🗺️ `http://localhost:3000/map` | Interactive map |
+| 🗺️ `http://localhost:3000/map-view` | Interactive map |
 | 🔐 `http://localhost:3000/login` | User login |
 | 📝 `http://localhost:3000/register` | User registration |
 | ⚙️ `http://localhost:3000/settings` | User settings |
-| 🔍 `http://localhost:3000/browse-all-rides` | Browse all rides |
+| 🔍 `http://localhost:3000/browse-rides` | Browse all rides |
 | 🚗 `http://localhost:3000/my-rides` | My rides |
+| 📋 `http://localhost:3000/ride-details` | Ride details |
+| 📊 `http://localhost:3000/ads-config` | Ads configuration |
 | ❓ `http://localhost:3000/help-center` | Help center |
 | 📧 `http://localhost:3000/contact-us` | Contact us |
 | 🔒 `http://localhost:3000/privacy-policy` | Privacy policy |
 | 📜 `http://localhost:3000/terms-of-service` | Terms of service |
-| ❤️ `http://localhost:3000/health` | Health check |
+| 🧪 `http://localhost:3000/test-bot` | WhatsApp bot tester |
+| ❤️ `http://localhost:3000/api/health` | Health check |
 
 ---
 
@@ -141,6 +151,7 @@ npm start
 | **Framework** | Express.js | ⚡ |
 | **Database** | MongoDB + Mongoose | 🍃 |
 | **Messaging** | WhatsApp Cloud API | 💬 |
+| **Messaging** | Telegram Bot API | ✈️ |
 | **Maps** | Leaflet + OpenStreetMap | 🗺️ |
 | **Geocoding** | Nominatim | 📍 |
 | **Routing** | OSRM | 🛣️ |
@@ -161,6 +172,8 @@ npm start
 ├── 📄 settings.html          # ⚙️ User settings
 ├── 📄 browse-rides.html      # 🔍 Browse all rides
 ├── 📄 my-rides.html          # 🚗 My rides
+├── 📄 ride-details.html      # 📋 Ride details page
+├── 📄 ads-config.html        # 📊 Ads configuration
 ├── 📄 help-center.html       # ❓ Help center
 ├── 📄 contact-us.html        # 📧 Contact us
 ├── 📄 privacy-policy.html    # 🔒 Privacy policy
@@ -172,30 +185,55 @@ npm start
 │   │
 │   ├── 📂 models/
 │   │   ├── 📄 User.js        # 👤 User data model
-│   │   ├── 📄 Ride.js         # 🚗 Ride listings model
+│   │   ├── 📄 Ride.js        # 🚗 Ride listings model
+│   │   ├── 📄 Ad.js          # 📊 Advertisement model
 │   │   └── 📄 Conversation.js # 💬 Conversation state model
 │   │
 │   ├── 📂 services/
 │   │   ├── 📄 whatsapp.js    # 📱 WhatsApp API integration
+│   │   ├── 📄 telegram.js    # ✈️ Telegram Bot integration
 │   │   ├── 📄 messageHandler.js  # 🧠 Message processing & bot logic
-│   │   ├── 📄 scheduler.js    # ⏰ Background scheduled tasks
-│   │   ├── 📄 maps.js          # 🗺️ Geocoding & routing services
-│   │   ├── 📄 rideTypes.js     # 💵 Uber-style ride pricing
-│   │   └── 📄 otp.js           # 🔐 OTP verification service
+│   │   ├── 📄 scheduler.js   # ⏰ Background scheduled tasks
+│   │   ├── 📄 maps.js        # 🗺️ Geocoding & routing services
+│   │   ├── 📄 rideTypes.js   # 💵 Uber-style ride pricing
+│   │   ├── 📄 otp.js         # 🔐 OTP verification service
+│   │   ├── 📄 userService.js # 👤 User management service
+│   │   ├── 📄 rideService.js # 🚗 Ride management service
+│   │   ├── 📄 adService.js  # 📊 Advertisement service
+│   │   ├── 📄 ads-client.js # 📊 Ads client service
+│   │   ├── 📄 crud.js       # 📝 CRUD operations
+│   │   ├── 📄 database.js   # 🗄️ Database connection
+│   │   └── 📄 apiSync.js    # 🔄 API synchronization
 │   │
-│   └── 📂 routes/
-│       ├── 📄 auth.js         # 🔐 Authentication routes
-│       ├── 📄 user.js         # 👤 User management routes
-│       └── 📄 webhook.js      # 📥 WhatsApp webhook endpoints
+│   ├── 📂 routes/
+│   │   ├── 📄 auth.js       # 🔐 Authentication routes
+│   │   ├── 📄 user.js       # 👤 User management routes
+│   │   ├── 📄 api.js        # 🚗 Ride & general API routes
+│   │   ├── 📄 webhook.js    # 📥 WhatsApp webhook endpoints
+│   │   ├── 📄 telegram-webhook.js # ✈️ Telegram webhook endpoints
+│   │   └── 📄 ads.js        # 📊 Ads management routes
+│   │
+│   ├── 📂 middleware/
+│   │   └── 📄 auth.js       # 🔐 Authentication middleware
+│   │
+│   └── 📂 services/ (additional)
+│       └── (see above)
 │
-├── 📂 test/
-│   ├── 📄 test-full-flow.js   # 🧪 Full flow tests
-│   ├── 📄 test-whatsapp.js    # 🧪 WhatsApp tests
-│   └── 📄 test-*.json          # 🧪 Test data files
+├── 📂 ads-config/
+│   ├── 📄 ad-units.json     # 📊 Ad unit configurations
+│   ├── 📄 placements.json   # 📍 Ad placement settings
+│   ├── 📄 geo-targeting.json # 🌍 Geographic targeting
+│   └── 📄 fallback-content.json # ⏭️ Fallback content
 │
-├── 📄 package.json            # 📦 Project dependencies
-├── 📄 .env.example            # 📝 Environment template
-└── 📄 README.md               # 📖 This file
+├── 📂 ads-system/
+│   ├── 📄 ads-loader.js     # 📊 Ads loader script
+│   └── 📄 developer-config.json # 👨‍💻 Developer configuration
+│
+├── 📄 set-telegram-webhook.js # 🔧 Telegram webhook setup script
+│
+├── 📄 package.json          # 📦 Project dependencies
+├── 📄 .env.example         # 📝 Environment template
+└── 📄 README.md            # 📖 This file
 ```
 
 ---
@@ -212,6 +250,16 @@ npm start
 | `my rides` | 📋 View your rides | `my rides` |
 | `help`, `rules` | ❓ Show guidelines | `help` |
 | `cancel` | ❌ Cancel current flow | `cancel` |
+
+### ✈️ Telegram Bot Commands
+
+| Command | Action |
+|---------|--------|
+| `/start`, `/menu` | 📋 Show main menu |
+| `/offer` | 🚗 Start offering a ride |
+| `/find` | 🔍 Start finding a ride |
+| `/myrides` | 📋 View your rides |
+| `/help` | ❓ Show guidelines |
 
 ### 🚗 Ride Management
 
@@ -238,6 +286,13 @@ npm start
 5. 📱 **WhatsApp Sync** - Send ride details to phone
 6. 🗺️ **Map Visualization** - See routes on interactive map
 
+### 📊 Advertisement System
+
+- 🎯 **Targeted Ads** - Geo-targeting by state/region
+- 📏 **Multiple Ad Units** - Banner, interstitial, native ads
+- 📈 **Performance Tracking** - Impressions, clicks, CTR metrics
+- ⚙️ **Configuration UI** - Admin panel for ad management
+
 ---
 
 ## 📡 API Endpoints
@@ -252,6 +307,7 @@ npm start
 | `/api/auth/logout` | POST | Logout user |
 | `/api/auth/me` | GET | Get current user |
 | `/api/auth/check-onboarding` | GET | Check onboarding status |
+| `/api/auth/resend-otp` | POST | Resend OTP code |
 
 ### 👤 User Management
 
@@ -260,9 +316,16 @@ npm start
 | `/api/user/profile` | GET | Get user profile |
 | `/api/user/profile` | PUT | Update user profile |
 | `/api/user/driver-info` | PUT | Update driver info |
+| `/api/user/account` | DELETE | Schedule account deletion |
+| `/api/user/account/cancel-deletion` | POST | Cancel account deletion |
+| `/api/user/password` | PUT | Change password |
+| `/api/user/driver-preferences` | GET/PUT | Driver preferences |
+| `/api/user/privacy-settings` | GET/PUT | Privacy settings |
+| `/api/user/notification-settings` | GET/PUT | Notification settings |
 | `/api/user/ride-history` | GET | Get ride history |
+| `/api/user/recent-searches` | GET/POST/DELETE | Manage searches |
 | `/api/user/favorite-routes` | GET/POST/DELETE | Manage favorites |
-| `/api/user/recent-searches` | GET/POST/DELETE | Manage search history |
+| `/api/user/stats` | GET | Get user statistics |
 
 ### 🚗 Ride API
 
@@ -272,8 +335,15 @@ npm start
 | `/api/fare` | GET | Uber-style fare estimate |
 | `/api/rides` | GET | Get available rides |
 | `/api/rides` | POST | Create new ride |
+| `/api/rides/:id` | GET/PUT/DELETE | Ride CRUD |
 | `/api/rides/:id/book` | POST | Book a ride |
-| `/api/ride/book` | POST | Instant ride booking |
+| `/api/rides/:id/cancel-booking` | POST | Cancel booking |
+| `/api/rides/:id/cancel` | POST | Cancel ride |
+| `/api/rides/:id/complete` | POST | Complete ride |
+| `/api/rides/:id/status` | GET/PUT | Ride status |
+| `/api/users/me/rides` | GET | User's rides (all) |
+| `/api/users/me/rides/offered` | GET | User's offered rides |
+| `/api/users/me/rides/joined` | GET | User's joined rides |
 | `/api/autocomplete` | GET | Location autocomplete |
 | `/api/reverse-geocode` | GET | Reverse geocoding |
 
@@ -285,6 +355,44 @@ npm start
 | `/webhook` | POST | Receive messages |
 | `/api/whatsapp/send-ride` | POST | Send ride to WhatsApp |
 | `/api/whatsapp/send-message` | POST | Send direct message |
+
+### ✈️ Telegram
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/telegram-webhook` | POST | Telegram webhook endpoint |
+| `/telegram-webhook/health` | GET | Telegram bot health |
+
+### 📊 Ads Management
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/ads` | GET | List all ads |
+| `/api/ads` | POST | Create new ad |
+| `/api/ads/:adId` | GET/PUT/DELETE | Ad CRUD |
+| `/api/ads/:adId/pause` | POST | Pause ad |
+| `/api/ads/:adId/activate` | POST | Activate ad |
+| `/api/ads/:adId/click` | POST | Track ad click |
+| `/api/ads/:adId/impression` | POST | Track impression |
+| `/api/ads/:adId/metrics` | GET | Get ad metrics |
+| `/api/ads/stats/platform` | GET | Platform statistics |
+| `/api/ads/config/units` | GET | Get ad unit configs |
+| `/api/ads/config/placements` | GET | Get placement configs |
+| `/api/ads/config/geo` | GET | Get geo targeting |
+| `/api/ads/config/states` | GET | Get available states |
+
+### 🏠 General
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/health` | GET | Health check |
+| `/api/ping` | GET | Ping endpoint |
+| `/api/stats` | GET | Platform statistics |
+| `/api/admin/stats` | GET | Admin statistics |
+| `/api/admin/users` | GET | List all users (admin) |
+| `/api/admin/rides` | GET | List all rides (admin) |
+| `/api/conversations/:phoneNumber` | GET | Get conversation |
+| `/api/conversations/:phoneNumber/reset` | POST | Reset conversation |
 
 ---
 
@@ -316,8 +424,16 @@ npm start
     femaleOnly: Boolean,
     smoking: Boolean
   },
+  privacySettings: {         // 🔒 Privacy settings
+    showPhone: Boolean,
+    showEmail: Boolean
+  },
+  notificationSettings: {    // 🔔 Notification preferences
+    rideUpdates: Boolean,
+    promotional: Boolean
+  },
   favoriteRoutes: [],         // ⭐ Saved routes
-  recentSearches: []          // 🔍 Recent searches
+  recentSearches: []         // 🔍 Recent searches
 }
 ```
 
@@ -326,24 +442,63 @@ npm start
 ```javascript
 {
   driverPhone: String,        // 📱 Driver's phone
-  driverName: String,         // 👤 Driver's name
-  pickupLocation: String,     // 📍 Pickup address
-  destination: String,        // 🏁 Destination
-  pickupLat/Lng: Number,      // 📍 Coordinates
-  destLat/Lng: Number,        // 🏁 Coordinates
-  date: Date,                 // 📅 Ride date
-  time: String,               // ⏰ Ride time
-  totalSeats: Number,          // 💺 Total seats
-  availableSeats: Number,     // 💺 Available seats
-  contribution: Number,       // 💵 Price per seat
-  status: String,             // 📊 active/full/completed/cancelled
-  passengers: [{              // 👥 Joined passengers
+  driverName: String,        // 👤 Driver's name
+  pickupLocation: String,   // 📍 Pickup address
+  destination: String,       // 🏁 Destination
+  pickupLat/Lng: Number,     // 📍 Coordinates
+  destLat/Lng: Number,       // 🏁 Coordinates
+  date: Date,                // 📅 Ride date
+  time: String,              // ⏰ Ride time
+  totalSeats: Number,        // 💺 Total seats
+  availableSeats: Number,   // 💺 Available seats
+  contribution: Number,      // 💵 Price per seat
+  status: String,            // 📊 active/full/completed/cancelled
+  rideType: String,          // 🚗 Ride type (UberX, UberXL, etc.)
+  passengers: [{             // 👥 Joined passengers
     phone: String,
     name: String,
     seats: Number
   }],
-  tags: [String],             // 🏷️ Ride preferences
-  expiresAt: Date             // ⏰ Expiration time
+  tags: [String],            // 🏷️ Ride preferences
+  expiresAt: Date            // ⏰ Expiration time
+}
+```
+
+### 📊 Ad Model
+
+```javascript
+{
+  name: String,              // 📝 Ad name
+  adUnit: String,            // 📏 Ad unit type
+  content: {
+    headline: String,
+    description: String,
+    imageUrl: String,
+    ctaText: String,
+    ctaUrl: String
+  },
+  targeting: {
+    states: [String],       // 🌍 Geographic targeting
+    radius: Number          // 📍 Radius targeting
+  },
+  status: String,            // 📊 active/paused/expired
+  impressions: Number,       // 👁️ Total impressions
+  clicks: Number,            // 👆 Total clicks
+  createdAt: Date,          // 📅 Creation date
+  expiresAt: Date           // ⏰ Expiration date
+}
+```
+
+### 💬 Conversation Model
+
+```javascript
+{
+  phoneNumber: String,       // 📱 User's phone
+  platform: String,          // 📱 whatsapp/telegram
+  state: String,            // 📊 current conversation state
+  context: Object,           // 📝 Conversation context data
+  lastMessage: String,      // 💬 Last message received
+  updatedAt: Date           // 🕐 Last update timestamp
 }
 ```
 
@@ -366,7 +521,7 @@ npm start
   ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
   │    🔐    │     │   🗺️     │     │   💬     │     │   ⭐      │
   │   OTP    │     │  View    │     │ Connect  │     │  Rate    │
-  │ Verify   │     │  Map     │     │  WhatsApp│     │  Ride    │
+  │ Verify   │     │  Map     │     │ WhatsApp │     │  Ride    │
   └──────────┘     └──────────┘     └──────────┘     └──────────┘
 ```
 
@@ -377,7 +532,7 @@ npm start
 | 1️⃣ | **Register** | Sign up with phone number + OTP verification |
 | 2️⃣ | **Choose Role** | Register as passenger, driver, or both |
 | 3️⃣ | **Find/Offer** | Search for rides or offer your own |
-| 4️⃣ | **Connect** | Coordinate via WhatsApp |
+| 4️⃣ | **Connect** | Coordinate via WhatsApp or Telegram |
 | 5️⃣ | **Ride** | Enjoy the trip! |
 | 6️⃣ | **Rate** | Rate your experience |
 
@@ -429,6 +584,7 @@ git push origin feature/amazing-feature
 | Service | Description |
 |---------|-------------|
 | [WhatsApp Cloud API](https://developers.facebook.com/docs/whatsapp) | 📱 Messaging platform |
+| [Telegram Bot API](https://core.telegram.org/bots/api) | ✈️ Bot API |
 | [OpenStreetMap](https://www.openstreetmap.org/) | 🗺️ Free map data |
 | [Nominatim](https://nominatim.openstreetmap.org/) | 📍 Geocoding service |
 | [OSRM](https://project-osrm.org/) | 🛣️ Routing engine |
@@ -464,6 +620,7 @@ git push origin feature/amazing-feature
 ![Built with](https://img.shields.io/badge/Built%20with-Node.js-green)
 ![Built with](https://img.shields.io/badge/Built%20with-MongoDB-green)
 ![Built with](https://img.shields.io/badge/Built%20with-WhatsApp-green)
+![Built with](https://img.shields.io/badge/Built%20with-Telegram-green)
 
 ---
 

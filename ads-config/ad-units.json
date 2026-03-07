@@ -1,0 +1,206 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2024-01-01",
+  "description": "Ad Unit Definitions - Similar to Google Ads Dimensions",
+  "units": [
+    {
+      "id": "banner-300x250",
+      "name": "Medium Rectangle",
+      "type": "banner",
+      "dimensions": {
+        "width": 300,
+        "height": 250,
+        "aspectRatio": "1.2:1"
+      },
+      "displayName": "Medium Rectangle (300x250)",
+      "description": "Versatile ad unit that works well in sidebars and in-content",
+      "platforms": ["web", "mobile-web"],
+      "minWidth": 300,
+      "minHeight": 250,
+      "fileTypes": ["jpg", "png", "gif", "html5"],
+      "maxFileSizeKB": 150,
+      "supportedFeatures": ["image", "video", "html5"],
+      "example": {
+        "image": "https://via.placeholder.com/300x250?text=300x250+Ad",
+        "clickUrl": "https://example.com/ad-click"
+      }
+    },
+    {
+      "id": "banner-728x90",
+      "name": "Leaderboard",
+      "type": "banner",
+      "dimensions": {
+        "width": 728,
+        "height": 90,
+        "aspectRatio": "8.09:1"
+      },
+      "displayName": "Leaderboard (728x90)",
+      "description": "Best for top of page placements",
+      "platforms": ["web", "desktop"],
+      "minWidth": 728,
+      "minHeight": 90,
+      "fileTypes": ["jpg", "png", "gif", "html5"],
+      "maxFileSizeKB": 150,
+      "supportedFeatures": ["image", "video", "html5"],
+      "example": {
+        "image": "https://via.placeholder.com/728x90?text=728x90+Leaderboard",
+        "clickUrl": "https://example.com/ad-click"
+      }
+    },
+    {
+      "id": "banner-320x50",
+      "name": "Mobile Banner",
+      "type": "banner",
+      "dimensions": {
+        "width": 320,
+        "height": 50,
+        "aspectRatio": "6.4:1"
+      },
+      "displayName": "Mobile Banner (320x50)",
+      "description": "Standard mobile banner for smartphones",
+      "platforms": ["mobile-web", "mobile-app"],
+      "minWidth": 320,
+      "minHeight": 50,
+      "fileTypes": ["jpg", "png", "gif", "html5"],
+      "maxFileSizeKB": 100,
+      "supportedFeatures": ["image", "video", "html5"],
+      "example": {
+        "image": "https://via.placeholder.com/320x50?text=320x50+Mobile",
+        "clickUrl": "https://example.com/ad-click"
+      }
+    },
+    {
+      "id": "banner-320x100",
+      "name": "Large Mobile Banner",
+      "type": "banner",
+      "dimensions": {
+        "width": 320,
+        "height": 100,
+        "aspectRatio": "3.2:1"
+      },
+      "displayName": "Large Mobile Banner (320x100)",
+      "description": "Larger mobile banner for more creative impact",
+      "platforms": ["mobile-web", "mobile-app"],
+      "minWidth": 320,
+      "minHeight": 100,
+      "fileTypes": ["jpg", "png", "gif", "html5"],
+      "maxFileSizeKB": 100,
+      "supportedFeatures": ["image", "video", "html5"],
+      "example": {
+        "image": "https://via.placeholder.com/320x100?text=320x100+Large+Mobile",
+        "clickUrl": "https://example.com/ad-click"
+      }
+    },
+    {
+      "id": "banner-300x600",
+      "name": "Half Page",
+      "type": "banner",
+      "dimensions": {
+        "width": 300,
+        "height": 600,
+        "aspectRatio": "1:2"
+      },
+      "displayName": "Half Page (300x600)",
+      "description": "Tall format for sidebar placements",
+      "platforms": ["web", "desktop"],
+      "minWidth": 300,
+      "minHeight": 600,
+      "fileTypes": ["jpg", "png", "gif", "html5"],
+      "maxFileSizeKB": 200,
+      "supportedFeatures": ["image", "video", "html5"],
+      "example": {
+        "image": "https://via.placeholder.com/300x600?text=300x600+Half+Page",
+        "clickUrl": "https://example.com/ad-click"
+      }
+    },
+    {
+      "id": "interstitial-320x480",
+      "name": "Mobile Interstitial",
+      "type": "interstitial",
+      "dimensions": {
+        "width": 320,
+        "height": 480,
+        "aspectRatio": "2:3"
+      },
+      "displayName": "Mobile Interstitial (320x480)",
+      "description": "Full-screen mobile interstitial ad",
+      "platforms": ["mobile-web", "mobile-app"],
+      "minWidth": 320,
+      "minHeight": 480,
+      "fileTypes": ["jpg", "png", "gif", "html5", "video"],
+      "maxFileSizeKB": 500,
+      "supportedFeatures": ["image", "video", "html5"],
+      "example": {
+        "image": "https://via.placeholder.com/320x480?text=320x480+Interstitial",
+        "clickUrl": "https://example.com/ad-click"
+      }
+    },
+    {
+      "id": "interstitial-300x250",
+      "name": "Interstitial Square",
+      "type": "interstitial",
+      "dimensions": {
+        "width": 300,
+        "height": 250,
+        "aspectRatio": "1.2:1"
+      },
+      "displayName": "Interstitial Square (300x250)",
+      "description": "Square interstitial for various placements",
+      "platforms": ["web", "mobile-web"],
+      "minWidth": 300,
+      "minHeight": 250,
+      "fileTypes": ["jpg", "png", "gif", "html5", "video"],
+      "maxFileSizeKB": 300,
+      "supportedFeatures": ["image", "video", "html5"],
+      "example": {
+        "image": "https://via.placeholder.com/300x250?text=300x250+Interstitial",
+        "clickUrl": "https://example.com/ad-click"
+      }
+    },
+    {
+      "id": "native-in-feed",
+      "name": "In-Feed Native Ad",
+      "type": "native",
+      "dimensions": {
+        "width": "fluid",
+        "height": "auto",
+        "minHeight": 250,
+        "maxHeight": 400
+      },
+      "displayName": "In-Feed Native Ad",
+      "description": "Native ad format that matches the content flow",
+      "platforms": ["web", "mobile-web"],
+      "minWidth": 300,
+      "fileTypes": ["image", "html"],
+      "maxFileSizeKB": 200,
+      "supportedFeatures": ["image", "html", "sponsored"],
+      "components": {
+        "required": ["headline", "image", "cta"],
+        "optional": ["description", "logo", "rating", "price"]
+      },
+      "styles": {
+        "container": "display: flex; gap: 12px; padding: 12px; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 8px 0;",
+        "image": "width: 100px; height: 100px; object-fit: cover; border-radius: 4px; flex-shrink: 0;",
+        "content": "flex: 1; display: flex; flex-direction: column;",
+        "headline": "font-size: 14px; font-weight: 600; color: #333; margin: 0 0 4px 0; line-height: 1.3;",
+        "description": "font-size: 12px; color: #666; margin: 0 0 8px 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;",
+        "cta": "display: inline-block; padding: 6px 16px; background: #667eea; color: #fff; border-radius: 4px; font-size: 12px; font-weight: 600; text-decoration: none; align-self: flex-start;",
+        "sponsored": "font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;"
+      },
+      "example": {
+        "headline": "Discover Local Restaurants Near You",
+        "description": "Order now and get 20% off your first order!",
+        "image": "https://via.placeholder.com/100x100?text=Local",
+        "ctaText": "Learn More",
+        "ctaUrl": "https://example.com/ad-click",
+        "sponsored": "Sponsored"
+      }
+    }
+  ],
+  "notes": {
+    "fluid": "Fluid ads adjust their width to the container",
+    "auto": "Height is determined by content",
+    "html5": "HTML5 ads must be in a zip file with all assets"
+  }
+}
+

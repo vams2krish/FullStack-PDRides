@@ -8,6 +8,11 @@ const API_VERSION = process.env.WHATSAPP_API_VERSION || 'v18.0';
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 const ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 
+console.log('WhatsApp Service initializing...');
+console.log('- Phone Number ID:', PHONE_NUMBER_ID ? `SET (${PHONE_NUMBER_ID})` : 'NOT SET');
+console.log('- Access Token:', ACCESS_TOKEN ? `SET (${ACCESS_TOKEN.substring(0, 20)}...)` : 'NOT SET');
+console.log('- API Version:', API_VERSION);
+
 const BASE_URL = `https://graph.facebook.com/${API_VERSION}/${PHONE_NUMBER_ID}`;
 
 /**

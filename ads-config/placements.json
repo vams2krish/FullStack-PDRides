@@ -1,0 +1,194 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2024-01-01",
+  "description": "Ad Placement Configuration - Where ads appear in the app",
+  "placements": [
+    {
+      "id": "in-feed-top-banner",
+      "name": "In-Feed Top Banner Ad",
+      "description": "Banner ad displayed above the map on the map-view page",
+      "location": "map-view",
+      "page": "map-view.html",
+      "position": "above-map",
+      "positionSelector": "#map",
+      "insertMethod": "before",
+      "supportedUnits": [
+        "banner-300x250",
+        "banner-320x50",
+        "banner-728x90",
+        "banner-320x100"
+      ],
+      "defaultUnit": "banner-320x50",
+      "priority": 1,
+      "active": true,
+      "responsive": true,
+      "breakpoints": {
+        "mobile": {
+          "maxWidth": 480,
+          "defaultUnit": "banner-320x50"
+        },
+        "tablet": {
+          "maxWidth": 768,
+          "defaultUnit": "banner-300x250"
+        },
+        "desktop": {
+          "minWidth": 769,
+          "defaultUnit": "banner-728x90"
+        }
+      },
+      "targeting": {
+        "modes": ["passenger", "driver"],
+        "userTypes": ["all"],
+        "requiresAuth": false
+      },
+      "refresh": {
+        "enabled": false,
+        "interval": 0
+      },
+      "tracking": {
+        "impression": true,
+        "click": true,
+        "viewability": true
+      }
+    },
+    {
+      "id": "in-feed-middle-banner",
+      "name": "In-Feed Middle Banner Ad",
+      "description": "Banner ad displayed after the pricing card on the map-view page",
+      "location": "map-view",
+      "page": "map-view.html",
+      "position": "after-pricing",
+      "positionSelector": ".pricing-card",
+      "insertMethod": "after",
+      "supportedUnits": [
+        "banner-300x250",
+        "banner-320x50"
+      ],
+      "defaultUnit": "banner-300x250",
+      "priority": 2,
+      "active": true,
+      "responsive": true,
+      "breakpoints": {
+        "mobile": {
+          "maxWidth": 480,
+          "defaultUnit": "banner-320x50"
+        },
+        "tablet": {
+          "maxWidth": 768,
+          "defaultUnit": "banner-300x250"
+        },
+        "desktop": {
+          "minWidth": 769,
+          "defaultUnit": "banner-300x250"
+        }
+      },
+      "targeting": {
+        "modes": ["passenger", "driver"],
+        "userTypes": ["all"],
+        "requiresAuth": false
+      },
+      "refresh": {
+        "enabled": false,
+        "interval": 0
+      },
+      "tracking": {
+        "impression": true,
+        "click": true,
+        "viewability": true
+      }
+    },
+    {
+      "id": "interstitial-full",
+      "name": "Full Screen Interstitial",
+      "description": "Full-screen interstitial ad shown between content",
+      "location": "app-wide",
+      "page": "all",
+      "position": "modal",
+      "supportedUnits": [
+        "interstitial-320x480",
+        "interstitial-300x250"
+      ],
+      "defaultUnit": "interstitial-320x480",
+      "priority": 3,
+      "active": false,
+      "responsive": true,
+      "breakpoints": {
+        "mobile": {
+          "maxWidth": 480,
+          "defaultUnit": "interstitial-320x480"
+        },
+        "tablet": {
+          "maxWidth": 768,
+          "defaultUnit": "interstitial-300x250"
+        },
+        "desktop": {
+          "minWidth": 769,
+          "defaultUnit": "interstitial-300x250"
+        }
+      },
+      "targeting": {
+        "modes": ["passenger", "driver"],
+        "userTypes": ["all"],
+        "requiresAuth": false
+      },
+      "triggers": {
+        "onPageLoad": false,
+        "onScroll": false,
+        "onExitIntent": false,
+        "onTimer": false
+      },
+      "refresh": {
+        "enabled": true,
+        "interval": 300000,
+        "maxPerSession": 3
+      },
+      "tracking": {
+        "impression": true,
+        "click": true,
+        "viewability": true,
+        "close": true
+      }
+    },
+    {
+      "id": "in-feed-native",
+      "name": "In-Feed Native Ad",
+      "description": "Native ad format that blends with content feed",
+      "location": "rides-list",
+      "page": "map-view.html",
+      "position": "in-feed",
+      "positionSelector": ".ride-list",
+      "insertMethod": "intersperse",
+      "supportedUnits": [
+        "native-in-feed"
+      ],
+      "defaultUnit": "native-in-feed",
+      "priority": 4,
+      "active": false,
+      "responsive": true,
+      "targeting": {
+        "modes": ["passenger", "driver"],
+        "userTypes": ["all"],
+        "requiresAuth": false
+      },
+      "refresh": {
+        "enabled": false,
+        "interval": 0
+      },
+      "tracking": {
+        "impression": true,
+        "click": true,
+        "viewability": true
+      }
+    }
+  ],
+  "globalSettings": {
+    "defaultFallback": true,
+    "enableAdRefresh": false,
+    "maxAdsPerPage": 2,
+    "adLoadTimeout": 5000,
+    "enableDebug": false,
+    "lazyLoad": true,
+    "lazyLoadThreshold": 200
+  }
+}
+

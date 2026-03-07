@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+ move<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PDRides - Affordable carpooling made easy. Connect with commuters, save money, and reduce your carbon footprint.">
-    <title>PDRides 🚗 | Affordable Carpooling Made Easy</title>
+    <meta name="description" content="PDRides - Public-Demand Ride-share Made Easy. Forever Free to use platform for both Passengers and Drivers with no platform fees.">
+    <title>PDRides 🚗 | Public-Demand Ride-share Made Easy - No Platform Fees</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -220,6 +220,17 @@
         }
 
         .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-telegram {
+            background: linear-gradient(135deg, #229ED9 0%, #0088cc 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-telegram:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
@@ -789,14 +800,13 @@
                     🌟 #1 Carpooling Platform
                 </div>
                 
-                <h1>Smart Carpooling Made Easy 🚗</h1>
+<h1>Ride sharing is now Easy, Quick & Community Friendly - On Public demand 🚗</h1>
                 
-                <p>Connect with fellow commuters, save money on transportation, and reduce your carbon footprint. Join thousands of happy riders today!</p>
+                <p>Forever Free to use this platform for both Passengers and Drivers. Connect with fellow commuters, save money on transportation, and reduce your carbon footprint. Join thousands of happy riders today!</p>
                 
-                <div class="hero-buttons">
-                    <a href="#" onclick="handleFindRide()" class="btn btn-white">🗺️ Find a Ride</a>
-                    <a href="#" onclick="handleOfferRide()" class="btn btn-accent">🚙 Offer a Ride</a>
-                    <a href="https://wa.me/15551758507" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">📱 WhatsApp Bot</a>
+<div class="hero-buttons">
+                    <a href="https://t.me/PDRides_admin_bot" target="_blank" rel="noopener noreferrer" class="btn btn-telegram">✈️ Telegram Bot</a>
+                    <a href="#" onclick="openWhatsAppBot(); return false;" class="btn btn-whatsapp">📱 WhatsApp Bot</a>
                 </div>
             </div>
         </div>
@@ -1089,7 +1099,7 @@
             }
         }
         
-        // Handle Offer Ride button - check login status
+// Handle Offer Ride button - check login status
         function handleOfferRide() {
             const authToken = localStorage.getItem('pdrides_token');
             const userPhone = localStorage.getItem('pdrides_phone');
@@ -1101,6 +1111,16 @@
                 // User is not logged in, go to login
                 window.location.href = '/login';
             }
+        }
+        
+// Handle WhatsApp Bot button click - opens WhatsApp with pre-filled message
+        function openWhatsAppBot() {
+            // Use the WhatsApp API direct link with properly encoded message
+            const phoneNumber = '15551758507';
+            const message = 'hi';
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
         }
     </script>
 </body>

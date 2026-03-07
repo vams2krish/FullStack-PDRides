@@ -45,9 +45,29 @@ router.post('/', async (req, res) => {
   try {
     const body = req.body;
     
-    // Log webhook payload in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Webhook received:', JSON.stringify(body, null, 2));
+    // Log full webhook payload
+    console.log('========================================');
+    console.log('📥 WhatsApp Webhook received:');
+    console.log(JSON.stringify(body, null, 2));
+    console.log('========================================');
+    
+    // Log environment info
+    console.log('Environment check:');
+    console.log('- Phone Number ID:', process.env.WHATSAPP_PHONE_NUMBER_ID ? 'SET' : 'NOT SET');
+    console.log('- Access Token:', process.env.WHATSAPP_ACCESS_TOKEN ? 'SET' : 'NOT SET');
+    console.log('- Verify Token:', process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN);
+    
+    // Check if this is a verification request
+    if (body.object === 'whatsapp_business_account') {
+      console.log('✅ This is a WhatsApp Business Account webhook');
+    }
+    
+    if (body.entry && body.entry[0] && body.entry[0].changes) {
+      const changes = body.entry[0].changes;
+      console.log('Changes found:', changes.length);
+      changes.forEach((change, i) => {
+        console.log(`Change ${i+1}:`, JSON.stringify(change.value, null, 2));
+      });
     }
 
     // Handle message

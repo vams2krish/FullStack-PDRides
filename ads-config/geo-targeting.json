@@ -1,0 +1,165 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2024-01-01",
+  "description": "Geo-Targeting Configuration - State & Zip Code Targeting Rules",
+  "settings": {
+    "supportedCountries": ["US"],
+    "defaultCountry": "US",
+    "zipcodeLength": 5,
+    "radiusUnits": "miles",
+    "enableDayparting": true,
+    "enableRadiusTargeting": true
+  },
+  "states": [
+    { "code": "AL", "name": "Alabama" },
+    { "code": "AK", "name": "Alaska" },
+    { "code": "AZ", "name": "Arizona" },
+    { "code": "AR", "name": "Arkansas" },
+    { "code": "CA", "name": "California" },
+    { "code": "CO", "name": "Colorado" },
+    { "code": "CT", "name": "Connecticut" },
+    { "code": "DE", "name": "Delaware" },
+    { "code": "FL", "name": "Florida" },
+    { "code": "GA", "name": "Georgia" },
+    { "code": "HI", "name": "Hawaii" },
+    { "code": "ID", "name": "Idaho" },
+    { "code": "IL", "name": "Illinois" },
+    { "code": "IN", "name": "Indiana" },
+    { "code": "IA", "name": "Iowa" },
+    { "code": "KS", "name": "Kansas" },
+    { "code": "KY", "name": "Kentucky" },
+    { "code": "LA", "name": "Louisiana" },
+    { "code": "ME", "name": "Maine" },
+    { "code": "MD", "name": "Maryland" },
+    { "code": "MA", "name": "Massachusetts" },
+    { "code": "MI", "name": "Michigan" },
+    { "code": "MN", "name": "Minnesota" },
+    { "code": "MS", "name": "Mississippi" },
+    { "code": "MO", "name": "Missouri" },
+    { "code": "MT", "name": "Montana" },
+    { "code": "NE", "name": "Nebraska" },
+    { "code": "NV", "name": "Nevada" },
+    { "code": "NH", "name": "New Hampshire" },
+    { "code": "NJ", "name": "New Jersey" },
+    { "code": "NM", "name": "New Mexico" },
+    { "code": "NY", "name": "New York" },
+    { "code": "NC", "name": "North Carolina" },
+    { "code": "ND", "name": "North Dakota" },
+    { "code": "OH", "name": "Ohio" },
+    { "code": "OK", "name": "Oklahoma" },
+    { "code": "OR", "name": "Oregon" },
+    { "code": "PA", "name": "Pennsylvania" },
+    { "code": "RI", "name": "Rhode Island" },
+    { "code": "SC", "name": "South Carolina" },
+    { "code": "SD", "name": "South Dakota" },
+    { "code": "TN", "name": "Tennessee" },
+    { "code": "TX", "name": "Texas" },
+    { "code": "UT", "name": "Utah" },
+    { "code": "VT", "name": "Vermont" },
+    { "code": "VA", "name": "Virginia" },
+    { "code": "WA", "name": "Washington" },
+    { "code": "WV", "name": "West Virginia" },
+    { "code": "WI", "name": "Wisconsin" },
+    { "code": "WY", "name": "Wyoming" }
+  ],
+  "metroAreas": [
+    {
+      "id": "nyc",
+      "name": "New York City",
+      "states": ["NY", "NJ", "CT"],
+      "zipcodes": ["10001", "10002", "10003", "10451", "10452", "07030", "07060", "06830"]
+    },
+    {
+      "id": "la",
+      "name": "Los Angeles",
+      "states": ["CA"],
+      "zipcodes": ["90001", "90002", "90003", "90210", "90247", "90402"]
+    },
+    {
+      "id": "chicago",
+      "name": "Chicago",
+      "states": ["IL"],
+      "zipcodes": ["60601", "60602", "60603", "60614", "60622", "60657"]
+    },
+    {
+      "id": "philadelphia",
+      "name": "Philadelphia",
+      "states": ["PA", "NJ", "DE"],
+      "zipcodes": ["19102", "19103", "19104", "19106", "19107", "19111", "08002"]
+    },
+    {
+      "id": "houston",
+      "name": "Houston",
+      "states": ["TX"],
+      "zipcodes": ["77001", "77002", "77003", "77004", "77005", "77401"]
+    }
+  ],
+  "targetingTypes": {
+    "all": {
+      "description": "Target all locations",
+      "requires": [],
+      "priority": 0
+    },
+    "states": {
+      "description": "Target specific US states",
+      "requires": ["states"],
+      "priority": 1,
+      "example": {
+        "geoType": "states",
+        "states": ["NJ", "NY", "PA"]
+      }
+    },
+    "zipcodes": {
+      "description": "Target specific zip codes",
+      "requires": ["zipcodes"],
+      "priority": 2,
+      "matchtypes": [
+        { "type": "exact", "description": "Match exact 5-digit zip code", "example": "08830" },
+        { "type": "prefix", "description": "Match zip codes by prefix (first 3 digits)", "example": "088" }
+      ],
+      "example": {
+        "geoType": "zipcodes",
+        "zipcodes": [
+          { "code": "08830", "matchtype": "exact" },
+          { "code": "088", "matchtype": "prefix" }
+        ]
+      }
+    },
+    "radius": {
+      "description": "Target within radius of a point",
+      "requires": ["radius"],
+      "priority": 3,
+      "maxRadiusMiles": 50,
+      "example": {
+        "geoType": "radius",
+        "radius": {
+          "center": { "lat": 40.7128, "lng": -74.006 },
+          "radiusMiles": 25
+        }
+      }
+    }
+  },
+  "dayparting": {
+    "enabled": true,
+    "timezone": "America/New_York",
+    "days": [
+      "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
+    ],
+    "timeFormat": "HH:MM",
+    "example": {
+      "schedule": {
+        "daysOfWeek": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        "startTime": "09:00",
+        "endTime": "17:00"
+      }
+    }
+  },
+  "validation": {
+    "maxStatesPerAd": 50,
+    "maxZipcodesPerAd": 500,
+    "minRadiusMiles": 1,
+    "maxRadiusMiles": 50,
+    "zipcodeFormat": "^\\d{5}$"
+  }
+}
+

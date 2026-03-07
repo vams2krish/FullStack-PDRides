@@ -26,14 +26,35 @@
             --white: #ffffff;
             --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             --driver-gradient: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            
+            /* Responsive font sizes using clamp */
+            --font-xs: clamp(0.65rem, 0.8vw + 0.4rem, 0.8rem);
+            --font-sm: clamp(0.75rem, 0.9vw + 0.5rem, 0.9rem);
+            --font-base: clamp(0.85rem, 1vw + 0.6rem, 1rem);
+            --font-md: clamp(0.95rem, 1.2vw + 0.7rem, 1.1rem);
+            --font-lg: clamp(1.1rem, 1.5vw + 0.8rem, 1.3rem);
+            --font-xl: clamp(1.3rem, 2vw + 0.9rem, 1.6rem);
+            --font-2xl: clamp(1.5rem, 2.5vw + 1rem, 2rem);
+            
+            /* Responsive spacing */
+            --space-xs: clamp(4px, 1vw + 2px, 8px);
+            --space-sm: clamp(8px, 1.5vw + 4px, 12px);
+            --space-md: clamp(12px, 2vw + 6px, 16px);
+            --space-lg: clamp(16px, 2.5vw + 8px, 20px);
+            --space-xl: clamp(20px, 3vw + 10px, 28px);
+            --space-2xl: clamp(24px, 4vw + 12px, 36px);
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: var(--gradient);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: #333;
             line-height: 1.6;
+            padding: clamp(10px, 3vw, 30px);
         }
 
         body.driver-mode {
@@ -41,53 +62,55 @@
         }
 
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            padding: clamp(12px, 3vw, 20px);
         }
 
         .header {
             text-align: center;
-            padding: 30px 20px;
+            padding: var(--space-xl) var(--space-lg);
             color: white;
         }
 
         .header h1 {
-            font-size: 2rem;
-            margin-bottom: 8px;
+            font-size: var(--font-2xl);
+            margin-bottom: var(--space-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: var(--space-md);
         }
 
         .header p {
             opacity: 0.9;
-            font-size: 1rem;
+            font-size: var(--font-base);
         }
 
         .card {
             background: white;
-            border-radius: 20px;
+            border-radius: clamp(16px, 4vw + 8px, 24px);
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: var(--space-lg);
         }
 
         .card-header {
-            padding: 20px 25px;
+            padding: var(--space-lg);
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
         }
 
         .card-header h2 {
-            font-size: 1.3rem;
+            font-size: var(--font-lg);
             color: #333;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-sm);
         }
 
         .role-toggle-small {
@@ -98,12 +121,12 @@
         }
 
         .role-toggle-small button {
-            padding: 6px 14px;
+            padding: var(--space-xs) var(--space-md);
             border: none;
             background: transparent;
             border-radius: 18px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: var(--font-sm);
             font-weight: 600;
             transition: all 0.3s;
             color: #666;
@@ -115,11 +138,11 @@
         }
 
         .card-body {
-            padding: 25px;
+            padding: var(--space-xl);
         }
 
         .form-section {
-            margin-bottom: 25px;
+            margin-bottom: var(--space-xl);
         }
 
         .form-section:last-child {
@@ -127,15 +150,15 @@
         }
 
         .section-title {
-            font-size: 0.9rem;
+            font-size: var(--font-sm);
             font-weight: 700;
             color: #333;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
             border-bottom: 2px solid #eee;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-sm);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -496,18 +519,75 @@
         .privacy-note {
             text-align: center;
             font-size: 0.8rem;
-            color: #999;
+            color: rgba(255,255,255,0.8);
             margin-top: 15px;
             line-height: 1.5;
         }
 
         .privacy-note a {
-            color: var(--accent);
-            text-decoration: none;
+            color: white;
+            text-decoration: underline;
         }
 
-        .privacy-note a:hover {
-            text-decoration: underline;
+        /* Responsive Breakpoints */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 500px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 500px;
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .container {
+                max-width: 520px;
+            }
+        }
+
+        /* Small screens */
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--space-md);
+            }
+            
+            .header {
+                padding: var(--space-lg) var(--space-md);
+            }
+            
+            .card-body {
+                padding: var(--space-lg);
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .progress-steps {
+                gap: var(--space-sm);
+            }
+        }
+
+        @media (max-width: 320px) {
+            .container {
+                padding: var(--space-sm);
+            }
+            
+            .card-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header h1 {
+                font-size: var(--font-xl);
+            }
         }
     </style>
 </head>
@@ -522,8 +602,8 @@
             <div class="card-header">
                 <h2>📝 Registration</h2>
                 <div class="role-toggle-small">
-                    <button class="active" id="passengerTab" onclick="setRegistrationRole('passenger')">👤 Passenger</button>
-                    <button id="driverTab" onclick="setRegistrationRole('driver')">🚙 Driver</button>
+                    <button class="active" id="passengerTab" onclick="setRegistrationRole('passenger'); window.location.href='/register?mode=passenger'">👤 Passenger</button>
+                    <button id="driverTab" onclick="setRegistrationRole('driver'); window.location.href='/register?mode=driver'">🚙 Driver</button>
                 </div>
             </div>
 
@@ -680,8 +760,19 @@
                         </div>
                     </div>
 
-                    <div class="info-box success">
-                        ✅ By registering, you agree to our community guidelines and terms of service.
+                    <!-- Terms & Conditions and Privacy Policy Checkboxes -->
+                    <div class="form-section">
+                        <div class="section-title">📋 Agreement</div>
+                        
+                        <div class="checkbox-item" style="margin-bottom: 12px; padding: 12px 15px; background: #f8f9fa; border-radius: 8px;">
+                            <input type="checkbox" id="termsOfService" required>
+                            <span>I agree to the <a href="/terms-of-service" target="_blank" style="color: var(--accent); text-decoration: underline;">Terms of Service</a> <span style="color: var(--danger);">*</span></span>
+                        </div>
+                        
+                        <div class="checkbox-item" style="margin-bottom: 12px; padding: 12px 15px; background: #f8f9fa; border-radius: 8px;">
+                            <input type="checkbox" id="privacyPolicy" required>
+                            <span>I agree to the <a href="/privacy-policy" target="_blank" style="color: var(--accent); text-decoration: underline;">Privacy Policy</a> <span style="color: var(--danger);">*</span></span>
+                        </div>
                     </div>
 
                     <div class="form-row">
@@ -695,7 +786,7 @@
         </div>
 
         <div class="login-link">
-            Already have an account? <a href="/register">Register here</a>
+            Already have an account? <a href="/login">Login here</a>
         </div>
 
         <p class="privacy-note">
@@ -721,11 +812,15 @@
             window.location.href = '/map';
         }
 
-        // Check URL params for role
+        // Check URL params for mode (passenger or driver)
         const urlParams = new URLSearchParams(window.location.search);
-        const role = urlParams.get('role');
-        if (role === 'driver') {
+        const mode = urlParams.get('mode');
+        
+        // Set initial role based on URL parameter
+        if (mode === 'driver') {
             setRegistrationRole('driver');
+        } else if (mode === 'passenger') {
+            setRegistrationRole('passenger');
         }
 
         // Set registration role
@@ -747,7 +842,7 @@
             } else {
                 driverFields.classList.remove('active');
                 document.body.classList.remove('driver-mode');
-                document.getElementById('headerSubtitle').textContent = 'Create your account';
+                document.getElementById('headerSubtitle').textContent = 'Register as a Passenger';
             }
 
             // Update step titles
@@ -912,7 +1007,21 @@
                 licensePlate: document.getElementById('licensePlate').value.trim()
             } : null;
             
-            // Validate
+            // Validate Terms of Service and Privacy Policy checkboxes
+            const termsAccepted = document.getElementById('termsOfService').checked;
+            const privacyAccepted = document.getElementById('privacyPolicy').checked;
+            
+            if (!termsAccepted) {
+                showAlert('error', 'You must agree to the Terms of Service to continue');
+                return;
+            }
+            
+            if (!privacyAccepted) {
+                showAlert('error', 'You must agree to the Privacy Policy to continue');
+                return;
+            }
+            
+            // Validate basic fields
             if (!name || !phone) {
                 showAlert('error', 'Please fill in all required fields');
                 return;
@@ -938,7 +1047,9 @@
                             name: emergencyName,
                             phone: emergencyPhone
                         },
-                        isRegistration: true
+                        isRegistration: true,
+                        termsAccepted: termsAccepted,
+                        privacyAccepted: privacyAccepted
                     })
                 });
                 

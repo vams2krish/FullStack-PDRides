@@ -1,0 +1,2317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDRides - Ad Configuration Tool</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --success: #25D366;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --info: #2196F3;
+            --dark: #333;
+            --light: #f5f5f5;
+            --border: #ddd;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--light);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--dark) 0%, #1a1a1a 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .menu-section {
+            padding: 10px 20px 5px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #ccc;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: var(--primary);
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--dark);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon.primary { background: rgba(102, 126, 234, 0.1); color: var(--primary); }
+        .stat-icon.success { background: rgba(37, 211, 102, 0.1); color: var(--success); }
+        .stat-icon.warning { background: rgba(255, 152, 0, 0.1); color: var(--warning); }
+        .stat-icon.danger { background: rgba(244, 67, 54, 0.1); color: var(--danger); }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-active { background: #e8f5e9; color: #2e7d32; }
+        .status-paused { background: #fff3e0; color: #e65100; }
+        .status-pending { background: #e3f2fd; color: #1565c0; }
+        .status-expired { background: #ffebee; color: #c62828; }
+
+        .action-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .action-btn.edit { background: #e3f2fd; color: #1565c0; }
+        .action-btn.edit:hover { background: #1565c0; color: white; }
+        .action-btn.preview { background: #e8f5e9; color: #2e7d32; }
+        .action-btn.preview:hover { background: #2e7d32; color: white; }
+        .action-btn.delete { background: #ffebee; color: #c62828; }
+        .action-btn.delete:hover { background: #c62828; color: white; }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 8px 12px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            min-width: 150px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            z-index: 1000;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 900px;
+            animation: modalSlideIn 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+        }
+
+        .modal-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .modal-close:hover {
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            position: sticky;
+            bottom: 0;
+            background: white;
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 768px) {
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Preview Box */
+        .preview-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        /* Chip/Tag Input */
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            min-height: 44px;
+        }
+
+        .chip-container:focus-within {
+            border-color: var(--primary);
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .chip-remove {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .chip-remove:hover {
+            opacity: 1;
+        }
+
+        .chip-input {
+            border: none;
+            outline: none;
+            flex: 1;
+            min-width: 100px;
+            font-size: 0.9rem;
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item:hover {
+            border-color: var(--primary);
+        }
+
+        .checkbox-item.selected {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .checkbox-item input {
+            display: none;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert.show {
+            display: flex;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffe0b2;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover, .page-btn.active {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header-actions {
+                width: 100%;
+            }
+            
+            .header-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        /* Hide sections */
+        .section { display: none; }
+        .section.active { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1><i class="fas fa-ad"></i> Ad Config</h1>
+            <p>Internal Developer Tool</p>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-section">Overview</div>
+            <a class="menu-item active" onclick="showSection('dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            <a class="menu-item" onclick="showSection('ads')">
+                <i class="fas fa-bullhorn"></i> All Ads
+            </a>
+            <a class="menu-item" onclick="showSection('create')">
+                <i class="fas fa-plus-circle"></i> Create Ad
+            </a>
+            <a class="menu-item" onclick="showSection('import-export')">
+                <i class="fas fa-exchange-alt"></i> Import/Export
+            </a>
+            <a class="menu-item" onclick="showSection('config')">
+                <i class="fas fa-cog"></i> Ad Config
+            </a>
+            
+            <div class="menu-section">Ad Types</div>
+            <a class="menu-item" onclick="filterByType('banner')">
+                <i class="fas fa-image"></i> Banners
+            </a>
+            <a class="menu-item" onclick="filterByType('interstitial')">
+                <i class="fas fa-mobile-alt"></i> Interstitials
+            </a>
+            <a class="menu-item" onclick="filterByType('native')">
+                <i class="fas fa-list"></i> Native Ads
+            </a>
+            
+            <div class="menu-section">Settings</div>
+            <a class="menu-item" href="/map-view.html" target="_blank">
+                <i class="fas fa-external-link-alt"></i> Preview on Map
+            </a>
+            <a class="menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fas fa-chart-line"></i> Ad Performance Dashboard</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="showSection('create'); openCreateModal()">
+                        <i class="fas fa-plus"></i> Create New Ad
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon primary"><i class="fas fa-bullhorn"></i></div>
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">Total Ads</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success"><i class="fas fa-play-circle"></i></div>
+                    <div class="stat-value" id="statActive">0</div>
+                    <div class="stat-label">Active Ads</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning"><i class="fas fa-eye"></i></div>
+                    <div class="stat-value" id="statImpressions">0</div>
+                    <div class="stat-label">Total Impressions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon danger"><i class="fas fa-hand-pointer"></i></div>
+                    <div class="stat-value" id="statClicks">0</div>
+                    <div class="stat-label">Total Clicks</div>
+                </div>
+            </div>
+
+            <!-- Quick Stats by Type -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Ads by Type</span>
+                </div>
+                <div class="card-body">
+                    <div class="stats-grid" style="margin-bottom: 0;">
+                        <div class="stat-card">
+                            <div class="stat-value" id="statBanners">0</div>
+                            <div class="stat-label">Banner Ads</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="statInterstitials">0</div>
+                            <div class="stat-label">Interstitial Ads</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="statNatives">0</div>
+                            <div class="stat-label">Native Ads</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="statCtr">0%</div>
+                            <div class="stat-label">Average CTR</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Ads -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Recent Ads</span>
+                    <button class="btn btn-outline btn-sm" onclick="showSection('ads')">View All</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Impressions</th>
+                                    <th>Clicks</th>
+                                    <th>CTR</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentAdsTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Ads Section -->
+        <div id="ads" class="section">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fas fa-bullhorn"></i> All Ads</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openCreateModal()">
+                        <i class="fas fa-plus"></i> Create Ad
+                    </button>
+                </div>
+            </div>
+
+            <!-- Alert -->
+            <div id="adsAlert" class="alert"></div>
+
+            <!-- Filters -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label>Status</label>
+                            <select id="filterStatus" onchange="loadAds()">
+                                <option value="">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="paused">Paused</option>
+                                <option value="pending">Pending</option>
+                                <option value="expired">Expired</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Ad Type</label>
+                            <select id="filterAdType" onchange="loadAds()">
+                                <option value="">All Types</option>
+                                <option value="banner">Banner</option>
+                                <option value="interstitial">Interstitial</option>
+                                <option value="native">Native</option>
+                                <option value="in-feed">In-Feed</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Search</label>
+                            <input type="text" id="searchAds" placeholder="Search ads..." onkeyup="loadAds()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ads Table -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ad Name</th>
+                                    <th>Type</th>
+                                    <th>Unit</th>
+                                    <th>Targeting</th>
+                                    <th>Status</th>
+                                    <th>Impressions</th>
+                                    <th>Clicks</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adsTable">
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="adsEmpty" class="empty-state" style="display: none;">
+                        <i class="fas fa-bullhorn"></i>
+                        <h3>No Ads Found</h3>
+                        <p>Create your first ad to get started</p>
+                        <button class="btn btn-primary" onclick="openCreateModal()">
+                            <i class="fas fa-plus"></i> Create Ad
+                        </button>
+                    </div>
+                    
+                    <div class="pagination" id="adsPagination"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create/Edit Ad Section -->
+        <div id="create" class="section">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fas fa-plus-circle"></i> <span id="formTitle">Create New Ad</span></h1>
+            </div>
+
+            <div class="alert" id="formAlert"></div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form id="adForm">
+                        <!-- Basic Info -->
+                        <div class="form-section">
+                            <div class="form-section-title"><i class="fas fa-info-circle"></i> Basic Information</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Ad Name <span class="required">*</span></label>
+                                    <input type="text" id="adName" name="name" required placeholder="e.g., NJ Local Restaurant Ad">
+                                </div>
+                                <div class="form-group">
+                                    <label>Ad ID (auto-generated if empty)</label>
+                                    <input type="text" id="adId" name="adId" placeholder="ad_123456789">
+                                </div>
+                                <div class="form-group">
+                                    <label>Ad Type <span class="required">*</span></label>
+                                    <select id="adType" name="adType" required onchange="updateAdUnits()">
+                                        <option value="">Select Type</option>
+                                        <option value="banner">Banner</option>
+                                        <option value="interstitial">Interstitial</option>
+                                        <option value="native">Native</option>
+                                        <option value="in-feed">In-Feed</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ad Unit <span class="required">*</span></label>
+                                    <select id="adUnitId" name="adUnitId" required>
+                                        <option value="">Select Ad Unit</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select id="adStatus" name="status">
+                                        <option value="pending">Pending</option>
+                                        <option value="active">Active</option>
+                                        <option value="paused">Paused</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Creative Content -->
+                        <div class="form-section">
+                            <div class="form-section-title"><i class="fas fa-palette"></i> Creative Content</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Headline</label>
+                                    <input type="text" id="creativeHeadline" name="headline" maxlength="90" placeholder="e.g., Best Pizza in New Jersey">
+                                    <div class="form-hint">Max 90 characters</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Sponsor Name</label>
+                                    <input type="text" id="creativeSponsor" name="sponsorName" placeholder="e.g., NJ Pizza Palace">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label>Description</label>
+                                    <textarea id="creativeDescription" name="description" maxlength="300" placeholder="e.g., Order now and get 20% off your first order!"></textarea>
+                                    <div class="form-hint">Max 300 characters</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Image URL</label>
+                                    <input type="url" id="creativeImage" name="imageUrl" placeholder="https://example.com/ad-image.jpg">
+                                    <div class="form-hint">Enter URL or use the image upload below</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Or Upload Image</label>
+                                    <input type="file" id="creativeImageUpload" accept="image/*" onchange="handleImageUpload(this)">
+                                    <input type="hidden" id="creativeImageUrl" name="imageUrl">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label>Image Preview</label>
+                                    <div id="imagePreview" style="max-width: 300px; border-radius: 8px; overflow: hidden; display: none;">
+                                        <img id="previewImg" src="" alt="Ad Preview" style="width: 100%;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CTA -->
+                        <div class="form-section">
+                            <div class="form-section-title"><i class="fas fa-hand-pointer"></i> Call-to-Action</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>CTA Text</label>
+                                    <input type="text" id="ctaText" placeholder="e.g., Order Now">
+                                </div>
+                                <div class="form-group">
+                                    <label>CTA URL</label>
+                                    <input type="url" id="ctaUrl" placeholder="https://example.com/order">
+                                </div>
+                                <div class="form-group">
+                                    <label>CTA Type</label>
+                                    <select id="ctaType">
+                                        <option value="button">Button</option>
+                                        <option value="link">Link</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Geo-Targeting -->
+                        <div class="form-section">
+                            <div class="form-section-title"><i class="fas fa-map-marker-alt"></i> Geo-Targeting</div>
+                            
+                            <div class="form-group">
+                                <label>Targeting Type</label>
+                                <select id="geoType" onchange="toggleGeoFields()">
+                                    <option value="all">All Locations</option>
+                                    <option value="states">Specific States</option>
+                                    <option value="zipcodes">Specific Zip Codes</option>
+                                    <option value="radius">Radius Targeting</option>
+                                </select>
+                            </div>
+
+                            <!-- States -->
+                            <div id="statesField" class="form-group" style="display: none;">
+                                <label>Select States</label>
+                                <div class="chip-container" id="statesContainer">
+                                    <input type="text" class="chip-input" id="stateInput" placeholder="Type state code (e.g., NJ)..." onkeypress="addState(event)">
+                                </div>
+                                <div class="form-hint">Press Enter to add state</div>
+                            </div>
+
+                            <!-- Zipcodes -->
+                            <div id="zipcodesField" style="display: none;">
+                                <div class="form-group">
+                                    <label>Zip Codes (one per line or comma-separated)</label>
+                                    <textarea id="zipcodesInput" placeholder="08830&#10;08831&#10;08830,08831,08832"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Match Type</label>
+                                    <select id="zipcodeMatchType">
+                                        <option value="exact">Exact Match</option>
+                                        <option value="prefix">Prefix Match (first 3 digits)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Radius -->
+                            <div id="radiusField" style="display: none;">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Center Latitude</label>
+                                        <input type="number" id="radiusLat" step="0.0001" placeholder="40.7128">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Center Longitude</label>
+                                        <input type="number" id="radiusLng" step="0.0001" placeholder="-74.0060">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Radius (miles)</label>
+                                        <input type="number" id="radiusMiles" min="1" max="50" placeholder="25">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Exclusions -->
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label>Exclude Locations</label>
+                                <div class="chip-container" id="excludedContainer">
+                                    <input type="text" class="chip-input" id="excludeInput" placeholder="Type state to exclude..." onkeypress="addExclude(event)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dayparting -->
+                        <div class="form-section">
+                            <div class="form-section-title"><i class="fas fa-clock"></i> Schedule (Dayparting)</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Days of Week</label>
+                                    <div class="checkbox-group" id="daysCheckboxes">
+                                        <label class="checkbox-item" onclick="toggleDay(this)">
+                                            <input type="checkbox" value="monday"> Monday
+                                        </label>
+                                        <label class="checkbox-item" onclick="toggleDay(this)">
+                                            <input type="checkbox" value="tuesday"> Tuesday
+                                        </label>
+                                        <label class="checkbox-item" onclick="toggleDay(this)">
+                                            <input type="checkbox" value="wednesday"> Wednesday
+                                        </label>
+                                        <label class="checkbox-item" onclick="toggleDay(this)">
+                                            <input type="checkbox" value="thursday"> Thursday
+                                        </label>
+                                        <label class="checkbox-item" onclick="toggleDay(this)">
+                                            <input type="checkbox" value="friday"> Friday
+                                        </label>
+                                        <label class="checkbox-item" onclick="toggleDay(this)">
+                                            <input type="checkbox" value="saturday"> Saturday
+                                        </label>
+                                        <label class="checkbox-item" onclick="toggleDay(this)">
+                                            <input type="checkbox" value="sunday"> Sunday
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Time Range</label>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <input type="time" id="scheduleStart" style="width: 120px;">
+                                        <span>to</span>
+                                        <input type="time" id="scheduleEnd" style="width: 120px;">
+                                    </div>
+                                    <div class="form-hint">Leave empty for all-day</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campaign -->
+                        <div class="form-section">
+                            <div class="form-section-title"><i class="fas fa-bullseye"></i> Campaign Settings</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Campaign Name</label>
+                                    <input type="text" id="campaignName" placeholder="e.g., NJ Local Ads">
+                                </div>
+                                <div class="form-group">
+                                    <label>Campaign ID</label>
+                                    <input type="text" id="campaignId" placeholder="camp_001">
+                                </div>
+                                <div class="form-group">
+                                    <label>Advertiser ID</label>
+                                    <input type="text" id="advertiserId" placeholder="adv_001">
+                                </div>
+                                <div class="form-group">
+                                    <label>Priority</label>
+                                    <input type="number" id="campaignPriority" value="1" min="1" max="100">
+                                    <div class="form-hint">Higher = more priority (1-100)</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Start Date</label>
+                                    <input type="date" id="campaignStart">
+                                </div>
+                                <div class="form-group">
+                                    <label>End Date</label>
+                                    <input type="date" id="campaignEnd">
+                                </div>
+                                <div class="form-group">
+                                    <label>Budget ($)</label>
+                                    <input type="number" id="campaignBudget" min="0" step="0.01" placeholder="1000.00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="preview-container">
+                            <div class="preview-title"><i class="fas fa-eye"></i> Ad Preview</div>
+                            <div id="adPreview"></div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label>Notes</label>
+                            <textarea id="adNotes" placeholder="Internal notes about this ad..."></textarea>
+                        </div>
+
+                        <!-- Submit -->
+                        <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
+                            <button type="button" class="btn btn-outline" onclick="resetForm()">Reset</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> <span id="submitBtnText">Create Ad</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import/Export Section -->
+        <div id="import-export" class="section">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fas fa-exchange-alt"></i> Import / Export</h1>
+            </div>
+
+            <div class="form-grid">
+                <!-- Export -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title"><i class="fas fa-download"></i> Export Ads</span>
+                    </div>
+                    <div class="card-body">
+                        <p style="margin-bottom: 15px; color: #666;">Export all ads to a JSON file for backup or migration.</p>
+                        <div class="form-group">
+                            <label>Filter by Status</label>
+                            <select id="exportStatus">
+                                <option value="">All Statuses</option>
+                                <option value="active">Active Only</option>
+                                <option value="paused">Paused Only</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" onclick="exportAds()">
+                            <i class="fas fa-download"></i> Export to JSON
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Import -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title"><i class="fas fa-upload"></i> Import Ads</span>
+                    </div>
+                    <div class="card-body">
+                        <p style="margin-bottom: 15px; color: #666;">Import ads from a JSON file. Existing ads with same ID will be updated.</p>
+                        <div class="form-group">
+                            <label>Select JSON File</label>
+                            <input type="file" id="importFile" accept=".json">
+                        </div>
+                        <div id="importPreview" style="margin-bottom: 15px; display: none;">
+                            <div class="alert alert-warning show">
+                                <i class="fas fa-info-circle"></i>
+                                <span id="importCount">0</span> ads found in file
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="importAds()">
+                            <i class="fas fa-upload"></i> Import Ads
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulk Operations -->
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <span class="card-title"><i class="fas fa-tasks"></i> Bulk Operations</span>
+                </div>
+                <div class="card-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Select Ads</label>
+                            <select id="bulkSelect">
+                                <option value="all">All Ads</option>
+                                <option value="active">All Active</option>
+                                <option value="paused">All Paused</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Action</label>
+                            <select id="bulkAction">
+                                <option value="">Select Action</option>
+                                <option value="activate">Activate All</option>
+                                <option value="pause">Pause All</option>
+                                <option value="delete">Delete All</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-warning" onclick="bulkOperation()">
+                        <i class="fas fa-play"></i> Execute
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Config Section -->
+        <div id="config" class="section">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fas fa-cog"></i> Ad Configuration</h1>
+            </div>
+
+            <div class="form-grid">
+                <!-- Ad Units -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Ad Units</span>
+                        <button class="btn btn-outline btn-sm" onclick="loadConfig('units')">Refresh</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="adUnitsConfig"></div>
+                    </div>
+                </div>
+
+                <!-- Placements -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Placements</span>
+                        <button class="btn btn-outline btn-sm" onclick="loadConfig('placements')">Refresh</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="placementsConfig"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Geo Config -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Geo-Targeting Settings</span>
+                </div>
+                <div class="card-body">
+                    <div id="geoConfig"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-eye"></i> Ad Preview</h2>
+                <button class="modal-close" onclick="closeModal('previewModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="previewModalBody">
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h2>
+                <button class="modal-close" onclick="closeModal('deleteModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this ad? This action cannot be undone.</p>
+                <p id="deleteAdName" style="font-weight: 600; margin-top: 10px;"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('deleteModal')">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let ads = [];
+        let currentAd = null;
+        let deleteAdId = null;
+        let selectedStates = [];
+        let excludedStates = [];
+        let adUnits = [];
+        let placements = [];
+        let geoConfig = {};
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfigData();
+            loadAds();
+        });
+
+        // Show Section
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            event?.target?.closest('.menu-item')?.classList.add('active');
+            
+            if (sectionId === 'dashboard') {
+                loadDashboard();
+            } else if (sectionId === 'config') {
+                loadConfigPage();
+            }
+        }
+
+        // Filter by Type
+        function filterByType(type) {
+            document.getElementById('filterAdType').value = type;
+            loadAds();
+            showSection('ads');
+        }
+
+        // Load Config Data
+        async function loadConfigData() {
+            try {
+                const [unitsRes, placementsRes, geoRes] = await Promise.all([
+                    fetch('/api/ads/config/units'),
+                    fetch('/api/ads/config/placements'),
+                    fetch('/api/ads/config/geo')
+                ]);
+                
+                const unitsData = await unitsRes.json();
+                const placementsData = await placementsRes.json();
+                const geoData = await geoRes.json();
+                
+                adUnits = unitsData.units?.units || [];
+                placements = placementsData.placements?.placements || [];
+                geoConfig = geoData.geo || {};
+                
+                updateAdUnits();
+            } catch (error) {
+                console.error('Error loading config:', error);
+            }
+        }
+
+        // Update Ad Units dropdown
+        function updateAdUnits() {
+            const adType = document.getElementById('adType').value;
+            const unitSelect = document.getElementById('adUnitId');
+            
+            unitSelect.innerHTML = '<option value="">Select Ad Unit</option>';
+            
+            const filtered = adUnits.filter(u => u.type === adType);
+            filtered.forEach(unit => {
+                const option = document.createElement('option');
+                option.value = unit.id;
+                option.textContent = `${unit.name} (${unit.dimensions?.width || 'fluid'}x${unit.dimensions?.height || 'auto'})`;
+                unitSelect.appendChild(option);
+            });
+        }
+
+        // Load Ads
+        async function loadAds(page = 1) {
+            showLoading();
+            try {
+                const status = document.getElementById('filterStatus').value;
+                const adType = document.getElementById('filterAdType').value;
+                const search = document.getElementById('searchAds').value;
+                
+                let url = '/api/ads?';
+                if (status) url += `status=${status}&`;
+                if (adType) url += `adType=${adType}&`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    let filteredAds = data.ads || [];
+                    
+                    if (search) {
+                        filteredAds = filteredAds.filter(ad => 
+                            ad.name?.toLowerCase().includes(search.toLowerCase()) ||
+                            ad.adId?.toLowerCase().includes(search.toLowerCase())
+                        );
+                    }
+                    
+                    ads = filteredAds;
+                    renderAdsTable(filteredAds);
+                    renderRecentAds(filteredAds.slice(0, 5));
+                    updateStats(filteredAds);
+                }
+            } catch (error) {
+                console.error('Error loading ads:', error);
+                showAlert('adsAlert', 'error', 'Failed to load ads');
+            }
+            hideLoading();
+        }
+
+        // Render Ads Table
+        function renderAdsTable(adsToRender) {
+            const tbody = document.getElementById('adsTable');
+            const empty = document.getElementById('adsEmpty');
+            
+            if (adsToRender.length === 0) {
+                tbody.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+            
+            empty.style.display = 'none';
+            tbody.innerHTML = adsToRender.map(ad => `
+                <tr>
+                    <td><strong>${ad.name || '-'}</strong></td>
+                    <td>${ad.adType || '-'}</td>
+                    <td><code style="font-size: 0.8rem;">${ad.adUnitId || '-'}</code></td>
+                    <td>${ad.targeting?.geoType === 'all' ? 'All' : (ad.targeting?.states?.join(', ') || ad.targeting?.zipcodes?.length + ' zips' || '-')}</td>
+                    <td><span class="status-badge status-${ad.status}">${ad.status}</span></td>
+                    <td>${ad.metrics?.impressions?.toLocaleString() || 0}</td>
+                    <td>${ad.metrics?.clicks?.toLocaleString() || 0}</td>
+                    <td>${new Date(ad.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn edit" title="Edit" onclick="editAd('${ad.adId}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn preview" title="Preview" onclick="previewAd('${ad.adId}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn delete" title="Delete" onclick="deleteAd('${ad.adId}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Render Recent Ads
+        function renderRecentAds(recentAds) {
+            const tbody = document.getElementById('recentAdsTable');
+            tbody.innerHTML = recentAds.map(ad => {
+                const ctr = ad.metrics?.impressions ? ((ad.metrics.clicks / ad.metrics.impressions) * 100).toFixed(2) : '0.00';
+                return `
+                    <tr>
+                        <td>${ad.name || '-'}</td>
+                        <td>${ad.adType || '-'}</td>
+                        <td><span class="status-badge status-${ad.status}">${ad.status}</span></td>
+                        <td>${ad.metrics?.impressions?.toLocaleString() || 0}</td>
+                        <td>${ad.metrics?.clicks?.toLocaleString() || 0}</td>
+                        <td>${ctr}%</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn edit" onclick="editAd('${ad.adId}')"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn preview" onclick="previewAd('${ad.adId}')"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Update Stats
+        function updateStats(adsData) {
+            document.getElementById('statTotal').textContent = adsData.length;
+            document.getElementById('statActive').textContent = adsData.filter(a => a.status === 'active').length;
+            
+            const totalImpressions = adsData.reduce((sum, a) => sum + (a.metrics?.impressions || 0), 0);
+            const totalClicks = adsData.reduce((sum, a) => sum + (a.metrics?.clicks || 0), 0);
+            
+            document.getElementById('statImpressions').textContent = totalImpressions.toLocaleString();
+            document.getElementById('statClicks').textContent = totalClicks.toLocaleString();
+            
+            document.getElementById('statBanners').textContent = adsData.filter(a => a.adType === 'banner').length;
+            document.getElementById('statInterstitials').textContent = adsData.filter(a => a.adType === 'interstitial').length;
+            document.getElementById('statNatives').textContent = adsData.filter(a => a.adType === 'native').length;
+            
+            const avgCtr = totalImpressions ? ((totalClicks / totalImpressions) * 100).toFixed(2) : '0.00';
+            document.getElementById('statCtr').textContent = avgCtr + '%';
+        }
+
+        // Load Dashboard
+        function loadDashboard() {
+            loadAds();
+        }
+
+        // Open Create Modal
+        function openCreateModal() {
+            showSection('create');
+            resetForm();
+        }
+
+        // Edit Ad
+        async function editAd(adId) {
+            showLoading();
+            try {
+                const response = await fetch(`/api/ads/${adId}`);
+                const data = await response.json();
+                
+                if (data.success && data.ad) {
+                    currentAd = data.ad;
+                    populateForm(data.ad);
+                    showSection('create');
+                }
+            } catch (error) {
+                console.error('Error loading ad:', error);
+                showAlert('formAlert', 'error', 'Failed to load ad');
+            }
+            hideLoading();
+        }
+
+        // Populate Form
+        function populateForm(ad) {
+            document.getElementById('formTitle').textContent = 'Edit Ad';
+            document.getElementById('submitBtnText').textContent = 'Save Changes';
+            
+            document.getElementById('adName').value = ad.name || '';
+            document.getElementById('adId').value = ad.adId || '';
+            document.getElementById('adType').value = ad.adType || '';
+            updateAdUnits();
+            document.getElementById('adUnitId').value = ad.adUnitId || '';
+            document.getElementById('adStatus').value = ad.status || 'pending';
+            
+            // Creative
+            document.getElementById('creativeHeadline').value = ad.creative?.headline || '';
+            document.getElementById('creativeSponsor').value = ad.creative?.sponsorName || '';
+            document.getElementById('creativeDescription').value = ad.creative?.description || '';
+            
+            const imageUrl = ad.creative?.images?.[0]?.url || '';
+            document.getElementById('creativeImage').value = imageUrl;
+            document.getElementById('creativeImageUrl').value = imageUrl;
+            if (imageUrl) {
+                document.getElementById('imagePreview').style.display = 'block';
+                document.getElementById('previewImg').src = imageUrl;
+            }
+            
+            // CTA
+            document.getElementById('ctaText').value = ad.creative?.cta?.text || '';
+            document.getElementById('ctaUrl').value = ad.creative?.cta?.url || '';
+            document.getElementById('ctaType').value = ad.creative?.cta?.type || 'button';
+            
+            // Targeting
+            document.getElementById('geoType').value = ad.targeting?.geoType || 'all';
+            toggleGeoFields();
+            
+            selectedStates = ad.targeting?.states || [];
+            excludedStates = ad.targeting?.excludedStates || [];
+            renderStateChips();
+            renderExcludeChips();
+            
+            if (ad.targeting?.zipcodes) {
+                document.getElementById('zipcodesInput').value = ad.targeting.zipcodes.map(z => z.code).join('\n');
+                document.getElementById('zipcodeMatchType').value = ad.targeting.zipcodes[0]?.matchtype || 'exact';
+            }
+            
+            if (ad.targeting?.radius?.center) {
+                document.getElementById('radiusLat').value = ad.targeting.radius.center.lat;
+                document.getElementById('radiusLng').value = ad.targeting.radius.center.lng;
+                document.getElementById('radiusMiles').value = ad.targeting.radius.radiusMiles;
+            }
+            
+            // Schedule
+            if (ad.targeting?.schedule?.daysOfWeek) {
+                document.querySelectorAll('#daysCheckboxes input').forEach(cb => {
+                    cb.checked = ad.targeting.schedule.daysOfWeek.includes(cb.value);
+                });
+            }
+            document.getElementById('scheduleStart').value = ad.targeting?.schedule?.startTime || '';
+            document.getElementById('scheduleEnd').value = ad.targeting?.schedule?.endTime || '';
+            
+            // Campaign
+            document.getElementById('campaignName').value = ad.campaign?.campaignName || '';
+            document.getElementById('campaignId').value = ad.campaign?.campaignId || '';
+            document.getElementById('advertiserId').value = ad.campaign?.advertiserId || '';
+            document.getElementById('campaignPriority').value = ad.campaign?.priority || 1;
+            document.getElementById('campaignBudget').value = ad.campaign?.budget || '';
+            
+            if (ad.campaign?.startDate) {
+                document.getElementById('campaignStart').value = new Date(ad.campaign.startDate).toISOString().split('T')[0];
+            }
+            if (ad.campaign?.endDate) {
+                document.getElementById('campaignEnd').value = new Date(ad.campaign.endDate).toISOString().split('T')[0];
+            }
+            
+            document.getElementById('adNotes').value = ad.notes || '';
+            
+            updatePreview();
+        }
+
+        // Toggle Geo Fields
+        function toggleGeoFields() {
+            const geoType = document.getElementById('geoType').value;
+            document.getElementById('statesField').style.display = geoType === 'states' ? 'block' : 'none';
+            document.getElementById('zipcodesField').style.display = geoType === 'zipcodes' ? 'block' : 'none';
+            document.getElementById('radiusField').style.display = geoType === 'radius' ? 'block' : 'none';
+        }
+
+        // Add State
+        function addState(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const input = document.getElementById('stateInput');
+                const state = input.value.trim().toUpperCase();
+                if (state && !selectedStates.includes(state)) {
+                    selectedStates.push(state);
+                    renderStateChips();
+                }
+                input.value = '';
+            }
+        }
+
+        // Render State Chips
+        function renderStateChips() {
+            const container = document.getElementById('statesContainer');
+            const input = document.getElementById('stateInput');
+            
+            // Remove existing chips
+            container.querySelectorAll('.chip').forEach(c => c.remove());
+            
+            selectedStates.forEach(state => {
+                const chip = document.createElement('span');
+                chip.className = 'chip';
+                chip.innerHTML = `${state} <span class="chip-remove" onclick="removeState('${state}')">&times;</span>`;
+                container.insertBefore(chip, input);
+            });
+        }
+
+        // Remove State
+        function removeState(state) {
+            selectedStates = selectedStates.filter(s => s !== state);
+            renderStateChips();
+        }
+
+        // Add Exclude
+        function addExclude(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const input = document.getElementById('excludeInput');
+                const state = input.value.trim().toUpperCase();
+                if (state && !excludedStates.includes(state)) {
+                    excludedStates.push(state);
+                    renderExcludeChips();
+                }
+                input.value = '';
+            }
+        }
+
+        // Render Exclude Chips
+        function renderExcludeChips() {
+            const container = document.getElementById('excludedContainer');
+            const input = document.getElementById('excludeInput');
+            
+            container.querySelectorAll('.chip').forEach(c => c.remove());
+            
+            excludedStates.forEach(state => {
+                const chip = document.createElement('span');
+                chip.className = 'chip';
+                chip.style.background = '#f44336';
+                chip.innerHTML = `${state} <span class="chip-remove" onclick="removeExclude('${state}')">&times;</span>`;
+                container.insertBefore(chip, input);
+            });
+        }
+
+        // Remove Exclude
+        function removeExclude(state) {
+            excludedStates = excludedStates.filter(s => s !== state);
+            renderExcludeChips();
+        }
+
+        // Toggle Day
+        function toggleDay(el) {
+            el.classList.toggle('selected');
+            const checkbox = el.querySelector('input');
+            checkbox.checked = el.classList.contains('selected');
+        }
+
+        // Handle Image Upload
+        function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('creativeImageUrl').value = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                    document.getElementById('previewImg').src = e.target.result;
+                    updatePreview();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Update Preview
+        function updatePreview() {
+            const headline = document.getElementById('creativeHeadline').value || 'Your Headline Here';
+            const description = document.getElementById('creativeDescription').value || 'Your description goes here';
+            const ctaText = document.getElementById('ctaText').value || 'Learn More';
+            const sponsor = document.getElementById('creativeSponsor').value || 'Sponsor Name';
+            const imageUrl = document.getElementById('creativeImage').value || document.getElementById('creativeImageUrl').value;
+            const adType = document.getElementById('adType').value;
+            const adUnitId = document.getElementById('adUnitId').value;
+            
+            let preview = '';
+            
+            if (adType === 'banner' || adType === 'interstitial') {
+                if (imageUrl) {
+                    preview = `
+                        <a href="#" style="display: block; position: relative;">
+                            <img src="${imageUrl}" alt="Ad" style="width: 100%; border-radius: 8px;">
+                        </a>
+                    `;
+                } else {
+                    preview = `
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 8px; text-align: center; color: white;">
+                            <div style="font-size: 1.2rem; font-weight: 700; margin-bottom: 10px;">${headline}</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 15px;">${description}</div>
+                            <div style="background: white; color: #667eea; padding: 8px 20px; border-radius: 20px; display: inline-block; font-weight: 600;">${ctaText}</div>
+                        </div>
+                    `;
+                }
+            } else if (adType === 'native') {
+                preview = `
+                    <div style="display: flex; gap: 15px; padding: 15px; background: white; border: 1px solid #ddd; border-radius: 8px;">
+                        ${imageUrl ? `<img src="${imageUrl}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px;">` : '<div style="width: 100px; height: 100px; background: #667eea; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white;">Image</div>'}
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; margin-bottom: 5px;">Sponsored - ${sponsor}</div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">${headline}</div>
+                            <div style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">${description}</div>
+                            <span style="background: #667eea; color: white; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">${ctaText}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                preview = `
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+                        <p style="color: #666;">Select an ad type to see preview</p>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('adPreview').innerHTML = preview;
+        }
+
+        // Add preview update listeners
+        document.getElementById('creativeHeadline').addEventListener('input', updatePreview);
+        document.getElementById('creativeDescription').addEventListener('input', updatePreview);
+        document.getElementById('ctaText').addEventListener('input', updatePreview);
+        document.getElementById('creativeSponsor').addEventListener('input', updatePreview);
+        document.getElementById('creativeImage').addEventListener('input', updatePreview);
+        document.getElementById('adType').addEventListener('change', updatePreview);
+
+        // Form Submit
+        document.getElementById('adForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const adData = {
+                name: document.getElementById('adName').value,
+                adId: document.getElementById('adId').value || undefined,
+                adType: document.getElementById('adType').value,
+                adUnitId: document.getElementById('adUnitId').value,
+                status: document.getElementById('adStatus').value,
+                creative: {
+                    headline: document.getElementById('creativeHeadline').value,
+                    description: document.getElementById('creativeDescription').value,
+                    sponsorName: document.getElementById('creativeSponsor').value,
+                    images: [],
+                    cta: {
+                        text: document.getElementById('ctaText').value,
+                        url: document.getElementById('ctaUrl').value,
+                        type: document.getElementById('ctaType').value
+                    }
+                },
+                targeting: {
+                    geoType: document.getElementById('geoType').value,
+                    states: selectedStates,
+                    excludedStates: excludedStates
+                },
+                campaign: {
+                    campaignName: document.getElementById('campaignName').value,
+                    campaignId: document.getElementById('campaignId').value,
+                    advertiserId: document.getElementById('advertiserId').value,
+                    priority: parseInt(document.getElementById('campaignPriority').value) || 1,
+                    budget: parseFloat(document.getElementById('campaignBudget').value) || 0
+                },
+                notes: document.getElementById('adNotes').value
+            };
+            
+            // Add image if present
+            const imageUrl = document.getElementById('creativeImage').value || document.getElementById('creativeImageUrl').value;
+            if (imageUrl) {
+                adData.creative.images.push({ url: imageUrl, altText: adData.creative.headline });
+            }
+            
+            // Add dates
+            const startDate = document.getElementById('campaignStart').value;
+            const endDate = document.getElementById('campaignEnd').value;
+            if (startDate) adData.campaign.startDate = new Date(startDate);
+            if (endDate) adData.campaign.endDate = new Date(endDate);
+            
+            // Add geo-specific data
+            const geoType = document.getElementById('geoType').value;
+            if (geoType === 'zipcodes') {
+                const zipInput = document.getElementById('zipcodesInput').value;
+                const matchType = document.getElementById('zipcodeMatchType').value;
+                const zips = zipInput.split(/[\n,]+/).map(z => z.trim()).filter(z => z);
+                adData.targeting.zipcodes = zips.map(code => ({ code, matchtype: matchType }));
+            } else if (geoType === 'radius') {
+                adData.targeting.radius = {
+                    center: {
+                        lat: parseFloat(document.getElementById('radiusLat').value),
+                        lng: parseFloat(document.getElementById('radiusLng').value)
+                    },
+                    radiusMiles: parseInt(document.getElementById('radiusMiles').value)
+                };
+            }
+            
+            // Add schedule
+            const selectedDays = [];
+            document.querySelectorAll('#daysCheckboxes input:checked').forEach(cb => {
+                selectedDays.push(cb.value);
+            });
+            if (selectedDays.length > 0) {
+                adData.targeting.schedule = {
+                    daysOfWeek: selectedDays,
+                    startTime: document.getElementById('scheduleStart').value,
+                    endTime: document.getElementById('scheduleEnd').value
+                };
+            }
+            
+            showLoading();
+            try {
+                const method = currentAd ? 'PUT' : 'POST';
+                const url = currentAd ? `/api/ads/${currentAd.adId}` : '/api/ads';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(adData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('formAlert', 'success', currentAd ? 'Ad updated successfully!' : 'Ad created successfully!');
+                    setTimeout(() => {
+                        showSection('ads');
+                        loadAds();
+                        resetForm();
+                    }, 1500);
+                } else {
+                    throw new Error(data.error || 'Failed to save ad');
+                }
+            } catch (error) {
+                console.error('Error saving ad:', error);
+                showAlert('formAlert', 'error', error.message);
+            }
+            hideLoading();
+        });
+
+        // Reset Form
+        function resetForm() {
+            document.getElementById('adForm').reset();
+            document.getElementById('formTitle').textContent = 'Create New Ad';
+            document.getElementById('submitBtnText').textContent = 'Create Ad';
+            currentAd = null;
+            selectedStates = [];
+            excludedStates = [];
+            renderStateChips();
+            renderExcludeChips();
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('adPreview').innerHTML = '';
+            document.getElementById('formAlert').classList.remove('show');
+        }
+
+        // Preview Ad
+        async function previewAd(adId) {
+            const ad = ads.find(a => a.adId === adId);
+            if (!ad) return;
+            
+            const creative = ad.creative || {};
+            const imageUrl = creative.images?.[0]?.url || '';
+            
+            let html = '';
+            if (ad.adType === 'banner' || ad.adType === 'interstitial') {
+                if (imageUrl) {
+                    html = `<img src="${imageUrl}" alt="Ad" style="max-width: 100%; border-radius: 8px;">`;
+                } else {
+                    html = `
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 8px; text-align: center; color: white;">
+                            <div style="font-size: 1.2rem; font-weight: 700; margin-bottom: 10px;">${creative.headline || 'Headline'}</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 15px;">${creative.description || 'Description'}</div>
+                            <div style="background: white; color: #667eea; padding: 8px 20px; border-radius: 20px; display: inline-block; font-weight: 600;">${creative.cta?.text || 'Learn More'}</div>
+                        </div>
+                    `;
+                }
+            } else {
+                html = `
+                    <div style="display: flex; gap: 15px; padding: 15px; background: white; border: 1px solid #ddd; border-radius: 8px;">
+                        ${imageUrl ? `<img src="${imageUrl}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px;">` : '<div style="width: 100px; height: 100px; background: #667eea; border-radius: 6px;"></div>'}
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; margin-bottom: 5px;">Sponsored - ${creative.sponsorName || 'Sponsor'}</div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">${creative.headline || 'Headline'}</div>
+                            <div style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">${creative.description || 'Description'}</div>
+                            <span style="background: #667eea; color: white; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">${creative.cta?.text || 'Learn More'}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('previewModalBody').innerHTML = `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                    <h4 style="margin-bottom: 10px;">${ad.name}</h4>
+                    <p style="font-size: 0.9rem; color: #666;">
+                        <strong>Type:</strong> ${ad.adType}<br>
+                        <strong>Unit:</strong> ${ad.adUnitId}<br>
+                        <strong>Status:</strong> <span class="status-badge status-${ad.status}">${ad.status}</span>
+                    </p>
+                </div>
+                ${html}
+            `;
+            
+            document.getElementById('previewModal').classList.add('active');
+        }
+
+        // Delete Ad
+        function deleteAd(adId) {
+            const ad = ads.find(a => a.adId === adId);
+            if (!ad) return;
+            
+            deleteAdId = adId;
+            document.getElementById('deleteAdName').textContent = ad.name;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        // Confirm Delete
+        async function confirmDelete() {
+            if (!deleteAdId) return;
+            
+            showLoading();
+            try {
+                const response = await fetch(`/api/ads/${deleteAdId}`, { method: 'DELETE' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('adsAlert', 'success', 'Ad deleted successfully');
+                    loadAds();
+                } else {
+                    throw new Error(data.error || 'Failed to delete ad');
+                }
+            } catch (error) {
+                console.error('Error deleting ad:', error);
+                showAlert('adsAlert', 'error', error.message);
+            }
+            hideLoading();
+            closeModal('deleteModal');
+            deleteAdId = null;
+        }
+
+        // Export Ads
+        async function exportAds() {
+            const status = document.getElementById('exportStatus').value;
+            let url = '/api/ads?';
+            if (status) url += `status=${status}&`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const json = JSON.stringify(data.ads, null, 2);
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `pdrides-ads-${new Date().toISOString().split('T')[0]}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }
+            } catch (error) {
+                console.error('Export error:', error);
+            }
+        }
+
+        // Import Ads
+        async function importAds() {
+            const fileInput = document.getElementById('importFile');
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert('Please select a JSON file');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const adsToImport = JSON.parse(e.target.result);
+                    if (!Array.isArray(adsToImport)) {
+                        throw new Error('Invalid format');
+                    }
+                    
+                    showLoading();
+                    let success = 0;
+                    let failed = 0;
+                    
+                    for (const adData of adsToImport) {
+                        try {
+                            const response = await fetch('/api/ads', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(adData)
+                            });
+                            const data = await response.json();
+                            if (data.success) success++;
+                            else failed++;
+                        } catch (err) {
+                            failed++;
+                        }
+                    }
+                    
+                    alert(`Import complete: ${success} succeeded, ${failed} failed`);
+                    loadAds();
+                } catch (error) {
+                    alert('Invalid JSON file');
+                }
+                hideLoading();
+            };
+            reader.readAsText(fileInput.files[0]);
+        }
+
+        // Bulk Operation
+        async function bulkOperation() {
+            const action = document.getElementById('bulkAction').value;
+            const select = document.getElementById('bulkSelect').value;
+            
+            if (!action) {
+                alert('Please select an action');
+                return;
+            }
+            
+            let adsToProcess = ads;
+            if (select === 'active') adsToProcess = ads.filter(a => a.status === 'active');
+            else if (select === 'paused') adsToProcess = ads.filter(a => a.status === 'paused');
+            
+            if (adsToProcess.length === 0) {
+                alert('No ads to process');
+                return;
+            }
+            
+            if (!confirm(`This will ${action} ${adsToProcess.length} ads. Continue?`)) {
+                return;
+            }
+            
+            showLoading();
+            let success = 0;
+            let failed = 0;
+            
+            for (const ad of adsToProcess) {
+                try {
+                    let response;
+                    if (action === 'delete') {
+                        response = await fetch(`/api/ads/${ad.adId}`, { method: 'DELETE' });
+                    } else {
+                        const endpoint = action === 'activate' ? 'activate' : 'pause';
+                        response = await fetch(`/api/ads/${ad.adId}/${endpoint}`, { method: 'POST' });
+                    }
+                    
+                    const data = await response.json();
+                    if (data.success) success++;
+                    else failed++;
+                } catch (err) {
+                    failed++;
+                }
+            }
+            
+            alert(`Operation complete: ${success} succeeded, ${failed} failed`);
+            loadAds();
+            hideLoading();
+        }
+
+        // Load Config Page
+        function loadConfigPage() {
+            // Ad Units
+            const unitsHtml = adUnits.map(unit => `
+                <div style="padding: 12px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${unit.name}</strong>
+                            <div style="font-size: 0.85rem; color: #666;">${unit.dimensions?.width || 'fluid'}x${unit.dimensions?.height || 'auto'}</div>
+                        </div>
+                        <span class="status-badge status-active">${unit.type}</span>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('adUnitsConfig').innerHTML = unitsHtml || '<p>No ad units configured</p>';
+            
+            // Placements
+            const placementsHtml = placements.map(p => `
+                <div style="padding: 12px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${p.name}</strong>
+                            <div style="font-size: 0.85rem; color: #666;">${p.description || p.location}</div>
+                        </div>
+                        <span class="status-badge ${p.active ? 'status-active' : 'status-paused'}">${p.active ? 'Active' : 'Inactive'}</span>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('placementsConfig').innerHTML = placementsHtml || '<p>No placements configured</p>';
+            
+            // Geo Config
+            const statesCount = geoConfig.states?.length || 0;
+            document.getElementById('geoConfig').innerHTML = `
+                <div class="stats-grid" style="margin-bottom: 0;">
+                    <div class="stat-card">
+                        <div class="stat-value">${geoConfig.supportedCountries?.join(', ') || 'US'}</div>
+                        <div class="stat-label">Supported Countries</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${statesCount}</div>
+                        <div class="stat-label">US States Available</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${geoConfig.zipcodeLength || 5}</div>
+                        <div class="stat-label">Zip Code Length</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${geoConfig.radiusUnits || 'miles'}</div>
+                        <div class="stat-label">Radius Unit</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Show Alert
+        function showAlert(elementId, type, message) {
+            const el = document.getElementById(elementId);
+            el.className = `alert alert-${type} show`;
+            el.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            setTimeout(() => el.classList.remove('show'), 5000);
+        }
+
+        // Close Modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Show/Hide Loading
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/';
+            }
+        }
+
+        // Preview Import File
+        document.getElementById('importFile').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const ads = JSON.parse(e.target.result);
+                        if (Array.isArray(ads)) {
+                            document.getElementById('importPreview').style.display = 'block';
+                            document.getElementById('importCount').textContent = ads.length;
+                        }
+                    } catch (err) {
+                        document.getElementById('importPreview').style.display = 'none';
+                    }
+                };
+                reader.readAsText(e.target.files[0]);
+            }
+        });
+    </script>
+</body>
+</html>
+
