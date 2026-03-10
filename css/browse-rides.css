@@ -1,0 +1,18 @@
+/* Browse Rides Page Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #667eea;
+    --secondary: #764ba2;
+    --accent: #25D366;
+    --accent-dark: #128C7E;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --success: #28a745;
+    --dark: #333;
+    --light: #f8f9fa;
+    --white: #ffffff;

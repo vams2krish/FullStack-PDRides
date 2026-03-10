@@ -5,1555 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDRides - Your Maps</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="/css/map-view.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="ads-system/ads-loader.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            overflow-x: hidden;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            min-height: 100vh;
-            overflow-y: auto;
-        }
-        
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 20px;
-            transition: background 0.3s ease;
-        }
-        
-        .header.driver-mode {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-        }
-        
-        .header.passenger-mode {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo-text {
-            font-size: 1.4rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .user-info {
-            font-size: 0.85rem;
-            opacity: 0.9;
-        }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .profile-dropdown {
-            position: relative;
-        }
-        
-        .profile-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s;
-        }
-        
-        .profile-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        .profile-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 8px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            min-width: 250px;
-            display: none;
-            z-index: 1000;
-            overflow: hidden;
-        }
-        
-        .profile-menu.active {
-            display: block;
-        }
-        
-        .profile-header {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .profile-avatar {
-            width: 60px;
-            height: 60px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            margin: 0 auto 10px;
-        }
-        
-        .profile-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        .profile-phone {
-            font-size: 0.85rem;
-            opacity: 0.9;
-        }
-        
-        /* My Rides Tabs */
-        .my-rides-tabs {
-            display: flex;
-            gap: 5px;
-            padding: 10px 15px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #eee;
-            flex-wrap: wrap;
-        }
-        
-        .my-rides-tab {
-            padding: 8px 14px;
-            border: none;
-            background: transparent;
-            color: #666;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .my-rides-tab:hover {
-            background: rgba(37, 211, 102, 0.1);
-            color: #25D366;
-        }
-        
-        .my-rides-tab.active {
-            background: #25D366;
-            color: white;
-        }
-        
-        .my-rides-content {
-            padding: 15px;
-        }
-        
-        .my-rides-section {
-            display: none;
-        }
-        
-        .my-rides-section.active {
-            display: block;
-        }
-        
-        .ride-card {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
-            transition: all 0.3s;
-        }
-        
-        .ride-card:hover {
-            border-color: #25D366;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .ride-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .ride-card-status {
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        
-        .ride-card-status.active-ride {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-        
-        .ride-card-status.completed {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-        
-        .ride-card-status.upcoming {
-            background: #fff3e0;
-            color: #e65100;
-        }
-        
-        .ride-card-status.cancelled {
-            background: #ffebee;
-            color: #c62828;
-        }
-        
-        .ride-card-route {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .ride-card-details {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .ride-card-details div {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .ride-card-price {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .ride-card-price .price {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #25D366;
-        }
-        
-        /* Quick Routes */
-        .section-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .quick-route-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 15px;
-        }
-        
-        /* WhatsApp */
-        .whatsapp-section {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-        
-        .whatsapp-section h4 {
-            font-size: 0.95rem;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        
-        .whatsapp-input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-        }
-        
-        .whatsapp-btn {
-            width: 100%;
-            padding: 12px;
-            background: #25D366;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background 0.3s;
-        }
-        
-        .whatsapp-btn:hover {
-            background: #128C7E;
-        }
-        
-        /* Alerts */
-        .alert {
-            padding: 10px 14px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            display: none;
-            font-size: 0.9rem;
-        }
-        
-        .alert.active {
-            display: block;
-        }
-        
-        .alert-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-        
-        .alert-error {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
-        }
-        
-        /* Loading */
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-        
-        .loading.active {
-            display: block;
-        }
-        
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #25D366;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Map */
-        #map {
-            height: 450px;
-            width: 100%;
-            border-radius: 0 0 15px 15px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .location-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .swap-btn, .my-location-btn {
-                margin: 0 auto;
-            }
-            
-            #map {
-                height: 300px;
-            }
-            
-            .route-title {
-                font-size: 0.95rem;
-            }
-            
-            .header-right {
-                gap: 5px;
-            }
-            
-            .profile-menu {
-                min-width: 220px;
-            }
-        }
-        
-        /* No login state */
-        .login-prompt {
-            text-align: center;
-            padding: 30px 20px;
-            color: #666;
-        }
-        
-        .login-prompt p {
-            margin-bottom: 15px;
-        }
-        
-        .login-prompt .btn {
-            margin: 0 auto;
-        }
-        
-        /* Settings Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-        
-        .modal-overlay.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 15px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: modalSlideIn 0.3s ease;
-        }
-        
-        @keyframes modalSlideIn {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 15px 15px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .modal-header.driver-mode {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-        }
-        
-        .modal-header h2 {
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-            line-height: 1;
-        }
-        
-        .modal-close:hover { opacity: 0.8; }
-        
-        .modal-body { padding: 20px; }
-        
-        .settings-section { margin-bottom: 20px; }
-        
-        .settings-section h3 {
-            font-size: 1rem;
-            color: #333;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .settings-option {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .settings-option-info { flex: 1; }
-        
-        .settings-option-title {
-            font-weight: 600;
-            color: #333;
-            font-size: 0.95rem;
-            margin-bottom: 3px;
-        }
-        
-        .settings-option-desc {
-            font-size: 0.8rem;
-            color: #666;
-        }
-        
-        .settings-option-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .settings-option-btn.delete-data {
-            background: #fff3e0;
-            color: #e65100;
-        }
-        
-        .settings-option-btn.delete-data:hover { background: #ffe0b2; }
-        
-        .settings-option-btn.delete-account {
-            background: #ffebee;
-            color: #c62828;
-        }
-        
-        .settings-option-btn.delete-account:hover { background: #ffcdd2; }
-        
-        /* 2-Step Confirmation */
-        .confirmation-popup {
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .confirmation-icon { font-size: 4rem; margin-bottom: 15px; }
-        
-        .confirmation-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .confirmation-message {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        
-        .confirmation-warning {
-            background: #fff3e0;
-            border: 1px solid #ffcc80;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .confirmation-warning-title {
-            font-weight: 600;
-            color: #e65100;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .confirmation-warning-text {
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .confirmation-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        
-        .confirmation-buttons button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .btn-cancel { background: #f5f5f5; color: #666; }
-        .btn-cancel:hover { background: #e0e0e0; }
-        
-        .btn-confirm-delete { background: #c62828; color: white; }
-        .btn-confirm-delete:hover { background: #b71c1c; }
-        
-        .step-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .step {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #666;
-        }
-        
-        .step.active { background: #667eea; color: white; }
-        .step.completed { background: #25D366; color: white; }
-        
-        @media (max-width: 600px) {
-            .confirmation-buttons { flex-direction: column; }
-            .settings-option { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .settings-option-btn { width: 100%; }
-        }
-        
-        /* Booking Confirmation Modal */
-        .booking-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-            padding: 20px;
-        }
-        
-        .booking-modal.active {
-            display: flex;
-        }
-        
-        .booking-modal-content {
-            background: white;
-            border-radius: 15px;
-            max-width: 450px;
-            width: 100%;
-            animation: modalSlideIn 0.3s ease;
-            overflow: hidden;
-        }
-        
-        .booking-modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .booking-modal-header.confirmed {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-        }
-        
-        .booking-modal-header h2 {
-            font-size: 1.3rem;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .booking-modal-body {
-            padding: 20px;
-        }
-        
-        .booking-ride-summary {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .booking-ride-summary .route {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .booking-ride-summary .details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        .booking-ride-summary .details div {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .booking-price {
-            background: #e8f5e9;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .booking-price .label {
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .booking-price .amount {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #25D366;
-        }
-        
-        .booking-question {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .booking-question h3 {
-            font-size: 1.2rem;
-            color: #333;
-            margin-bottom: 8px;
-        }
-        
-        .booking-question p {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .booking-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .booking-buttons button {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .booking-btn-confirm {
-            background: #25D366;
-            color: white;
-        }
-        
-        .booking-btn-confirm:hover {
-            background: #128C7E;
-        }
-        
-        .booking-btn-cancel {
-            background: #f5f5f5;
-            color: #666;
-        }
-        
-        .booking-btn-cancel:hover {
-            background: #e0e0e0;
-        }
-        
-        .booking-driver-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .booking-driver-avatar {
-            width: 45px;
-            height: 45px;
-            background: #667eea;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        
-        .booking-driver-details {
-            flex: 1;
-        }
-        
-        .booking-driver-name {
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .booking-driver-phone {
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .booking-success {
-            text-align: center;
-        }
-        
-        .booking-success-icon {
-            font-size: 4rem;
-            margin-bottom: 15px;
-        }
-        
-        .booking-success h3 {
-            font-size: 1.3rem;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .booking-success p {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-        }
-        
-        .booking-note {
-            background: #fff3e0;
-            border: 1px solid #ffcc80;
-            border-radius: 10px;
-            padding: 12px;
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .booking-note strong {
-            color: #e65100;
-        }
-        
-        /* Container and Grid Layout */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 15px;
-        }
-        
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 15px;
-        }
-        
-        @media (max-width: 900px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .left-column {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .rides-panel {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .rides-filters {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .rides-filters select {
-            flex: 1;
-            min-width: 100px;
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            background: white;
-        }
-        
-        .ride-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        
-        .ride-item {
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .ride-item:hover {
-            border-color: #25D366;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .ride-item.selected {
-            border-color: #25D366;
-            background: #e8f5e9;
-        }
-        
-        .ride-route {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 6px;
-        }
-        
-        .ride-meta {
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        
-        .ride-price-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .price-tag {
-            background: #25D366;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        /* Map Section */
-        .map-section {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .map-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .map-header h2 {
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        /* Controls */
-        .controls {
-            padding: 20px;
-        }
-        
-        .location-row {
-            display: grid;
-            grid-template-columns: auto 1fr auto 1fr;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        @media (max-width: 768px) {
-            .location-row {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .location-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .location-label.start {
-            color: #25D366;
-        }
-        
-        .location-label.dest {
-            color: #e74c3c;
-        }
-        
-        .my-location-btn, .swap-btn {
-            width: 40px;
-            height: 40px;
-            border: none;
-            border-radius: 50%;
-            background: #f0f0f0;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-        
-        .my-location-btn:hover, .swap-btn:hover {
-            background: #e0e0e0;
-            transform: scale(1.1);
-        }
-        
-        .input-wrapper {
-            position: relative;
-            width: 100%;
-        }
-        
-        .input-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1rem;
-        }
-        
-        .input-wrapper input {
-            width: 100%;
-            padding: 12px 12px 12px 38px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            transition: border-color 0.3s;
-        }
-        
-        .input-wrapper input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .autocomplete-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            max-height: 250px;
-            overflow-y: auto;
-            z-index: 100;
-            display: none;
-        }
-        
-        .autocomplete-dropdown.active {
-            display: block;
-        }
-        
-        .autocomplete-item {
-            padding: 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
-            transition: background 0.2s;
-        }
-        
-        .autocomplete-item:hover {
-            background: #f8f9fa;
-        }
-        
-        .autocomplete-item .main-text {
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .autocomplete-item .sub-text {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 3px;
-        }
-        
-        .btn-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .btn-row select {
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            background: white;
-            min-width: 100px;
-        }
-        
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-offer {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            color: white;
-        }
-        
-        .btn-offer:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
-        }
-        
-        /* Route Info */
-        .route-info {
-            display: none;
-        }
-        
-        .route-info.active {
-            display: block;
-        }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-        
-        @media (max-width: 600px) {
-            .info-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        .info-card {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .info-card label {
-            display: block;
-            font-size: 0.75rem;
-            color: #666;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-        
-        .info-card span {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #333;
-        }
-        
-        /* Role Toggle */
-        .role-toggle {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .role-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .role-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        .role-btn.active {
-            background: white;
-            color: #667eea;
-        }
-        
-        /* Pricing Card */
-        .pricing-card {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .pricing-card h4 {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        
-        .pricing-card .price {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #25D366;
-        }
-        
-        .pricing-card .price-detail {
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        /* Profile Menu Items */
-        .profile-menu-items {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .profile-menu-items li {
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .profile-menu-items li:last-child {
-            border-bottom: none;
-        }
-        
-        .profile-menu-items a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 15px;
-            color: #333;
-            text-decoration: none;
-            transition: background 0.2s;
-        }
-        
-        .profile-menu-items a:hover {
-            background: #f8f9fa;
-        }
-        
-        .profile-menu-items .logout-btn {
-            color: #c62828;
-        }
-        
-        .profile-menu-items .icon {
-            font-size: 1.1rem;
-        }
-        
-        /* =========================================
-           ADVERTISEMENT STYLES
-           ========================================= */
-        
-        /* Ad Container */
-        .ad-container {
-            margin: 10px 0;
-            padding: 0;
-            background: #f8f9fa;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        /* Banner Ad Styles */
-        .ad-banner {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            overflow: hidden;
-            margin: 10px 0;
-            transition: box-shadow 0.3s ease;
-        }
-        
-        .ad-banner:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .ad-banner-320x50 {
-            height: 50px;
-            width: 100%;
-            max-width: 320px;
-        }
-        
-        .ad-banner-300x250 {
-            height: 250px;
-            width: 100%;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-        
-        .ad-banner-728x90 {
-            height: 90px;
-            width: 100%;
-            max-width: 728px;
-            margin: 0 auto;
-        }
-        
-        .ad-banner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .ad-banner a {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            text-decoration: none;
-        }
-        
-        /* Fallback Ad Content */
-        .ad-fallback {
-            padding: 20px;
-            text-align: center;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border: 1px solid #dee2e6;
-            border-radius: 12px;
-            margin: 10px 0;
-        }
-        
-        .ad-fallback-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .ad-fallback-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 8px;
-        }
-        
-        .ad-fallback-description {
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-        
-        .ad-fallback-cta {
-            display: inline-block;
-            padding: 10px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        
-        .ad-fallback-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .ad-fallback-contact {
-            margin-top: 12px;
-            font-size: 0.8rem;
-            color: #999;
-        }
-        
-        .ad-fallback-contact a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        
-        .ad-fallback-contact a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Native Ad Styles */
-        .ad-native {
-            display: flex;
-            gap: 12px;
-            padding: 12px;
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            margin: 10px 0;
-        }
-        
-        .ad-native-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 4px;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-        
-        .ad-native-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .ad-native-sponsored {
-            font-size: 0.7rem;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-        
-        .ad-native-headline {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 4px;
-            line-height: 1.3;
-        }
-        
-        .ad-native-description {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 8px;
-            line-height: 1.4;
-            flex: 1;
-        }
-        
-        .ad-native-cta {
-            display: inline-block;
-            padding: 6px 14px;
-            background: #667eea;
-            color: #fff;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-decoration: none;
-            align-self: flex-start;
-        }
-        
-        /* Ad Label */
-        .ad-label {
-            font-size: 0.65rem;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-align: center;
-            padding: 4px 0;
-            background: #f8f9fa;
-            border-top: 1px solid #eee;
-        }
-        
-        /* Responsive */
-        @media (max-width: 480px) {
-            .ad-fallback {
-                padding: 15px;
-            }
-            
-            .ad-fallback-title {
-                font-size: 1rem;
-            }
-            
-            .ad-native {
-                flex-direction: column;
-            }
-            
-            .ad-native-image {
-                width: 100%;
-                height: 120px;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { overflow-x: hidden; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; min-height: 100vh; overflow-y: auto; }
     </style>
 </head>
 <body>
-    <div class="header">
+    <!-- Header -->
+    <div class="main-header">
         <div class="header-top">
             <div class="header-left">
                 <div class="logo-text">🚗 PDRides</div>
-                <div class="role-toggle">
-                    <button class="role-btn active" id="passengerModeBtn" onclick="setUserMode('passenger')">👤 Passenger</button>
-                    <button class="role-btn" id="driverModeBtn" onclick="setUserMode('driver')">🚙 Driver</button>
-                </div>
             </div>
             <div class="header-right">
                 <span class="user-info" id="headerUserInfo"></span>
                 <div class="profile-dropdown">
-                    <button class="profile-btn" id="profileBtn" onclick="toggleProfileMenu()">
-                        👤 <span id="profileName">Profile</span>
-                    </button>
+                    <button class="profile-btn" id="profileBtn" onclick="toggleProfileMenu()">👤 <span id="profileName">Profile</span></button>
                     <div class="profile-menu" id="profileMenu">
                         <div class="profile-header">
                             <div class="profile-avatar" id="profileAvatar">👤</div>
@@ -1562,8 +33,8 @@
                         </div>
                         <ul class="profile-menu-items">
                             <li><a href="#" onclick="showProfileSettings()"><span class="icon">⚙️</span> Settings</a></li>
-<li><a href="/my-rides"><span class="icon">🚗</span> My Rides</a></li>
-<li><a href="/browse-all-rides"><span class="icon">🔍</span> Browse All Rides</a></li>
+                            <li><a href="/my-rides"><span class="icon">🚗</span> My Rides</a></li>
+                            <li><a href="/browse-all-rides"><span class="icon">🔍</span> Browse All Rides</a></li>
                             <li><a href="#" onclick="logout()" class="logout-btn"><span class="icon">🚪</span> Logout</a></li>
                         </ul>
                     </div>
@@ -1580,17 +51,11 @@
         </div>
     </div>
     
-    <!-- Logged In Content Container -->
-    <div id="loggedInContent" style="display: none;">
-        <!-- Content shown when user is logged in -->
-    </div>
-    
-
-    
+    <!-- Main Container -->
     <div class="container">
         <div class="main-grid">
+            <!-- Left Column - Map -->
             <div class="left-column">
-    <!-- AD PLACEMENT 1: In-Feed Top Banner Ad (ABOVE Map) -->
                 <div id="ad-placement-top" class="ad-container" data-placement="in-feed-top-banner">
                     <div class="ad-loading" style="padding: 20px; text-align: center; color: #999;">
                         <span style="font-size: 0.8rem;">Loading advertisement...</span>
@@ -1606,30 +71,26 @@
                     <div class="controls">
                         <div class="location-row">
                             <button class="my-location-btn" onclick="getMyLocation()" title="Use my location">📍</button>
-                            
                             <div>
                                 <div class="location-label start">📍 Pick Up Location</div>
                                 <div class="input-wrapper">
-                                    <span class="input-icon">📍</span>
-                                    <input type="text" id="pickup" placeholder="Enter pickup address" autocomplete="off">
+                                    <span class="input-icon"></span>
+                                    <input type="text" id="pickup" placeholder="📍 Enter pickup address" autocomplete="off">
                                     <div class="autocomplete-dropdown" id="pickup-suggestions"></div>
                                 </div>
                             </div>
-                            
                             <button class="swap-btn" onclick="swapLocations()" title="Swap locations">⇄</button>
-                            
                             <div>
                                 <div class="location-label dest">🏁 Drop off Location</div>
                                 <div class="input-wrapper">
-                                    <span class="input-icon">🏁</span>
-                                    <input type="text" id="destination" placeholder="Enter Drop off address" autocomplete="off">
+                                    <span class="input-icon"></span>
+                                    <input type="text" id="destination" placeholder="🏁 Enter Drop off address" autocomplete="off">
                                     <div class="autocomplete-dropdown" id="destination-suggestions"></div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="btn-row" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
-                            <!-- Adults Seats -->
+                        <div class="btn-row">
                             <div style="flex: 1; min-width: 120px;">
                                 <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #333; margin-bottom: 5px;">👤 Adults</label>
                                 <select id="adultSeats" onchange="updateSeatSelection()" style="width: 100%; padding: 12px; border: 2px solid #667eea; border-radius: 8px; font-size: 0.95rem; background: white;">
@@ -1639,8 +100,6 @@
                                     <option value="4">4 Adults</option>
                                 </select>
                             </div>
-                            
-                            <!-- Kids Seats -->
                             <div style="flex: 1; min-width: 120px;">
                                 <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #333; margin-bottom: 5px;">👶 Kids</label>
                                 <select id="kidsSeats" onchange="updateSeatSelection()" style="width: 100%; padding: 12px; border: 2px solid #25D366; border-radius: 8px; font-size: 0.95rem; background: white;">
@@ -1651,8 +110,6 @@
                                     <option value="4">4 Kids</option>
                                 </select>
                             </div>
-                            
-                            <!-- Child Seat Type (shown when kids > 0) -->
                             <div id="childSeatTypeDiv" style="flex: 1; min-width: 150px; display: none;">
                                 <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #333; margin-bottom: 5px;">🧸 Child Seat</label>
                                 <select id="childSeatType" style="width: 100%; padding: 12px; border: 2px solid #ff9800; border-radius: 8px; font-size: 0.95rem; background: white;">
@@ -1661,7 +118,6 @@
                                     <option value="booster">Booster Seat</option>
                                 </select>
                             </div>
-                            
                             <button class="btn btn-primary" onclick="calculateRoute()">🚗 Calculate Price</button>
                             <button class="btn btn-offer" id="offerRideBtn" onclick="handleOfferRide()" style="display: none;">🚙 Offer Ride</button>
                         </div>
@@ -1673,80 +129,66 @@
                         
                         <div class="route-info" id="routeInfo">
                             <div class="info-grid">
-                                <div class="info-card">
-                                    <label>Distance</label>
-                                    <span id="distance">-</span>
-                                </div>
-                                <div class="info-card">
-                                    <label>Duration</label>
-                                    <span id="duration">-</span>
-                                </div>
-                                <div class="info-card">
-                                    <label>Per Seat</label>
-                                    <span id="pricePerSeat">-</span>
-                                </div>
-                                <div class="info-card">
-                                    <label>Total Price</label>
-                                    <span id="totalPrice">-</span>
-                                </div>
+                                <div class="info-card"><label>Distance</label><span id="distance">-</span></div>
+                                <div class="info-card"><label>Duration</label><span id="duration">-</span></div>
+                                <div class="info-card"><label>Per Seat</label><span id="pricePerSeat">-</span></div>
+                                <div class="info-card"><label>Total Price</label><span id="totalPrice">-</span></div>
                             </div>
+                        </div>
+                        
+                        <!-- Pricing Card - Below Calculate Price -->
+                        <div class="pricing-card" id="pricingCard" style="display: none; margin-top: 20px;">
+                            <h4>Estimated Price</h4>
+                            <div class="price" id="mainPrice">$0.00</div>
+                            <div class="price-detail" id="priceBreakdown">Based on distance</div>
+                        </div>
+                        
+                        <!-- Available Driver Rides - Below Pricing -->
+                        <div class="rides-panel" style="margin-top: 20px;">
+                            <h3>🚗 Available Driver Rides</h3>
+                            <div class="rides-filters">
+                                <select id="filterLocation" onchange="filterRides()">
+                                    <option value="">All Locations</option>
+                                </select>
+                                <select id="filterPrice" onchange="filterRides()">
+                                    <option value="">Price: Any</option>
+                                    <option value="low">Price: Low to High</option>
+                                    <option value="high">Price: High to Low</option>
+                                </select>
+                                <select id="filterState" onchange="filterRides()">
+                                    <option value="">All States</option>
+                                </select>
+                            </div>
+                            <div class="ride-list" id="ridesList">
+                                <p style="color: #666; text-align: center; padding: 20px; font-size: 0.9rem;">
+                                    Enter locations and click "Find Rides" to see available rides
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Ad and Find Rides Button - Below Available Rides -->
+                        <div id="ad-placement-bottom" class="ad-container" data-placement="in-feed-bottom-banner" style="margin-top: 20px;">
+                            <div class="ad-loading" style="padding: 20px; text-align: center; color: #999;">
+                                <span style="font-size: 0.8rem;">Loading advertisement...</span>
+                            </div>
+                        </div>
+
+                        <div class="whatsapp-section" style="margin-top: 15px;">
+                            <button class="whatsapp-btn" onclick="findRides()">🔍 Find Rides</button>
                         </div>
                     </div>
                 </div>
             </div>
             
-              <div class="sidebar">
-                    <div id="loggedOutContent" class="login-prompt" style="display: none;">
-                        <p>Login to access more features</p>
-                        <a href="/register" class="btn btn-primary">🔐 Register</a>
-                    </div>
-                    
-                    <h3 style="margin-top: 18px;">💰 Pricing</h3>
-                    <div class="pricing-card" id="pricingCard" style="display: none;">
-                        <h4>Estimated Price</h4>
-                        <div class="price" id="mainPrice">$0.00</div>
-                        <div class="price-detail" id="priceBreakdown">Based on distance</div>
-                    </div>
-                    
-                    <!-- AD PLACEMENT 2: In-Feed Middle Banner Ad (AFTER Pricing Card) -->
-                    <div id="ad-placement-middle" class="ad-container" data-placement="in-feed-middle-banner" style="margin-top: 10px;">
-                        <div class="ad-loading" style="padding: 20px; text-align: center; color: #999;">
-                            <span style="font-size: 0.8rem;">Loading advertisement...</span>
-                        </div>
-                    </div>
-
-                    <div class="whatsapp-section">
-                        <button class="whatsapp-btn" onclick="findRides()">
-                            🔍 Find Rides
-                        </button>
-                    </div>
-                    
-                    <!-- Rides Panel -->
-                    <div class="rides-panel" style="margin-top: 15px;">
-                        <h3>🚗 Available Driver Rides</h3>
-                        <div class="rides-filters">
-                            <select id="filterLocation" onchange="filterRides()">
-                                <option value="">All Locations</option>
-                            </select>
-                            <select id="filterPrice" onchange="filterRides()">
-                                <option value="">Price: Any</option>
-                                <option value="low">Price: Low to High</option>
-                                <option value="high">Price: High to Low</option>
-                            </select>
-                            <select id="filterState" onchange="filterRides()">
-                                <option value="">All States</option>
-                            </select>
-                        </div>
-                        <div class="ride-list" id="ridesList">
-                            <p style="color: #666; text-align: center; padding: 20px; font-size: 0.9rem;">
-                                Enter locations and click "Find Rides" to see available rides
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="alert alert-success" id="successAlert"></div>
-                    <div class="alert alert-error" id="errorAlert"></div>
+            <!-- Right Sidebar -->
+            <div class="sidebar">
+                <div id="loggedOutContent" class="login-prompt" style="display: none;">
+                    <p>Login to access more features</p>
+                    <a href="/register" class="btn btn-primary">🔐 Register</a>
                 </div>
+                
+                <div class="alert alert-success" id="successAlert"></div>
+                <div class="alert alert-error" id="errorAlert"></div>
             </div>
         </div>
     </div>
@@ -1758,9 +200,7 @@
                 <h2>⚙️ Settings</h2>
                 <button class="modal-close" onclick="closeSettingsModal()">×</button>
             </div>
-            <div class="modal-body" id="settingsModalBody">
-                <!-- Settings content will be dynamically inserted -->
-            </div>
+            <div class="modal-body" id="settingsModalBody"></div>
         </div>
     </div>
 
@@ -1770,103 +210,59 @@
             <div class="booking-modal-header" id="bookingModalHeader">
                 <h2>🎫 Book This Ride</h2>
             </div>
-            <div class="booking-modal-body" id="bookingModalBody">
-                <!-- Booking content will be dynamically inserted -->
-            </div>
+            <div class="booking-modal-body" id="bookingModalBody"></div>
         </div>
     </div>
 
     <script>
-
-        // Initialize the map FIRST before using it
-        const map = L.map('map').setView([42.3601, -71.0589], 12); // Default to Boston
-        
+        // Initialize map
+        const map = L.map('map').setView([42.3601, -71.0589], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
             maxZoom: 19
         }).addTo(map);
         
-        let pickupMarker = null;
-        let destinationMarker = null;
-        let routeLine = null;
-        let currentRoute = null;
-        let selectedRide = null;
+        let pickupMarker = null, destinationMarker = null, routeLine = null, currentRoute = null, selectedRide = null, allRides = [];
         
-        let allRides = [];
-        
-        // Auth state
         let authToken = localStorage.getItem('pdrides_token') || null;
         let userPhone = localStorage.getItem('pdrides_phone') || null;
         let userName = localStorage.getItem('pdrides_name') || 'User';
         let userMode = localStorage.getItem('pdrides_mode') || 'passenger';
-        
-        // Get user's driver status from registration - this determines if they can toggle
         let isDriver = localStorage.getItem('pdrides_isDriver') === 'true';
         let userRoles = JSON.parse(localStorage.getItem('pdrides_roles') || '{"passenger":true,"driver":false}');
         
-        // Debounce timer for autocomplete - faster response for dynamic suggestions
         let autocompleteTimer = null;
-        let selectedIndex = -1;
-        let currentSuggestions = [];
-        let activeField = null;
         
         // Custom marker icons
         const pickupIcon = L.divIcon({
             className: 'custom-marker',
             html: '<div style="background: #25D366; width: 35px; height: 35px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">📍</div>',
-            iconSize: [35, 35],
-            iconAnchor: [17, 35],
-            popupAnchor: [0, -35]
+            iconSize: [35, 35], iconAnchor: [17, 35], popupAnchor: [0, -35]
         });
-        
         const destinationIcon = L.divIcon({
             className: 'custom-marker',
             html: '<div style="background: #e74c3c; width: 35px; height: 35px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">🏁</div>',
-            iconSize: [35, 35],
-            iconAnchor: [17, 35],
-            popupAnchor: [0, -35]
+            iconSize: [35, 35], iconAnchor: [17, 35], popupAnchor: [0, -35]
         });
         
-        const carIcon = L.divIcon({
-            className: 'custom-marker',
-            html: '<div style="background: #3498db; width: 40px; height: 40px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">🚗</div>',
-            iconSize: [40, 40],
-            iconAnchor: [20, 20]
-        });
-        
-        // Initialize
         window.onload = () => {
             initUserInterface();
             checkUrlParams();
-            
-            // Initialize ads system
-            if (window.adsSystem) {
-                window.adsSystem.init();
-            }
-            
-            // Get user location
+            if (window.adsSystem) window.adsSystem.init();
             getMyLocation();
-            
-            // Listen for profile name updates from settings page
             window.addEventListener('profileNameUpdated', function(e) {
-                const newName = e.detail.name;
-                if (newName) {
-                    userName = newName;
-                    // Update all name displays in the UI
+                if (e.detail.name) {
+                    userName = e.detail.name;
                     document.getElementById('profileName').textContent = userName;
                     document.getElementById('profileMenuName').textContent = userName;
                     document.getElementById('welcomeUserName').textContent = userName;
-                    
-                    // Update avatar initial
                     document.getElementById('profileAvatar').textContent = userName.charAt(0).toUpperCase();
                 }
             });
         };
         
-        // Initialize UI based on auth state
         function initUserInterface() {
             if (authToken && userPhone) {
-                document.getElementById('loggedInContent').style.display = 'block';
                 document.getElementById('loggedOutContent').style.display = 'none';
                 document.getElementById('headerUserInfo').textContent = userPhone;
                 document.getElementById('profileName').textContent = userName;
@@ -1874,7 +270,6 @@
                 document.getElementById('profileMenuPhone').textContent = userPhone;
                 document.getElementById('welcomeUserName').textContent = userName;
                 
-                // Load profile photo if exists
                 const userPhoto = localStorage.getItem('pdrides_photo') || localStorage.getItem('userProfilePhoto') || localStorage.getItem('globalProfilePhoto');
                 if (userPhoto) {
                     document.getElementById('profileAvatar').innerHTML = '<img src="' + userPhoto + '" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
@@ -1882,437 +277,55 @@
                     document.getElementById('profileAvatar').textContent = userName.charAt(0).toUpperCase();
                 }
                 
-                // Set mode based on user's registration - driver status is now enforced
-                // If user is registered as driver, they start in driver mode
-                // If user is registered as passenger only, they stay in passenger mode
-                if (isDriver) {
-                    userMode = 'driver';
-                } else {
-                    userMode = 'passenger';
-                }
+                userMode = isDriver ? 'driver' : 'passenger';
                 localStorage.setItem('pdrides_mode', userMode);
             } else {
-                document.getElementById('loggedInContent').style.display = 'none';
                 document.getElementById('loggedOutContent').style.display = 'block';
                 document.getElementById('profileName').textContent = 'Login';
-                // Non-logged in users are in passenger mode
                 userMode = 'passenger';
             }
-            
-            // Set user mode - this will also handle disabling toggle based on registration
             setUserMode(userMode, false);
-            
-            // Update toggle visibility based on user roles
             updateRoleToggleVisibility();
         }
         
-        // Update role toggle visibility based on user registration
         function updateRoleToggleVisibility() {
-            const passengerBtn = document.getElementById('passengerModeBtn');
-            const driverBtn = document.getElementById('driverModeBtn');
-            
-            // If user is logged in and registered, show appropriate toggle
-            if (authToken && userPhone) {
-                // Both passenger and driver roles available - show both buttons
-                if (userRoles && userRoles.passenger && userRoles.driver) {
-                    passengerBtn.style.display = 'block';
-                    driverBtn.style.display = 'block';
-                }
-                // Only driver registered - show only driver button
-                else if (userRoles && userRoles.driver && !userRoles.passenger) {
-                    passengerBtn.style.display = 'none';
-                    driverBtn.style.display = 'block';
-                    driverBtn.classList.add('active');
-                    driverBtn.disabled = true;
-                    driverBtn.title = 'You are registered as a driver';
-                }
-                // Only passenger registered (default) - show only passenger button
-                else {
-                    passengerBtn.style.display = 'block';
-                    driverBtn.style.display = 'none';
-                    passengerBtn.classList.add('active');
-                    passengerBtn.disabled = true;
-                    passengerBtn.title = 'You are registered as a passenger';
-                }
-            } else {
-                // Not logged in - show both buttons as passenger mode
-                passengerBtn.style.display = 'block';
-                driverBtn.style.display = 'block';
-                passengerBtn.disabled = false;
-                driverBtn.disabled = false;
-            }
+            // This function kept for compatibility
         }
         
-// Set user mode (passenger/driver)
         function setUserMode(mode, save = true) {
             userMode = mode;
-            if (save) {
-                localStorage.setItem('pdrides_mode', mode);
-            }
+            if (save) localStorage.setItem('pdrides_mode', mode);
             
-            // Update button states
-            document.getElementById('passengerModeBtn').classList.toggle('active', mode === 'passenger');
-            document.getElementById('driverModeBtn').classList.toggle('active', mode === 'driver');
-            
-            // Show/hide Offer a Ride button based on mode
             const offerRideBtn = document.getElementById('offerRideBtn');
-            if (offerRideBtn) {
-                offerRideBtn.style.display = mode === 'driver' ? 'flex' : 'none';
-            }
+            if (offerRideBtn) offerRideBtn.style.display = mode === 'driver' ? 'flex' : 'none';
             
-            // Change header background color based on mode
-            const header = document.querySelector('.header');
+            const header = document.querySelector('.main-header');
             const welcomeBanner = document.getElementById('welcomeBanner');
             
             if (mode === 'driver') {
                 header.classList.add('driver-mode');
-                // Update welcome banner to driver colors (green)
                 welcomeBanner.style.background = 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)';
-                // Update welcome text for driver mode
                 document.getElementById('welcomeHeading').innerHTML = '🚙 Welcome Driver! <span id="welcomeUserName">' + userName + '</span>';
                 document.getElementById('welcomeSubtext').textContent = 'Schedule Your Car Rides';
-                showAlert('success', '🚙 You are now in Driver mode. You can offer rides!');
             } else {
                 header.classList.remove('driver-mode');
-                // Update welcome banner to passenger colors (purple)
                 welcomeBanner.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                // Update welcome text for passenger mode
                 document.getElementById('welcomeHeading').innerHTML = '👋 Welcome Passenger! <span id="welcomeUserName">' + userName + '</span>';
                 document.getElementById('welcomeSubtext').textContent = 'Book Your Car Rides';
-                showAlert('success', '👤 You are now in Passenger mode. You can find rides!');
             }
-            
-            // Update URL to reflect the current mode
             updateUrlWithMode(mode);
         }
         
-        // Update URL with current mode (driver/passenger)
         function updateUrlWithMode(mode) {
             const url = new URL(window.location);
-            
-            // Get current URL params to preserve them
-            const pickup = url.searchParams.get('pickup');
-            const destination = url.searchParams.get('destination');
-            
-            // Always set the mode parameter explicitly
             url.searchParams.set('mode', mode);
-            
-            // Restore other params if they exist
-            if (pickup) url.searchParams.set('pickup', pickup);
-            if (destination) url.searchParams.set('destination', destination);
-            
-            // Update URL without reloading the page
             window.history.replaceState({}, '', url);
         }
         
-        // Show Offer Ride Form Modal
-        function showOfferRideForm(existingPickup, existingDestination) {
-            // If no locations provided, get from input fields
-            const pickup = existingPickup || document.getElementById('pickup').value;
-            const destination = existingDestination || document.getElementById('destination').value;
-            
-            // Check if user needs to enter locations
-            const needsLocation = !pickup || !destination;
-            
-            const modalHtml = `
-                <div class="modal-overlay active" id="offerRideModal" onclick="closeOfferRideModal(event)">
-                    <div class="modal-content" onclick="event.stopPropagation()">
-                        <div class="modal-header driver-mode">
-                            <h2>🚙 Offer Ride to Passengers</h2>
-                            <button class="modal-close" onclick="closeOfferRideModal()">×</button>
-                        </div>
-                        <div class="modal-body">
-                            ${needsLocation ? `
-                                <div style="background: #fff3e0; border: 1px solid #ffcc80; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-                                    <div style="font-weight: 600; color: #e65100; margin-bottom: 8px;">📍 Enter Your Route</div>
-                                    <p style="font-size: 0.85rem; color: #666;">Please enter pickup and drop-off locations for your ride offer.</p>
-                                </div>
-                                
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">📍 Pickup Location</label>
-                                    <input type="text" id="modalPickup" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="Enter pickup address" value="${pickup || ''}">
-                                </div>
-                                
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">🏁 Drop-off Location</label>
-                                    <input type="text" id="modalDestination" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="Enter destination address" value="${destination || ''}">
-                                </div>
-                                
-                                <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem; margin-bottom: 15px;" onclick="proceedWithLocations()">
-                                    ✅ Continue with Locations
-                                </button>
-                            ` : `
-                                <div class="route-summary" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                                    <div style="font-weight: 600; color: #25D366; margin-bottom: 8px;">
-                                        📍 ${pickup.split(',')[0]} → 🏁 ${destination.split(',')[0]}
-                                    </div>
-                                    <div style="font-size: 0.85rem; color: #666;">
-                                        ${pickup} → ${destination}
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">📅 Date</label>
-                                    <input type="date" id="rideDate" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" required>
-                                </div>
-                                
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">⏰ Time</label>
-                                    <input type="time" id="rideTime" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" required>
-                                </div>
-                                
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">💺 Available Seats</label>
-                                    <select id="rideSeats" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-                                        <option value="1">1 Seat - $${(currentRoute?.pricePerSeat || 0).toFixed(2)}</option>
-                                        <option value="2" selected>2 Seats - $${((currentRoute?.pricePerSeat || 0) * 2).toFixed(2)}</option>
-                                        <option value="3">3 Seats - $${((currentRoute?.pricePerSeat || 0) * 3).toFixed(2)}</option>
-                                        <option value="4">4 Seats - $${((currentRoute?.pricePerSeat || 0) * 4).toFixed(2)}</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">💰 Price per Seat ($)</label>
-                                    <input type="number" id="ridePrice" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" value="${(currentRoute?.pricePerSeat || 0).toFixed(2)}" min="0" step="0.01" required>
-                                </div>
-                                
-                                <div class="form-group" style="margin-bottom: 20px;">
-                                    <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">📝 Additional Details (Optional)</label>
-                                    <textarea id="rideNotes" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; min-height: 80px; resize: vertical;" placeholder="Any additional information for passengers..."></textarea>
-                                </div>
-                                
-                                <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem; margin-bottom: 10px;" onclick="createRide()">
-                                    🚗 Create Ride Offer
-                                </button>
-                                
-                                <button class="btn" style="width: 100%; padding: 12px; font-size: 0.95rem; background: #25D366; color: white; border: none;" onclick="createAndShareToWhatsApp()">
-                                    📲 Create & Share to WhatsApp
-                                </button>
-                            `}
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Remove existing modal if any
-            const existingModal = document.getElementById('offerRideModal');
-            if (existingModal) {
-                existingModal.remove();
-            }
-            
-            // Add modal to body
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            
-            // If we have locations, set default date/time
-            if (!needsLocation) {
-                // Set default date to tomorrow
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                document.getElementById('rideDate').value = tomorrow.toISOString().split('T')[0];
-                document.getElementById('rideDate').min = new Date().toISOString().split('T')[0];
-                
-                // Set default time to current time + 1 hour
-                const now = new Date();
-                now.setHours(now.getHours() + 1);
-                document.getElementById('rideTime').value = now.toTimeString().slice(0, 5);
-            }
-        }
-        
-        // Proceed with locations from modal
-        async function proceedWithLocations() {
-            const modalPickup = document.getElementById('modalPickup').value.trim();
-            const modalDestination = document.getElementById('modalDestination').value.trim();
-            
-            if (!modalPickup || !modalDestination) {
-                showAlert('error', 'Please enter both pickup and destination locations');
-                return;
-            }
-            
-            // Close current modal and show the full form with locations
-            closeOfferRideModal();
-            showOfferRideForm(modalPickup, modalDestination);
-            
-            // Also update the main input fields
-            document.getElementById('pickup').value = modalPickup;
-            document.getElementById('destination').value = modalDestination;
-            
-            // Calculate route in background
-            calculateRoute();
-        }
-        
-        // Create ride and share to WhatsApp
-        async function createAndShareToWhatsApp() {
-            if (!authToken || !userPhone) {
-                showAlert('error', 'Please register to offer rides');
-                window.location.href = '/register';
-                return;
-            }
-            
-            const pickup = document.getElementById('pickup').value;
-            const destination = document.getElementById('destination').value;
-            const date = document.getElementById('rideDate').value;
-            const time = document.getElementById('rideTime').value;
-            const seats = document.getElementById('rideSeats').value;
-            const pricePerSeat = parseFloat(document.getElementById('ridePrice').value);
-            
-            if (!date || !time || !pricePerSeat) {
-                showAlert('error', 'Please fill in all required fields');
-                return;
-            }
-            
-            // Close modal
-            closeOfferRideModal();
-            document.getElementById('loading').classList.add('active');
-            
-            try {
-                const response = await fetch('/api/rides', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    },
-                    body: JSON.stringify({
-                        driverPhone: userPhone,
-                        driverName: userName,
-                        pickup: pickup,
-                        destination: destination,
-                        date: date,
-                        time: time,
-                        seats: parseInt(seats),
-                        contribution: pricePerSeat,
-                        pickupLat: currentRoute?.pickup?.lat,
-                        pickupLng: currentRoute?.pickup?.lng,
-                        destLat: currentRoute?.destination?.lat,
-                        destLng: currentRoute?.destination?.lng
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Ask user for WhatsApp number to share
-                    const sharePhone = prompt('Enter the phone number to share this ride offer on WhatsApp (+1...):', userPhone || '');
-                    
-                    if (sharePhone) {
-                        // Send ride details to WhatsApp
-                        const seatsText = seats === '1' ? '1 seat' : `${seats} seats`;
-                        const message = `🚗 *Ride Offered!*\n\n📍 From: ${pickup}\n🏁 To: ${destination}\n📅 Date: ${new Date(date).toLocaleDateString()}\n⏰ Time: ${time}\n💺 Available: ${seatsText}\n💰 Price: $${pricePerSeat.toFixed(2)} per seat\n\n👤 Driver: ${userName}\n\nBook now on PDRides!`;
-                        
-                        await fetch('/api/whatsapp/send-ride', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                phoneNumber: sharePhone,
-                                pickup: pickup,
-                                destination: destination,
-                                date: new Date(date).toLocaleDateString(),
-                                time: time,
-                                price: pricePerSeat.toFixed(2),
-                                seats: seats
-                            })
-                        });
-                    }
-                    
-                    showAlert('success', '🎉 Ride offer created and shared to WhatsApp!');
-                    // Refresh rides list
-                    findRides();
-                } else {
-                    throw new Error(data.error || 'Failed to create ride');
-                }
-            } catch (error) {
-                console.error('Error creating ride:', error);
-                showAlert('error', error.message || 'Failed to create ride offer');
-            } finally {
-                document.getElementById('loading').classList.remove('active');
-            }
-        }
-        
-        // Close Offer Ride Modal
-        function closeOfferRideModal(event) {
-            if (!event || event.target === event.currentTarget) {
-                const modal = document.getElementById('offerRideModal');
-                if (modal) {
-                    modal.remove();
-                }
-            }
-        }
-        
-// Create a new ride
-        async function createRide() {
-if (!authToken || !userPhone) {
-                showAlert('error', 'Please register to offer rides');
-                window.location.href = '/register';
-                return;
-            }
-            
-            const pickup = document.getElementById('pickup').value;
-            const destination = document.getElementById('destination').value;
-            const date = document.getElementById('rideDate').value;
-            const time = document.getElementById('rideTime').value;
-            const seats = document.getElementById('rideSeats').value;
-            const pricePerSeat = parseFloat(document.getElementById('ridePrice').value);
-            
-            if (!date || !time || !pricePerSeat) {
-                showAlert('error', 'Please fill in all required fields');
-                return;
-            }
-            
-            // Close modal
-            closeOfferRideModal();
-            document.getElementById('loading').classList.add('active');
-            
-            try {
-                const response = await fetch('/api/rides', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    },
-                    body: JSON.stringify({
-                        driverPhone: userPhone,
-                        driverName: userName,
-                        pickup: pickup,
-                        destination: destination,
-                        date: date,
-                        time: time,
-                        seats: parseInt(seats),
-                        contribution: pricePerSeat,
-                        pickupLat: currentRoute?.pickup?.lat,
-                        pickupLng: currentRoute?.pickup?.lng,
-                        destLat: currentRoute?.destination?.lat,
-                        destLng: currentRoute?.destination?.lng
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showAlert('success', '🎉 Ride offer created successfully! Passengers can now find your ride.');
-                    // Refresh rides list
-                    findRides();
-                } else {
-                    throw new Error(data.error || 'Failed to create ride');
-                }
-            } catch (error) {
-                console.error('Error creating ride:', error);
-                showAlert('error', error.message || 'Failed to create ride offer');
-            } finally {
-                document.getElementById('loading').classList.remove('active');
-            }
-        }
-        
-        // Toggle profile menu
         function toggleProfileMenu() {
-            if (!authToken) {
-                window.location.href = '/register';
-                return;
-            }
+            if (!authToken) { window.location.href = '/register'; return; }
             const menu = document.getElementById('profileMenu');
             menu.classList.toggle('active');
-            
-            // Close on click outside
             document.addEventListener('click', function closeMenu(e) {
                 if (!e.target.closest('.profile-dropdown')) {
                     menu.classList.remove('active');
@@ -2321,7 +334,6 @@ if (!authToken || !userPhone) {
             });
         }
         
-        // Check URL params
         function checkUrlParams() {
             const urlParams = new URLSearchParams(window.location.search);
             const pickup = urlParams.get('pickup');
@@ -2330,96 +342,27 @@ if (!authToken || !userPhone) {
             
             if (pickup) document.getElementById('pickup').value = pickup;
             if (destination) document.getElementById('destination').value = destination;
-            
-            // Set user mode from URL if provided
             if (mode === 'driver' || mode === 'passenger') {
                 userMode = mode;
                 localStorage.setItem('pdrides_mode', mode);
             }
-            
-            if (pickup && destination) {
-                calculateRoute();
-            }
+            if (pickup && destination) calculateRoute();
         }
         
-        // Update route title
-        function updateRouteTitle() {
-            // This function is kept for future use when routeTitle element is added
-            // Currently not used but kept for potential future features
-            try {
-                const pickup = document.getElementById('pickup').value;
-                const destination = document.getElementById('destination').value;
-                const title = document.getElementById('routeTitle');
-                
-                if (!title) return; // Element doesn't exist, skip
-                
-                if (pickup && destination) {
-                    const pickupShort = pickup.split(',')[0];
-                    const destShort = destination.split(',')[0];
-                    title.innerHTML = `<span class="location start-loc">📍 ${pickupShort}</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 ${destShort}</span>`;
-                } else if (pickup) {
-                    const pickupShort = pickup.split(',')[0];
-                    title.innerHTML = `<span class="location start-loc">📍 ${pickupShort}</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 Enter destination</span>`;
-                } else if (destination) {
-                    const destShort = destination.split(',')[0];
-                    title.innerHTML = `<span class="location start-loc">📍 Enter start location</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 ${destShort}</span>`;
-                } else {
-                    title.innerHTML = `<span class="location start-loc">📍 Enter start location</span> <span class="arrow">→</span> <span class="location dest-loc">🏁 Enter destination</span>`;
-                }
-            } catch (e) {
-                // Silently ignore if element doesn't exist
-            }
-        }
-        
-        // Autocomplete for pickup - Dynamic location suggestions as user types
+        // Autocomplete
         document.getElementById('pickup').addEventListener('input', function(e) {
-            updateRouteTitle();
             clearTimeout(autocompleteTimer);
-            const query = e.target.value;
-            
-            // Show suggestions immediately if we have enough characters
-            if (query.length >= 2) {
-                // Shorter delay for more responsive feel (150ms)
-                autocompleteTimer = setTimeout(() => {
-                    showAutocomplete('pickup', query);
-                }, 150);
-            } else if (query.length === 0) {
-                // Hide suggestions when input is cleared
-                document.getElementById('pickup-suggestions').classList.remove('active');
-            }
-        });
-        
-        document.getElementById('pickup').addEventListener('focus', function(e) {
             if (e.target.value.length >= 2) {
-                showAutocomplete('pickup', e.target.value);
+                autocompleteTimer = setTimeout(() => showAutocomplete('pickup', e.target.value), 150);
             }
         });
-        
-        // Autocomplete for destination - Dynamic location suggestions as user types
         document.getElementById('destination').addEventListener('input', function(e) {
-            updateRouteTitle();
             clearTimeout(autocompleteTimer);
-            const query = e.target.value;
-            
-            // Show suggestions immediately if we have enough characters
-            if (query.length >= 2) {
-                // Shorter delay for more responsive feel (150ms)
-                autocompleteTimer = setTimeout(() => {
-                    showAutocomplete('destination', query);
-                }, 150);
-            } else if (query.length === 0) {
-                // Hide suggestions when input is cleared
-                document.getElementById('destination-suggestions').classList.remove('active');
-            }
-        });
-        
-        document.getElementById('destination').addEventListener('focus', function(e) {
             if (e.target.value.length >= 2) {
-                showAutocomplete('destination', e.target.value);
+                autocompleteTimer = setTimeout(() => showAutocomplete('destination', e.target.value), 150);
             }
         });
         
-        // Close autocomplete when clicking outside
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.input-wrapper')) {
                 document.getElementById('pickup-suggestions').classList.remove('active');
@@ -2427,24 +370,16 @@ if (!authToken || !userPhone) {
             }
         });
         
-        // Show autocomplete suggestions
         async function showAutocomplete(field, query) {
             const dropdown = document.getElementById(field + '-suggestions');
+            if (query.length < 1) { dropdown.classList.remove('active'); return; }
             
-// Show autocomplete suggestions - Dynamic as user types
-            if (query.length < 1) {
-                dropdown.classList.remove('active');
-                return;
-            }
-            
-            // Show loading indicator
             dropdown.innerHTML = '<div class="autocomplete-item" style="color: #999; font-size: 0.85rem;">Searching...</div>';
             dropdown.classList.add('active');
             
             try {
                 const response = await fetch(`/api/autocomplete?q=${encodeURIComponent(query)}`);
                 const data = await response.json();
-                
                 if (data.success && data.suggestions.length > 0) {
                     dropdown.innerHTML = data.suggestions.map(s => `
                         <div class="autocomplete-item" onclick="selectAutocomplete('${field}', '${s.display_name.replace(/'/g, "\\'")}', ${s.lat}, ${s.lon})">
@@ -2452,107 +387,54 @@ if (!authToken || !userPhone) {
                             <div class="sub-text">${s.display_name.split(',').slice(1, 4).join(',')}</div>
                         </div>
                     `).join('');
-                    dropdown.classList.add('active');
                 } else {
                     dropdown.classList.remove('active');
                 }
             } catch (error) {
-                console.error('Autocomplete error:', error);
                 dropdown.classList.remove('active');
             }
         }
         
-        // Select autocomplete suggestion
         function selectAutocomplete(field, displayName, lat, lon) {
             document.getElementById(field).value = displayName;
             document.getElementById(field + '-suggestions').classList.remove('active');
-            updateRouteTitle();
             
-            // Save to recent searches if authenticated
-            if (authToken && userPhone) {
-                const otherField = field === 'pickup' ? 'destination' : 'pickup';
-                const otherValue = document.getElementById(otherField).value;
-                
-                if (otherValue) {
-                    saveRecentSearchToServer();
-                }
-            }
-            
-            // Auto-calculate route if both fields have values
             const pickup = document.getElementById('pickup').value;
             const destination = document.getElementById('destination').value;
-            if (pickup && destination && field === 'destination') {
-                calculateRoute();
-            }
+            if (pickup && destination && field === 'destination') calculateRoute();
         }
         
-        // Swap pickup and destination
         function swapLocations() {
             const pickup = document.getElementById('pickup');
             const destination = document.getElementById('destination');
             const temp = pickup.value;
             pickup.value = destination.value;
             destination.value = temp;
-            updateRouteTitle();
-            
-            // Recalculate route
-            if (pickup.value && destination.value) {
-                calculateRoute();
-            }
+            if (pickup.value && destination.value) calculateRoute();
         }
         
-        // Get user's current location
         function getMyLocation() {
-            if (!navigator.geolocation) {
-                showAlert('error', 'Geolocation is not supported by your browser');
-                return;
-            }
-            
+            if (!navigator.geolocation) { showAlert('error', 'Geolocation is not supported'); return; }
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
                     const { latitude, longitude } = position.coords;
-                    
                     try {
                         const response = await fetch(`/api/reverse-geocode?lat=${latitude}&lon=${longitude}`);
                         const data = await response.json();
-                        
                         if (data.success) {
                             document.getElementById('pickup').value = data.address;
-                            updateRouteTitle();
                             calculateRoute();
                             showAlert('success', 'Location updated!');
                         }
                     } catch (error) {
                         document.getElementById('pickup').value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-                        updateRouteTitle();
                         calculateRoute();
                     }
                 },
-                (error) => {
-                    showAlert('error', 'Unable to get your location. Please check permissions.');
-                }
+                (error) => showAlert('error', 'Unable to get your location')
             );
         }
         
-// Clear form
-        function clearForm() {
-            document.getElementById('pickup').value = '';
-            document.getElementById('destination').value = '';
-            document.getElementById('routeInfo').classList.remove('active');
-            document.getElementById('pricingCard').style.display = 'none';
-            updateRouteTitle();
-            
-            if (pickupMarker) map.removeLayer(pickupMarker);
-            if (destinationMarker) map.removeLayer(destinationMarker);
-            if (routeLine) map.removeLayer(routeLine);
-            
-            pickupMarker = null;
-            destinationMarker = null;
-            routeLine = null;
-            currentRoute = null;
-        }
-        
-        // Show alert
         function showAlert(type, message) {
             const alert = document.getElementById(type === 'success' ? 'successAlert' : 'errorAlert');
             alert.textContent = message;
@@ -2560,174 +442,10 @@ if (!authToken || !userPhone) {
             setTimeout(() => alert.classList.remove('active'), 5000);
         }
         
-        // Update seat selection - show/hide child seat type based on kids selection
-        function updateSeatSelection() {
-            const kidsSeats = document.getElementById('kidsSeats');
-            const childSeatTypeDiv = document.getElementById('childSeatTypeDiv');
-            
-            if (kidsSeats && childSeatTypeDiv) {
-                if (parseInt(kidsSeats.value) > 0) {
-                    childSeatTypeDiv.style.display = 'block';
-                } else {
-                    childSeatTypeDiv.style.display = 'none';
-                }
-            }
-        }
-        
-        // Get total seats (adults + kids)
-        function getTotalSeats() {
-            const adults = parseInt(document.getElementById('adultSeats')?.value || 1);
-            const kids = parseInt(document.getElementById('kidsSeats')?.value || 0);
-            return adults + kids;
-        }
-        
-        // Get seat breakdown for display
-        function getSeatBreakdown() {
-            const adults = parseInt(document.getElementById('adultSeats')?.value || 1);
-            const kids = parseInt(document.getElementById('kidsSeats')?.value || 0);
-            const childSeatType = document.getElementById('childSeatType')?.value || 'none';
-            
-            return {
-                adults,
-                kids,
-                childSeatType,
-                total: adults + kids
-            };
-        }
-        
-        // Calculate route
-        async function calculateRoute() {
-            const pickup = document.getElementById('pickup').value;
-            const destination = document.getElementById('destination').value;
-            
-            // Get seat selection using the new functions
-            const seatInfo = getSeatBreakdown();
-            const totalSeats = seatInfo.total;
-            const adults = seatInfo.adults;
-            const kids = seatInfo.kids;
-            const childSeatType = seatInfo.childSeatType;
-            
-            if (!pickup || !destination) {
-                showAlert('error', 'Please enter both pickup and destination locations');
-                return;
-            }
-            
-            document.getElementById('loading').classList.add('active');
-            document.getElementById('routeInfo').classList.remove('active');
-            document.getElementById('pricingCard').style.display = 'none';
-            
-            if (pickupMarker) map.removeLayer(pickupMarker);
-            if (destinationMarker) map.removeLayer(destinationMarker);
-            if (routeLine) map.removeLayer(routeLine);
-            
-            try {
-                // Call API with adults and children parameters
-                const response = await fetch(`/api/route?pickup=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(destination)}&seats=${totalSeats}&adults=${adults}&children=${kids}&childSeatType=${childSeatType}`);
-                const data = await response.json();
-                
-                if (!data.success) {
-                    throw new Error(data.error || 'Failed to calculate route');
-                }
-                
-                currentRoute = data;
-                
-                // Add markers with drag support
-                pickupMarker = L.marker([data.pickup.lat, data.pickup.lon], { 
-                    icon: pickupIcon,
-                    draggable: true
-                })
-                    .addTo(map)
-                    .bindPopup(`<strong>📍 Pickup:</strong><br>${data.pickup.address}`)
-                    .on('dragend', function(e) {
-                        const pos = e.target.getLatLng();
-                        updateMarkerPosition('pickup', pos.lat, pos.lng);
-                    });
-                
-                destinationMarker = L.marker([data.destination.lat, data.destination.lon], { 
-                    icon: destinationIcon,
-                    draggable: true
-                })
-                    .addTo(map)
-                    .bindPopup(`<strong>🏁 Destination:</strong><br>${data.destination.address}`)
-                    .on('dragend', function(e) {
-                        const pos = e.target.getLatLng();
-                        updateMarkerPosition('destination', pos.lat, pos.lng);
-                    });
-                
-                // Draw route
-                if (data.geometry && data.geometry.coordinates) {
-                    const coordinates = data.geometry.coordinates.map(coord => [coord[1], coord[0]]);
-                    routeLine = L.polyline(coordinates, {
-                        color: '#25D366',
-                        weight: 6,
-                        opacity: 0.8
-                    }).addTo(map);
-                    
-                    map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
-                }
-                
-                // Calculate price with adult/kids breakdown
-                const adultPrice = data.pricePerAdult || data.pricePerSeat;
-                const kidPrice = data.pricePerChild || (data.pricePerSeat * 0.5); // 50% discount for kids by default
-                const basePrice = data.totalPrice || (adultPrice * adults + kidPrice * kids);
-                
-                // Build price breakdown text
-                let priceBreakdownText = '';
-                if (kids > 0) {
-                    priceBreakdownText = `👤 ${adults} Adult${adults > 1 ? 's' : ''} @ $${adultPrice.toFixed(2)} = $${(adultPrice * adults).toFixed(2)}`;
-                    priceBreakdownText += `\n👶 ${kids} Kid${kids > 1 ? 's' : ''} @ $${kidPrice.toFixed(2)} = $${(kidPrice * kids).toFixed(2)}`;
-                    priceBreakdownText += `\n📍 ${data.distanceFormatted}`;
-                } else {
-                    priceBreakdownText = `$${adultPrice.toFixed(2)} × ${totalSeats} seat${totalSeats > 1 ? 's' : ''} • ${data.distanceFormatted}`;
-                }
-                
-                // Update UI with 2 decimal places
-                document.getElementById('distance').textContent = data.distanceFormatted;
-                document.getElementById('duration').textContent = data.durationFormatted;
-                document.getElementById('pricePerSeat').textContent = `$${adultPrice.toFixed(2)}`;
-                document.getElementById('totalPrice').textContent = `$${basePrice.toFixed(2)}`;
-                document.getElementById('routeInfo').classList.add('active');
-                
-                document.getElementById('mainPrice').textContent = `$${basePrice.toFixed(2)}`;
-                document.getElementById('priceBreakdown').textContent = priceBreakdownText;
-                document.getElementById('pricingCard').style.display = 'block';
-                
-                pickupMarker.openPopup();
-                
-                // Save to recent searches if authenticated
-                if (authToken && userPhone) {
-                    saveRecentSearchToServer();
-                }
-                
-            } catch (error) {
-                console.error('Route calculation error:', error);
-                showAlert('error', error.message || 'Failed to calculate route');
-            } finally {
-                document.getElementById('loading').classList.remove('active');
-            }
-        }
-        
-        // Update marker position after drag
-        async function updateMarkerPosition(field, lat, lon) {
-            try {
-                const response = await fetch(`/api/reverse-geocode?lat=${lat}&lon=${lon}`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    document.getElementById(field).value = data.address;
-                    updateRouteTitle();
-                    calculateRoute();
-                }
-            } catch (error) {
-                console.error('Reverse geocode error:', error);
-            }
-        }
-        
-        // Find rides - searches for available rides matching the route
+        // Find Rides
         async function findRides() {
             const pickup = document.getElementById('pickup').value;
             const destination = document.getElementById('destination').value;
-            const seats = getTotalSeats(); // Use the new function to get total seats
             
             if (!pickup || !destination) {
                 showAlert('error', 'Please enter both pickup and destination locations');
@@ -2735,755 +453,336 @@ if (!authToken || !userPhone) {
             }
             
             document.getElementById('loading').classList.add('active');
-            document.getElementById('routeInfo').classList.remove('active');
-            document.getElementById('pricingCard').style.display = 'none';
-            
-            if (pickupMarker) map.removeLayer(pickupMarker);
-            if (destinationMarker) map.removeLayer(destinationMarker);
-            if (routeLine) map.removeLayer(routeLine);
             
             try {
-                const response = await fetch(`/api/rides?pickup=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(destination)}&seats=${seats}`);
-                const data = await response.json();
+                // First, geocode the addresses if not already done
+                const adults = parseInt(document.getElementById('adultSeats').value) || 1;
+                const kids = parseInt(document.getElementById('kidsSeats').value) || 0;
+                const childSeatType = document.getElementById('childSeatType') ? document.getElementById('childSeatType').value : 'none';
                 
-                const ridesList = document.getElementById('ridesList');
-                
-                if (!data.success || !data.rides || data.rides.length === 0) {
-                    ridesList.innerHTML = `
-                        <div style="text-align: center; padding: 30px; color: #666;">
-                            <p>😕 No rides found</p>
-                            <p style="font-size: 0.85rem; margin-top: 10px;">Try creating a new ride</p>
-                        </div>
-                    `;
-                    return;
+                // If we don't have a current route, calculate it first to geocode addresses
+                if (!currentRoute || currentRoute.pickup?.address !== pickup || currentRoute.destination?.address !== destination) {
+                    try {
+                        const params = new URLSearchParams({ pickup, destination, adults, children: kids, childSeatType });
+                        const routeResponse = await fetch(`/api/route?${params.toString()}`);
+                        const routeData = await routeResponse.json();
+                        
+                        if (routeData.success) {
+                            currentRoute = {
+                                pickup: routeData.pickup,
+                                destination: routeData.destination,
+                                distance: routeData.distance,
+                                distanceFormatted: routeData.distanceFormatted,
+                                duration: routeData.duration,
+                                durationFormatted: routeData.durationFormatted,
+                                pricePerSeat: routeData.pricePerSeat,
+                                totalPrice: routeData.totalPrice,
+                                adults,
+                                children: kids,
+                                childSeatType,
+                                geometry: routeData.geometry
+                            };
+                            
+                            updateRouteDisplay(currentRoute);
+                            updateMapMarkers(routeData.pickup, routeData.destination, routeData.geometry);
+                            document.getElementById('routeInfo').classList.add('active');
+                            
+                            const pricingCard = document.getElementById('pricingCard');
+                            if (pricingCard) {
+                                pricingCard.style.display = 'block';
+                                document.getElementById('mainPrice').textContent = `$${routeData.totalPrice.toFixed(2)}`;
+                                let breakdown = `${routeData.adults} adult${routeData.adults > 1 ? 's' : ''}`;
+                                if (routeData.children > 0) breakdown += `, ${routeData.children} kid${routeData.children > 1 ? 's' : ''}`;
+                                document.getElementById('priceBreakdown').textContent = breakdown;
+                            }
+                        }
+                    } catch (routeError) {
+                        console.error('Route calculation error:', routeError);
+                        // Continue with ride search even if route calculation fails
+                    }
                 }
                 
-                allRides = data.rides;
-                renderRides(allRides);
-                populateFilters(allRides);
-                showRidesOnMap(allRides);
+                // Now search for rides with the geocoded locations
+                const params = new URLSearchParams();
+                if (pickup) params.append('pickup', pickup);
+                if (destination) params.append('destination', destination);
+                params.append('limit', '50');
                 
+                const response = await fetch(`/api/rides?${params.toString()}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    allRides = data.rides || [];
+                    displayRides(allRides);
+                    showAlert('success', allRides.length === 0 ? 'No rides found' : `Found ${allRides.length} ride(s)!`);
+                } else {
+                    throw new Error(data.error);
+                }
             } catch (error) {
-                console.error('Error finding rides:', error);
                 showAlert('error', 'Failed to find rides');
             } finally {
                 document.getElementById('loading').classList.remove('active');
             }
         }
         
-        // Render rides list
-        function renderRides(rides) {
+        function displayRides(rides) {
             const ridesList = document.getElementById('ridesList');
+            const pricingCard = document.getElementById('pricingCard');
+            
+            if (!ridesList) return;
             
             if (rides.length === 0) {
-                ridesList.innerHTML = `
-                    <div style="text-align: center; padding: 30px; color: #666;">
-                        <p>😕 No rides match your filters</p>
-                    </div>
-                `;
+                ridesList.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No rides found</p>';
                 return;
             }
             
-            ridesList.innerHTML = rides.map((ride, index) => `
-                <div class="ride-item" onclick="selectRide(${index}, '${ride._id}')" data-index="${index}">
-                    <div class="ride-route">📍 ${ride.pickupLocation} → 🏁 ${ride.destination}</div>
-                    <div class="ride-meta">
-                        📅 ${new Date(ride.date).toLocaleDateString()} • ⏰ ${ride.time} • 💺 ${ride.availableSeats} seats
+            ridesList.innerHTML = rides.map(ride => {
+                const date = ride.date ? new Date(ride.date).toLocaleDateString() : 'N/A';
+                const seats = ride.availableSeats || ride.seats || 0;
+                const price = (ride.contribution || 0).toFixed(2);
+                return `
+                    <div class="ride-item" onclick="selectRide('${ride._id}')">
+                        <div class="ride-route">📍 ${(ride.pickupLocation || ride.pickup || 'Pickup').split(',')[0]} → 🏁 ${(ride.destination || 'Destination').split(',')[0]}</div>
+                        <div class="ride-meta"><span>📅 ${date}</span><span>⏰ ${ride.time || ''}</span><span>💺 ${seats} seat${seats !== 1 ? 's' : ''}</span></div>
+                        <div class="ride-price-row"><span class="price-tag">$${price}</span></div>
                     </div>
-                    <div class="ride-price-row">
-                        <span>👤 ${ride.driverName || 'Anonymous'}</span>
-                        <span class="price-tag">$${(ride.totalPrice || ride.contribution || 0).toFixed(2)}</span>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+            
+            if (pricingCard) pricingCard.style.display = 'block';
         }
         
-        // Populate filters
-        function populateFilters(rides) {
-            const locationFilter = document.getElementById('filterLocation');
-            const stateFilter = document.getElementById('filterState');
-            
-            const locations = new Set();
-            const states = new Set();
-            
-            rides.forEach(ride => {
-                if (ride.pickupLocation) locations.add(ride.pickupLocation.split(',')[0]);
-                if (ride.destination) locations.add(ride.destination.split(',')[0]);
-            });
-            
-            locationFilter.innerHTML = '<option value="">All Locations</option>' + 
-                Array.from(locations).map(loc => `<option value="${loc}">${loc}</option>`).join('');
-            
-            stateFilter.innerHTML = '<option value="">All States</option>' + 
-                Array.from(states).map(state => `<option value="${state}">${state}</option>`).join('');
+        function selectRide(rideId) {
+            selectedRide = allRides.find(r => r._id === rideId);
+            showAlert('success', 'Ride selected!');
         }
         
-        // Filter rides
+        // Calculate Route
+        async function calculateRoute() {
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            const adults = parseInt(document.getElementById('adultSeats').value) || 1;
+            const kids = parseInt(document.getElementById('kidsSeats').value) || 0;
+            const childSeatType = document.getElementById('childSeatType') ? document.getElementById('childSeatType').value : 'none';
+            
+            if (!pickup || !destination) {
+                showAlert('error', 'Please enter both pickup and destination locations');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loading').classList.add('active');
+            
+            try {
+                const params = new URLSearchParams({ pickup, destination, adults, children: kids, childSeatType });
+                const response = await fetch('/api/route?' + params.toString());
+                
+                if (!response.ok) {
+                    throw new Error('Server error: ' + response.status);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentRoute = {
+                        pickup: data.pickup, destination: data.destination,
+                        distance: data.distance, distanceFormatted: data.distanceFormatted,
+                        duration: data.duration, durationFormatted: data.durationFormatted,
+                        pricePerSeat: data.pricePerSeat, totalPrice: data.totalPrice,
+                        adults, children: kids, childSeatType, geometry: data.geometry
+                    };
+                    
+                    updateRouteDisplay(currentRoute);
+                    updateMapMarkers(data.pickup, data.destination, data.geometry);
+                    document.getElementById('routeInfo').classList.add('active');
+                    
+                    const pricingCard = document.getElementById('pricingCard');
+                    if (pricingCard) {
+                        pricingCard.style.display = 'block';
+                        document.getElementById('mainPrice').textContent = '$' + data.totalPrice.toFixed(2);
+                        let breakdown = data.adults + ' adult' + (data.adults > 1 ? 's' : '');
+                        if (data.children > 0) breakdown += ', ' + data.children + ' kid' + (data.children > 1 ? 's' : '');
+                        document.getElementById('priceBreakdown').textContent = breakdown;
+                    }
+                    
+                    // Hide loading on success
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('loading').classList.remove('active');
+                } else {
+                    throw new Error(data.error || 'Failed to calculate route');
+                }
+            } catch (error) {
+                console.error('Route calculation error:', error);
+                showAlert('error', 'Failed to calculate price: ' + (error.message || 'Please check your locations and try again'));
+                // Hide loading on error
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+        
+        function updateRouteDisplay(route) {
+            document.getElementById('distance').textContent = route.distanceFormatted || '-';
+            document.getElementById('duration').textContent = route.durationFormatted || '-';
+            document.getElementById('pricePerSeat').textContent = `$${(route.pricePerSeat || 0).toFixed(2)}`;
+            document.getElementById('totalPrice').textContent = `$${(route.totalPrice || 0).toFixed(2)}`;
+        }
+        
+        function updateMapMarkers(pickup, destination, geometry) {
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            if (destinationMarker) map.removeLayer(destinationMarker);
+            if (routeLine) map.removeLayer(routeLine);
+            
+            if (pickup) {
+                pickupMarker = L.marker([pickup.lat, pickup.lng], { icon: pickupIcon }).addTo(map).bindPopup('📍 Pickup: ' + pickup.address.split(',')[0]);
+            }
+            if (destination) {
+                destinationMarker = L.marker([destination.lat, destination.lng], { icon: destinationIcon }).addTo(map).bindPopup('🏁 Destination: ' + destination.address.split(',')[0]);
+            }
+            if (geometry) {
+                routeLine = L.geoJSON(geometry, { style: { color: '#667eea', weight: 5, opacity: 0.7 } }).addTo(map);
+            }
+            if (pickup && destination) {
+                map.fitBounds([[pickup.lat, pickup.lng], [destination.lat, destination.lng]], { padding: [50, 50] });
+            }
+        }
+        
+        function updateSeatSelection() {
+            const kids = parseInt(document.getElementById('kidsSeats').value) || 0;
+            const childSeatDiv = document.getElementById('childSeatTypeDiv');
+            if (childSeatDiv) childSeatDiv.style.display = kids > 0 ? 'block' : 'none';
+            
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            if (pickup && destination && currentRoute) calculateRoute();
+        }
+        
         function filterRides() {
-            const locationFilter = document.getElementById('filterLocation').value;
-            const priceFilter = document.getElementById('filterPrice').value;
-            const stateFilter = document.getElementById('filterState').value;
-            
             let filtered = [...allRides];
+            const locationFilter = document.getElementById('filterLocation')?.value || '';
+            const priceFilter = document.getElementById('filterPrice')?.value || '';
             
             if (locationFilter) {
                 filtered = filtered.filter(ride => 
-                    ride.pickupLocation.includes(locationFilter) || 
-                    ride.destination.includes(locationFilter)
+                    (ride.pickupLocation || '').toLowerCase().includes(locationFilter.toLowerCase()) ||
+                    (ride.destination || '').toLowerCase().includes(locationFilter.toLowerCase())
                 );
             }
+            if (priceFilter === 'low') filtered.sort((a, b) => (a.contribution || 0) - (b.contribution || 0));
+            else if (priceFilter === 'high') filtered.sort((a, b) => (b.contribution || 0) - (a.contribution || 0));
             
-            if (priceFilter === 'low') {
-                filtered.sort((a, b) => (a.totalPrice || a.contribution) - (b.totalPrice || b.contribution));
-            } else if (priceFilter === 'high') {
-                filtered.sort((a, b) => (b.totalPrice || b.contribution) - (a.totalPrice || a.contribution));
-            }
-            
-            renderRides(filtered);
+            displayRides(filtered);
         }
         
-        // Show rides on map
-        function showRidesOnMap(rides) {
-            map.eachLayer((layer) => {
-                if (layer instanceof L.Marker && layer !== pickupMarker && layer !== destinationMarker) {
-                    map.removeLayer(layer);
-                }
-            });
-            
-            const bounds = [];
-            
-            rides.forEach((ride, index) => {
-                const pickupLat = ride.pickupLat || 42.3601 + (index * 0.01);
-                const pickupLng = ride.pickupLng || -71.0589 + (index * 0.01);
-                const destLat = ride.destLat || 40.7128 + (index * 0.01);
-const destLng = ride.destLng || -74.006 + (index * 0.01);
-                
-                L.marker([pickupLat, pickupLng], { icon: pickupIcon })
-                    .addTo(map)
-                    .bindPopup(`<strong>Pickup:</strong> ${ride.pickupLocation}`);
-                
-                L.marker([destLat, destLng], { icon: destinationIcon })
-                    .addTo(map)
-                    .bindPopup(`<strong>Destination:</strong> ${ride.destination}`);
-                
-                const midLat = (pickupLat + destLat) / 2;
-                const midLng = (pickupLng + destLng) / 2;
-                L.marker([midLat, midLng], { icon: carIcon })
-                    .addTo(map)
-                    .bindPopup(`<strong>🚗 ${ride.driverName || 'Driver'}</strong><br>Price: $${ride.contribution}<br>Seats: ${ride.availableSeats}`);
-                
-                bounds.push([pickupLat, pickupLng], [destLat, destLng]);
-            });
-            
-            if (bounds.length > 0) {
-                map.fitBounds(bounds, { padding: [50, 50] });
-            }
+        function handleOfferRide() {
+            if (!authToken || !userPhone) { showAlert('error', 'Please register to offer rides'); window.location.href = '/register'; return; }
+            if (userMode !== 'driver') { showAlert('error', 'Switch to Driver mode to offer rides'); return; }
+            showOfferRideForm();
         }
         
-        function selectRide(index, rideId) {
-            document.querySelectorAll('.ride-item').forEach(item => item.classList.remove('selected'));
-            const selected = document.querySelector(`[data-index="${index}"]`);
-            if (selected) selected.classList.add('selected');
-            selectedRide = { index, rideId };
-            
-            // Show the booking confirmation modal
-            showBookingModal(index);
-        }
-        
-        // Show booking confirmation modal
-        function showBookingModal(index) {
-            const ride = allRides[index];
-            if (!ride) return;
-            
-            const modal = document.getElementById('bookingModal');
-            const modalBody = document.getElementById('bookingModalBody');
-            const modalHeader = document.getElementById('bookingModalHeader');
-            
-            // Reset header to default (not confirmed)
-            modalHeader.classList.remove('confirmed');
-            modalHeader.innerHTML = '<h2>🎫 Book This Ride</h2>';
-            
-            const seats = getTotalSeats(); // Use the new function to get total seats
-            const seatInfo = getSeatBreakdown();
-            const totalPrice = (ride.contribution || 0) * parseInt(seats);
-            
-            // Calculate price breakdown
-            const pricePerSeat = ride.contribution || 0;
-            const adultPrice = pricePerSeat;
-            const kidPrice = pricePerSeat * 0.5;
-            
-            modalBody.innerHTML = `
-                <div class="booking-driver-info">
-                    <div class="booking-driver-avatar">${(ride.driverName || 'A').charAt(0).toUpperCase()}</div>
-                    <div class="booking-driver-details">
-                        <div class="booking-driver-name">👤 ${ride.driverName || 'Anonymous Driver'}</div>
-                        <div class="booking-driver-phone">📱 ${ride.driverPhone || 'N/A'}</div>
+        function showOfferRideForm() {
+            const modalHtml = `
+                <div class="modal-overlay active" id="offerRideModal" onclick="closeOfferRideModal(event)">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <div class="modal-header driver-mode">
+                            <h2>🚙 Offer Ride</h2>
+                            <button class="modal-close" onclick="closeOfferRideModal()">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 6px;">📅 Date</label>
+                                <input type="date" id="rideDate" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px;" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 6px;">⏰ Time</label>
+                                <input type="time" id="rideTime" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px;" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 6px;">💺 Seats</label>
+                                <select id="rideSeats" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px;">
+                                    <option value="1">1 Seat</option>
+                                    <option value="2" selected>2 Seats</option>
+                                    <option value="3">3 Seats</option>
+                                    <option value="4">4 Seats</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 6px;">💰 Price per Seat ($)</label>
+                                <input type="number" id="ridePrice" value="${(currentRoute?.pricePerSeat || 0).toFixed(2)}" min="0" step="0.01" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px;">
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%; padding: 14px;" onclick="createRide()">🚗 Create Ride Offer</button>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="booking-ride-summary">
-                    <div class="route">
-                        📍 ${ride.pickupLocation} → 🏁 ${ride.destination}
-                    </div>
-                    <div class="details">
-                        <div>📅 ${new Date(ride.date).toLocaleDateString()}</div>
-                        <div>⏰ ${ride.time}</div>
-                        <div>💺 ${ride.availableSeats} seats available</div>
-                        <div>🚗 ${seats} seat(s) selected</div>
-                    </div>
-                </div>
-                
-                <div class="booking-price">
-                    <div class="label">Total Price</div>
-                    <div class="amount">$${totalPrice.toFixed(2)}</div>
-                    <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
-                        $${pricePerSeat.toFixed(2)} per seat × ${seats} seat(s)
-                    </div>
-                </div>
-                
-                <!-- Share Section -->
-                <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-                    <button class="booking-btn-cancel" style="flex: 1; padding: 10px; font-size: 0.85rem;" onclick="shareRideDetails('${ride._id}', 'whatsapp')">
-                        📱 Share
-                    </button>
-                    <button class="booking-btn-cancel" style="flex: 1; padding: 10px; font-size: 0.85rem;" onclick="shareRideDetails('${ride._id}', 'telegram')">
-                        ✈️ Telegram
-                    </button>
-                    <button class="booking-btn-cancel" style="flex: 1; padding: 10px; font-size: 0.85rem;" onclick="copyRideLink('${ride._id}')">
-                        🔗 Copy Link
-                    </button>
-                </div>
-                
-                <div class="booking-question">
-                    <h3>🤔 Do you want to book this ride?</h3>
-                    <p>The driver will be notified of your booking request.</p>
-                </div>
-                
-                <div class="booking-buttons">
-                    <button class="booking-btn-cancel" onclick="closeBookingModal()">Cancel</button>
-                    <button class="booking-btn-confirm" onclick="confirmBooking('${ride._id}', ${index})">✅ Yes, Book!</button>
-                </div>
-                
-                <div class="booking-note">
-                    <strong>📝 Note:</strong> The driver will receive your contact information and can reach out to confirm the ride.
                 </div>
             `;
+            const existing = document.getElementById('offerRideModal');
+            if (existing) existing.remove();
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
             
-            modal.classList.add('active');
+            const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('rideDate').value = tomorrow.toISOString().split('T')[0];
+            document.getElementById('rideDate').min = new Date().toISOString().split('T')[0];
         }
         
-        // Share ride details to WhatsApp/Telegram
-        async function shareRideDetails(rideId, platform) {
-            const ride = allRides.find(r => r._id === rideId);
-            if (!ride) return;
-            
-            const seats = getTotalSeats();
-            const totalPrice = (ride.contribution || 0) * parseInt(seats);
-            
-            // Build detailed fare breakdown message
-            const fareDetails = `
-🧾 *Ride Fare Breakdown*
-
-📍 From: ${ride.pickupLocation}
-🏁 To: ${ride.destination}
-📅 Date: ${new Date(ride.date).toLocaleDateString()}
-⏰ Time: ${ride.time}
-
-💰 *Price Details:*
-• Price per seat: $${ride.contribution.toFixed(2)}
-• Number of seats: ${seats}
-• Subtotal: $${totalPrice.toFixed(2)}
-
-👤 Driver: ${ride.driverName || 'Anonymous'}
-📱 Contact: ${ride.driverPhone || 'Via App'}
-
-🔗 Book now: ${window.location.origin}/ride/${ride._id}
-            `.trim();
-            
-            if (platform === 'whatsapp') {
-                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fareDetails)}`;
-                window.open(whatsappUrl, '_blank');
-            } else if (platform === 'telegram') {
-                const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.origin + '/ride/' + rideId)}&text=${encodeURIComponent(fareDetails)}`;
-                window.open(telegramUrl, '_blank');
+        function closeOfferRideModal(event) {
+            if (!event || event.target === event.currentTarget) {
+                const modal = document.getElementById('offerRideModal');
+                if (modal) modal.remove();
             }
         }
         
-        // Copy ride link to clipboard
-        async function copyRideLink(rideId) {
-            const rideUrl = `${window.location.origin}/ride/${rideId}`;
-            try {
-                await navigator.clipboard.writeText(rideUrl);
-                showAlert('success', '🔗 Ride link copied to clipboard!');
-            } catch (err) {
-                // Fallback
-                const input = document.createElement('input');
-                input.value = rideUrl;
-                document.body.appendChild(input);
-                input.select();
-                document.execCommand('copy');
-                document.body.removeChild(input);
-                showAlert('success', '🔗 Ride link copied to clipboard!');
-            }
-        }
-        
-        // Close booking modal
-        function closeBookingModal() {
-            const modal = document.getElementById('bookingModal');
-            modal.classList.remove('active');
-        }
-        
-        // Confirm booking
-        async function confirmBooking(rideId, index) {
-            if (!authToken || !userPhone) {
-                showAlert('error', '🔐 Please register to book rides');
-                window.location.href = '/register';
-                return;
-            }
+        async function createRide() {
+            if (!authToken || !userPhone) { showAlert('error', 'Please register'); window.location.href = '/register'; return; }
             
-            const ride = allRides[index];
-            const seats = getTotalSeats(); // Use the new function to get total seats
-            const seatInfo = getSeatBreakdown();
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            const date = document.getElementById('rideDate').value;
+            const time = document.getElementById('rideTime').value;
+            const seats = document.getElementById('rideSeats').value;
+            const pricePerSeat = parseFloat(document.getElementById('ridePrice').value);
             
-            // Show loading state
-            const modalBody = document.getElementById('bookingModalBody');
-            modalBody.innerHTML = `
-                <div style="text-align: center; padding: 40px 20px;">
-                    <div class="spinner" style="margin: 0 auto 20px;"></div>
-                    <p style="color: #666;">Processing your booking...</p>
-                </div>
-            `;
+            if (!date || !time || !pricePerSeat) { showAlert('error', 'Please fill all fields'); return; }
+            
+            closeOfferRideModal();
+            document.getElementById('loading').classList.add('active');
             
             try {
-                const response = await fetch(`/api/rides/${rideId}/book`, {
+                const response = await fetch('/api/rides', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    },
+                    headers: { 'Content-Type': 'application/json', 'phoneNumber': userPhone, 'token': authToken },
                     body: JSON.stringify({
-                        phoneNumber: userPhone,
-                        passengerName: userName,
-                        seats: parseInt(seats)
+                        driverPhone: userPhone, driverName: userName, pickup, destination, date, time,
+                        seats: parseInt(seats), contribution: pricePerSeat,
+                        pickupLat: currentRoute?.pickup?.lat, pickupLng: currentRoute?.pickup?.lng,
+                        destLat: currentRoute?.destination?.lat, destLng: currentRoute?.destination?.lng
                     })
                 });
-                
                 const data = await response.json();
-                
                 if (data.success) {
-                    // Show success state
-                    const modalHeader = document.getElementById('bookingModalHeader');
-                    modalHeader.classList.add('confirmed');
-                    modalHeader.innerHTML = '<h2>🎉 Booking Sent!</h2>';
-                    
-                    modalBody.innerHTML = `
-                        <div class="booking-success">
-                            <div class="booking-success-icon">✅</div>
-                            <h3>Booking Request Sent!</h3>
-                            <p>Your booking request has been sent to the driver. They will contact you shortly to confirm.</p>
-                            <div class="booking-ride-summary" style="text-align: left;">
-                                <div class="route">
-                                    📍 ${ride.pickupLocation} → 🏁 ${ride.destination}
-                                </div>
-                                <div class="details">
-                                    <div>📅 ${new Date(ride.date).toLocaleDateString()}</div>
-                                    <div>⏰ ${ride.time}</div>
-                                    <div>💺 ${seats} seat(s)</div>
-                                    <div>💰 $${((ride.contribution || 0) * parseInt(seats)).toFixed(2)}</div>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="closeBookingModal()">Close</button>
-                        </div>
-                    `;
-                    
-                    showAlert('success', '🎉 Booking request sent to driver!');
+                    showAlert('success', '🎉 Ride offer created!');
+                    findRides();
                 } else {
-                    throw new Error(data.error || 'Failed to book ride');
+                    throw new Error(data.error);
                 }
             } catch (error) {
-                console.error('Booking error:', error);
-                showAlert('error', error.message || 'Failed to book ride');
-                closeBookingModal();
+                showAlert('error', 'Failed to create ride');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
             }
         }
         
-        // Show profile settings
-        function showProfileSettings() {
-            document.getElementById('profileMenu').classList.remove('active');
-            window.location.href = '/settings';
-        }
+        function showProfileSettings() { window.location.href = '/settings'; }
+        function closeSettingsModal() { const m = document.getElementById('settingsModal'); if (m) m.classList.remove('active'); }
         
-        // Show my rides
-        function showMyRides() {
-            document.getElementById('profileMenu').classList.remove('active');
-            window.location.href = '/map?tab=rides';
-        }
-        
-        // Show saved routes
-        function showSavedRoutes() {
-            document.getElementById('profileMenu').classList.remove('active');
-            window.location.href = '/map?tab=saved';
-        }
-        
-        // Show ride history
-        function showRideHistory() {
-            document.getElementById('profileMenu').classList.remove('active');
-            window.location.href = '/map?tab=history';
-        }
-        
-        // Show available rides
-        function showAvailableRides() {
-            document.getElementById('profileMenu').classList.remove('active');
-            findRides();
-        }
-        
-        // Send to WhatsApp
-        async function sendToWhatsApp() {
-            if (!currentRoute) {
-                showAlert('error', 'Please calculate a route first');
-                return;
-            }
-
-            // Ask for phone number to share
-            const sharePhone = prompt('Enter phone number to share ride on WhatsApp (+1...):', userPhone || '');
-
-            if (!sharePhone) {
-                showAlert('error', 'Please enter a phone number');
-                return;
-            }
-            
-            const seats = getTotalSeats();
-            const data = {
-                phoneNumber: sharePhone,
-                pickup: currentRoute.pickup.address,
-                destination: currentRoute.destination.address,
-                date: new Date().toLocaleDateString(),
-                time: new Date().toLocaleTimeString(),
-                price: (currentRoute.pricePerSeat || currentRoute.totalPrice / seats).toFixed(2),
-                seats: seats
-            };
-            
-            try {
-                const response = await fetch('/api/whatsapp/send-ride', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showAlert('success', 'Ride details sent to WhatsApp!');
-                } else {
-                    throw new Error(result.error || 'Failed to send');
-                }
-            } catch (error) {
-                console.error('WhatsApp send error:', error);
-                showAlert('error', 'Failed to send WhatsApp message');
-            }
-        }
-        
-// Logout
         function logout() {
-            document.getElementById('profileMenu').classList.remove('active');
             localStorage.removeItem('pdrides_token');
             localStorage.removeItem('pdrides_phone');
             localStorage.removeItem('pdrides_name');
+            localStorage.removeItem('pdrides_isDriver');
+            localStorage.removeItem('pdrides_roles');
             localStorage.removeItem('pdrides_mode');
-            authToken = null;
-            userPhone = null;
-            userName = null;
-            window.location.href = '/';
-        }
-        
-        // Save recent search to server
-        async function saveRecentSearchToServer() {
-            const pickup = document.getElementById('pickup').value;
-            const destination = document.getElementById('destination').value;
-            
-            if (!pickup || !destination) {
-                return;
-            }
-            
-            try {
-                await fetch('/api/user/recent-searches', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    },
-                    body: JSON.stringify({
-                        pickup: pickup,
-                        destination: destination,
-                        pickupLat: currentRoute?.pickup?.lat,
-                        pickupLng: currentRoute?.pickup?.lng,
-                        destLat: currentRoute?.destination?.lat,
-                        destLng: currentRoute?.destination?.lng
-                    })
-                });
-            } catch (error) {
-                console.error('Error saving recent search:', error);
-            }
-        }
-        
-        // Handle Find Rides button click - requires login
-        function handleFindRides() {
-            if (!authToken || !userPhone) {
-                showAlert('error', '🔐 Please register to find rides');
-                window.location.href = '/register';
-                return;
-            }
-            findRides();
-        }
-        
-        // Handle Offer Ride button click - allows drivers to offer rides with or without locations
-        function handleOfferRide() {
-            if (!authToken || !userPhone) {
-                showAlert('error', '🔐 Please register to offer rides');
-                window.location.href = '/register';
-                return;
-            }
-            
-            // Check if user is registered as a driver first
-            checkDriverStatusAndProceed();
-        }
-        
-        // Check driver status and proceed to offer ride or show registration
-        async function checkDriverStatusAndProceed() {
-            try {
-                const response = await fetch(`/api/user/profile?phoneNumber=${userPhone}&token=${authToken}`);
-                const data = await response.json();
-                
-                if (data.success && data.profile) {
-                    const isDriver = data.profile.driverInfo && data.profile.driverInfo.isDriver;
-                    
-                    if (isDriver) {
-                        // User is registered as driver, proceed to offer ride
-                        proceedWithOfferRide();
-                    } else {
-                        // User is not registered as driver, show registration modal
-                        showDriverRegistrationModal();
-                    }
-                } else {
-                    // If profile fetch fails, assume not a driver and show registration
-                    showDriverRegistrationModal();
-                }
-            } catch (error) {
-                console.error('Error checking driver status:', error);
-                showDriverRegistrationModal();
-            }
-        }
-        
-        // Show driver registration modal
-        function showDriverRegistrationModal() {
-            // Get current locations to preserve
-            const pickup = document.getElementById('pickup').value;
-            const destination = document.getElementById('destination').value;
-            
-            const modalHtml = `
-                <div class="modal-overlay active" id="driverRegModal" onclick="closeDriverRegModal(event)">
-                    <div class="modal-content" onclick="event.stopPropagation()">
-                        <div class="modal-header" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);">
-                            <h2>🚙 Driver Registration</h2>
-                            <button class="modal-close" onclick="closeDriverRegModal()">×</button>
-                        </div>
-                        <div class="modal-body">
-                            <div style="background: #fff3e0; border: 1px solid #ffcc80; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-                                <div style="font-weight: 600; color: #e65100; margin-bottom: 8px;">⚠️ Registration Required</div>
-                                <p style="font-size: 0.85rem; color: #666;">You are not registered as a driver. Please complete driver registration to offer rides.</p>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">🚗 Vehicle Make *</label>
-                                <input type="text" id="driverVehicleMake" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="e.g., Toyota, Honda, Ford" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">🚙 Vehicle Model *</label>
-                                <input type="text" id="driverVehicleModel" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="e.g., Camry, Civic, Accord" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">📅 Vehicle Year *</label>
-                                <input type="text" id="driverVehicleYear" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="e.g., 2020, 2021, 2022" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">🎨 Vehicle Color *</label>
-                                <input type="text" id="driverVehicleColor" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="e.g., Silver, Black, White" required>
-                            </div>
-                            
-                            <div class="form-group" style="margin-bottom: 20px;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #333;">🔢 License Plate *</label>
-                                <input type="text" id="driverLicensePlate" class="form-input" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;" placeholder="e.g., ABC-1234" required>
-                            </div>
-                            
-                            <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;" onclick="registerAsDriver('${pickup}', '${destination}')">
-                                ✅ Complete Registration
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Remove existing modal if any
-            const existingModal = document.getElementById('driverRegModal');
-            if (existingModal) {
-                existingModal.remove();
-            }
-            
-            // Add modal to body
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-        }
-        
-        // Close driver registration modal
-        function closeDriverRegModal(event) {
-            if (!event || event.target === event.currentTarget) {
-                const modal = document.getElementById('driverRegModal');
-                if (modal) {
-                    modal.remove();
-                }
-            }
-        }
-        
-        // Register as driver
-        async function registerAsDriver(pickup, destination) {
-            const vehicleMake = document.getElementById('driverVehicleMake').value.trim();
-            const vehicleModel = document.getElementById('driverVehicleModel').value.trim();
-            const vehicleYear = document.getElementById('driverVehicleYear').value.trim();
-            const vehicleColor = document.getElementById('driverVehicleColor').value.trim();
-            const licensePlate = document.getElementById('driverLicensePlate').value.trim();
-            
-            // Validation
-            if (!vehicleMake || !vehicleModel || !vehicleYear || !vehicleColor || !licensePlate) {
-                showAlert('error', 'Please fill in all vehicle details');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/api/user/driver-info?phoneNumber=${userPhone}&token=${authToken}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'phoneNumber': userPhone,
-                        'token': authToken
-                    },
-                    body: JSON.stringify({
-                        vehicleMake: vehicleMake,
-                        vehicleModel: vehicleModel,
-                        vehicleYear: vehicleYear,
-                        vehicleColor: vehicleColor,
-                        licensePlate: licensePlate,
-                        isDriver: true
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Close modal
-                    closeDriverRegModal();
-                    
-                    showAlert('success', '🎉 You are now registered as a driver!');
-                    
-                    // Redirect to /map with original params after a short delay
-                    setTimeout(() => {
-                        let redirectUrl = '/map';
-                        if (pickup || destination) {
-                            redirectUrl += '?';
-                            const params = [];
-                            if (pickup) params.push(`pickup=${encodeURIComponent(pickup)}`);
-                            if (destination) params.push(`destination=${encodeURIComponent(destination)}`);
-                            redirectUrl += params.join('&');
-                        }
-                        window.location.href = redirectUrl;
-                    }, 1500);
-                } else {
-                    throw new Error(data.error || 'Failed to register as driver');
-                }
-            } catch (error) {
-                console.error('Error registering as driver:', error);
-                showAlert('error', error.message || 'Failed to register as driver');
-            }
-        }
-        
-        // Proceed with offer ride (after confirming driver status)
-        function proceedWithOfferRide() {
-            // Get current locations (can be empty)
-            const pickup = document.getElementById('pickup').value;
-            const destination = document.getElementById('destination').value;
-            
-            // Set mode to driver in URL for shareable links
-            userMode = 'driver';
-            localStorage.setItem('pdrides_mode', 'driver');
-            
-            // Update URL without refreshing
-            const url = new URL(window.location);
-            url.searchParams.set('mode', 'driver');
-            if (pickup) url.searchParams.set('pickup', pickup);
-            if (destination) url.searchParams.set('destination', destination);
-            window.history.replaceState({}, '', url);
-            
-            // Show the offer ride form - it will handle location input if needed
-            showOfferRideForm(pickup, destination);
-        }
-        
-        // Quick share to WhatsApp - directly share current route without creating ride
-        function shareToWhatsApp() {
-            const pickup = document.getElementById('pickup').value;
-            const destination = document.getElementById('destination').value;
-            
-            if (!pickup || !destination) {
-                showAlert('error', 'Please enter pickup and destination locations first');
-                return;
-            }
-            
-            if (!currentRoute) {
-                showAlert('error', 'Please calculate the route first');
-                return;
-            }
-            
-            const seats = document.getElementById('seats').value;
-            const price = (currentRoute.pricePerSeat || 0).toFixed(2);
-            
-            // Create WhatsApp message
-            const message = `🚗 *PDRides Ride*\n\n📍 From: ${pickup}\n🏁 To: ${destination}\n💺 Seats: ${seats}\n💰 Price: $${price} per seat\n\nBook now on PDRides!`;
-            
-            // Ask for phone number to share
-            const sharePhone = prompt('Enter phone number to share ride on WhatsApp (+1...):', userPhone || '');
-            
-            if (sharePhone) {
-                fetch('/api/whatsapp/send-message', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        phoneNumber: sharePhone,
-                        message: message
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        showAlert('success', '📤 Ride details shared to WhatsApp!');
-                    } else {
-                        // Fallback: open WhatsApp directly
-                        const whatsappUrl = `https://wa.me/${sharePhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
-                        window.open(whatsappUrl, '_blank');
-                        showAlert('success', '📤 Opening WhatsApp to share ride!');
-                    }
-                })
-                .catch(err => {
-                    // Fallback: open WhatsApp directly
-                    const whatsappUrl = `https://wa.me/${sharePhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
-                    window.open(whatsappUrl, '_blank');
-                    showAlert('success', '📤 Opening WhatsApp to share ride!');
-                });
-            }
+            window.location.href = '/login';
         }
     </script>
 </body>
 </html>
-                
-

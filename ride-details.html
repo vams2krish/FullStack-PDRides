@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ride Details - PDRides</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="/css/ride-details.css">
+    
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         * {
@@ -538,7 +542,7 @@
         // Load ride details from API
         async function loadRideDetails() {
             try {
-                const response = await fetch(`/api/rides/${rideId}`);
+                const response = await fetch('/api/rides/' + rideId);
                 const data = await response.json();
 
                 if (!data.success) {
@@ -588,24 +592,23 @@
             document.getElementById('driverAvatar').textContent = (ride.driverName || 'A').charAt(0).toUpperCase();
 
             // Price
-            document.getElementById('totalPrice').textContent = `$${ride.contribution.toFixed(2)}`;
-            document.getElementById('pricePerSeat').textContent = `$${ride.contribution.toFixed(2)} per seat`;
+            document.getElementById('totalPrice').textContent = '$' + ride.contribution.toFixed(2);
+            document.getElementById('pricePerSeat').textContent = '$' + ride.contribution.toFixed(2) + ' per seat';
 
             // Price breakdown
-            const breakdownHtml = `
-                <div class="price-row">
-                    <span>Base Fare</span>
-                    <span>$${(ride.fareBreakdown?.baseFare || 5).toFixed(2)}</span>
-                </div>
-                <div class="price-row">
-                    <span>Distance (${ride.fareBreakdown?.distanceMiles || 0} mi)</span>
-                    <span>$${(ride.fareBreakdown?.distanceFare || ride.contribution - 5).toFixed(2)}</span>
-                </div>
-                <div class="price-row total">
-                    <span>Total per seat</span>
-                    <span>$${ride.contribution.toFixed(2)}</span>
-                </div>
-            `;
+            const breakdownHtml = 
+                '<div class="price-row">' +
+                    '<span>Base Fare</span>' +
+                    '<span>$' + (ride.fareBreakdown?.baseFare || 5).toFixed(2) + '</span>' +
+                '</div>' +
+                '<div class="price-row">' +
+                    '<span>Distance (' + (ride.fareBreakdown?.distanceMiles || 0) + ' mi)</span>' +
+                    '<span>$' + (ride.fareBreakdown?.distanceFare || ride.contribution - 5).toFixed(2) + '</span>' +
+                '</div>' +
+                '<div class="price-row total">' +
+                    '<span>Total per seat</span>' +
+                    '<span>$' + ride.contribution.toFixed(2) + '</span>' +
+                '</div>';
             document.getElementById('priceBreakdown').innerHTML = breakdownHtml;
 
             // Initialize map
@@ -615,7 +618,7 @@
             const authToken = localStorage.getItem('pdrides_token');
             if (authToken) {
                 document.getElementById('bookBtn').textContent = '✅ Book This Ride';
-                document.getElementById('bookBtn').href = `/map?ride=${ride._id}`;
+                document.getElementById('bookBtn').href = '/map?ride=' + ride._id;
             }
         }
 
@@ -693,17 +696,42 @@
         async function shareToWhatsApp() {
             if (!rideData) return;
 
-            const message = `🚗 *PDRides Ride*\n\n` +
-                `📍 From: ${formatAddress(rideData.pickupLocation)}\n` +
-                `🏁 To: ${formatAddress(rideData.destination)}\n` +
-                `📅 Date: ${new Date(rideData.date).toLocaleDateString()}\n` +
-                `⏰ Time: ${rideData.time}\n` +
-                `💺 Seats: ${rideData.availableSeats} available\n` +
-                `💰 Price: $${rideData.contribution.toFixed(2)} per seat\n\n` +
-                `👤 Driver: ${rideData.driverName}\n\n` +
-                `Book now: ${window.location.href}`;
+            // Build price breakdown with adults, kids, and child seat info
+            const adults = rideData.adults || 1;
+            const kids = rideData.children || 0;
+            const childSeatType = rideData.childSeatType || 'none';
+            const pricePerSeat = rideData.contribution || 0;
+            const totalSeats = adults + kids;
+            const totalPrice = pricePerSeat * totalSeats;
+            
+            // Format child seat requirement
+            let childSeatText = '';
+            if (kids > 0) {
+                if (childSeatType === 'infant') {
+                    childSeatText = '\n🧸 Child Seat: Infant Car Seat Required';
+                } else if (childSeatType === 'booster') {
+                    childSeatText = '\n🧸 Child Seat: Booster Seat Required';
+                } else {
+                    childSeatText = '\n🧸 Child Seat: ' + kids + ' kid' + (kids > 1 ? 's' : '') + ' (no special seat)';
+                }
+            }
 
-            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            const message = '🚗 *PDRides Ride*\n\n' +
+                '📍 Pickup Location:\n   ' + formatAddress(rideData.pickupLocation) + '\n\n' +
+                '🏁 Drop-off Location:\n   ' + formatAddress(rideData.destination) + '\n\n' +
+                '📅 Date: ' + new Date(rideData.date).toLocaleDateString() + '\n' +
+                '⏰ Time: ' + rideData.time + '\n' +
+                '💺 Available Seats: ' + rideData.availableSeats + '\n\n' +
+                '💰 *PRICE DETAILS*\n' +
+                '------------------------\n' +
+                '👤 Adults: ' + adults + ' × $' + pricePerSeat.toFixed(2) + ' = $' + (pricePerSeat * adults).toFixed(2) + '\n' +
+                '👶 Kids: ' + kids + ' × $' + (pricePerSeat * 0.5).toFixed(2) + ' = $' + (pricePerSeat * kids * 0.5).toFixed(2) + '\n' +
+                '------------------------\n' +
+                '💵 *Total Price: $' + totalPrice.toFixed(2) + '*' + childSeatText + '\n\n' +
+                '👤 Driver: ' + (rideData.driverName || 'Anonymous') + '\n\n' +
+                '🔗 Book now: ' + window.location.href;
+
+            const whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(message);
             window.open(whatsappUrl, '_blank');
         }
 
@@ -711,24 +739,85 @@
         function shareToTelegram() {
             if (!rideData) return;
 
-            const message = `🚗 *PDRides Ride*\n\n` +
-                `📍 From: ${formatAddress(rideData.pickupLocation)}\n` +
-                `🏁 To: ${formatAddress(rideData.destination)}\n` +
-                `📅 Date: ${new Date(rideData.date).toLocaleDateString()}\n` +
-                `⏰ Time: ${rideData.time}\n` +
-                `💺 Seats: ${rideData.availableSeats} available\n` +
-                `💰 Price: $${rideData.contribution.toFixed(2)} per seat\n\n` +
-                `👤 Driver: ${rideData.driverName}`;
+            // Build price breakdown with adults, kids, and child seat info
+            const adults = rideData.adults || 1;
+            const kids = rideData.children || 0;
+            const childSeatType = rideData.childSeatType || 'none';
+            const pricePerSeat = rideData.contribution || 0;
+            const totalSeats = adults + kids;
+            const totalPrice = pricePerSeat * totalSeats;
+            
+            // Format child seat requirement
+            let childSeatText = '';
+            if (kids > 0) {
+                if (childSeatType === 'infant') {
+                    childSeatText = '\n🧸 Child Seat: Infant Car Seat Required';
+                } else if (childSeatType === 'booster') {
+                    childSeatText = '\n🧸 Child Seat: Booster Seat Required';
+                } else {
+                    childSeatText = '\n🧸 Child Seat: ' + kids + ' kid' + (kids > 1 ? 's' : '') + ' (no special seat)';
+                }
+            }
 
-            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(message)}`;
+            const message = '🚗 *PDRides Ride*\n\n' +
+                '📍 *Pickup Location:*\n   ' + formatAddress(rideData.pickupLocation) + '\n\n' +
+                '🏁 *Drop-off Location:*\n   ' + formatAddress(rideData.destination) + '\n\n' +
+                '📅 Date: ' + new Date(rideData.date).toLocaleDateString() + '\n' +
+                '⏰ Time: ' + rideData.time + '\n' +
+                '💺 Available Seats: ' + rideData.availableSeats + '\n\n' +
+                '💰 *PRICE DETAILS*\n' +
+                '------------------------\n' +
+                '👤 Adults: ' + adults + ' × $' + pricePerSeat.toFixed(2) + ' = $' + (pricePerSeat * adults).toFixed(2) + '\n' +
+                '👶 Kids: ' + kids + ' × $' + (pricePerSeat * 0.5).toFixed(2) + ' = $' + (pricePerSeat * kids * 0.5).toFixed(2) + '\n' +
+                '------------------------\n' +
+                '💵 *Total Price: $' + totalPrice.toFixed(2) + '*' + childSeatText + '\n\n' +
+                '👤 Driver: ' + (rideData.driverName || 'Anonymous');
+
+            const telegramUrl = 'https://t.me/share/url?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent(message);
             window.open(telegramUrl, '_blank');
         }
 
         // Copy link
         function copyLink() {
-            navigator.clipboard.writeText(window.location.href).then(() => {
+            if (!rideData) return;
+
+            // Build price breakdown with adults, kids, and child seat info
+            const adults = rideData.adults || 1;
+            const kids = rideData.children || 0;
+            const childSeatType = rideData.childSeatType || 'none';
+            const pricePerSeat = rideData.contribution || 0;
+            const totalSeats = adults + kids;
+            const totalPrice = pricePerSeat * totalSeats;
+            
+            // Format child seat requirement
+            let childSeatText = '';
+            if (kids > 0) {
+                if (childSeatType === 'infant') {
+                    childSeatText = '\nChild Seat: Infant Car Seat Required';
+                } else if (childSeatType === 'booster') {
+                    childSeatText = '\nChild Seat: Booster Seat Required';
+                } else {
+                    childSeatText = '\nChild Seat: ' + kids + ' kid' + (kids > 1 ? 's' : '') + ' (no special seat)';
+                }
+            }
+
+            const shareMessage = 'PDRides Ride\n' +
+                '\nPickup Location:\n   ' + formatAddress(rideData.pickupLocation) + '\n' +
+                '\nDrop-off Location:\n   ' + formatAddress(rideData.destination) + '\n' +
+                '\nDate: ' + new Date(rideData.date).toLocaleDateString() +
+                '\nTime: ' + rideData.time +
+                '\nAvailable Seats: ' + rideData.availableSeats + '\n' +
+                '\n--- PRICE DETAILS ---\n' +
+                'Adults: ' + adults + ' x $' + pricePerSeat.toFixed(2) + ' = $' + (pricePerSeat * adults).toFixed(2) +
+                '\nKids: ' + kids + ' x $' + (pricePerSeat * 0.5).toFixed(2) + ' = $' + (pricePerSeat * kids * 0.5).toFixed(2) +
+                '\n---' +
+                '\nTotal Price: $' + totalPrice.toFixed(2) + childSeatText + '\n' +
+                '\nDriver: ' + (rideData.driverName || 'Anonymous') + '\n' +
+                '\nBook now: ' + window.location.href;
+
+            navigator.clipboard.writeText(shareMessage).then(() => {
                 const alert = document.getElementById('shareAlert');
-                alert.textContent = '✅ Link copied to clipboard!';
+                alert.textContent = '✅ Ride details copied to clipboard!';
                 alert.classList.add('active');
                 setTimeout(() => alert.classList.remove('active'), 3000);
             });
