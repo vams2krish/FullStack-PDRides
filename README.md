@@ -191,49 +191,47 @@ npm start
 │   │
 │   ├── 📂 services/
 │   │   ├── 📄 whatsapp.js    # 📱 WhatsApp API integration
-│   │   ├── 📄 telegram.js    # ✈️ Telegram Bot integration
+│   │   ├── 📄 telegram.js     # ✈️ Telegram Bot integration
 │   │   ├── 📄 messageHandler.js  # 🧠 Message processing & bot logic
-│   │   ├── 📄 scheduler.js   # ⏰ Background scheduled tasks
-│   │   ├── 📄 maps.js        # 🗺️ Geocoding & routing services
-│   │   ├── 📄 rideTypes.js   # 💵 Uber-style ride pricing
-│   │   ├── 📄 otp.js         # 🔐 OTP verification service
-│   │   ├── 📄 userService.js # 👤 User management service
-│   │   ├── 📄 rideService.js # 🚗 Ride management service
-│   │   ├── 📄 adService.js  # 📊 Advertisement service
-│   │   ├── 📄 ads-client.js # 📊 Ads client service
-│   │   ├── 📄 crud.js       # 📝 CRUD operations
-│   │   ├── 📄 database.js   # 🗄️ Database connection
-│   │   └── 📄 apiSync.js    # 🔄 API synchronization
+│   │   ├── 📄 scheduler.js    # ⏰ Background scheduled tasks
+│   │   ├── 📄 maps.js         # 🗺️ Geocoding & routing services
+│   │   ├── 📄 rideTypes.js    # 💵 Uber-style ride pricing
+│   │   ├── 📄 otp.js          # 🔐 OTP verification service
+│   │   ├── 📄 userService.js  # 👤 User management service
+│   │   ├── 📄 rideService.js  # 🚗 Ride management service
+│   │   ├── 📄 adService.js    # 📊 Advertisement service
+│   │   ├── 📄 ads-client.js   # 📊 Ads client service
+│   │   ├── 📄 crud.js         # 📝 CRUD operations
+│   │   ├── 📄 database.js     # 🗄️ Database connection
+│   │   ├── 📄 apiSync.js      # 🔄 API synchronization
+│   │   └── 📄 rideTypes.js    # 🚗 Ride type definitions
 │   │
 │   ├── 📂 routes/
-│   │   ├── 📄 auth.js       # 🔐 Authentication routes
-│   │   ├── 📄 user.js       # 👤 User management routes
-│   │   ├── 📄 api.js        # 🚗 Ride & general API routes
-│   │   ├── 📄 webhook.js    # 📥 WhatsApp webhook endpoints
+│   │   ├── 📄 auth.js        # 🔐 Authentication routes
+│   │   ├── 📄 user.js        # 👤 User management routes
+│   │   ├── 📄 api.js         # 🚗 Ride & general API routes
+│   │   ├── 📄 webhook.js     # 📥 WhatsApp webhook endpoints
 │   │   ├── 📄 telegram-webhook.js # ✈️ Telegram webhook endpoints
-│   │   └── 📄 ads.js        # 📊 Ads management routes
+│   │   └── 📄 ads.js         # 📊 Ads management routes
 │   │
-│   ├── 📂 middleware/
-│   │   └── 📄 auth.js       # 🔐 Authentication middleware
-│   │
-│   └── 📂 services/ (additional)
-│       └── (see above)
+│   └── 📂 middleware/
+│       └── 📄 auth.js        # 🔐 Authentication middleware
 │
 ├── 📂 ads-config/
-│   ├── 📄 ad-units.json     # 📊 Ad unit configurations
-│   ├── 📄 placements.json   # 📍 Ad placement settings
+│   ├── 📄 ad-units.json      # 📊 Ad unit configurations
+│   ├── 📄 placements.json    # 📍 Ad placement settings
 │   ├── 📄 geo-targeting.json # 🌍 Geographic targeting
 │   └── 📄 fallback-content.json # ⏭️ Fallback content
 │
 ├── 📂 ads-system/
-│   ├── 📄 ads-loader.js     # 📊 Ads loader script
+│   ├── 📄 ads-loader.js      # 📊 Ads loader script
 │   └── 📄 developer-config.json # 👨‍💻 Developer configuration
 │
 ├── 📄 set-telegram-webhook.js # 🔧 Telegram webhook setup script
 │
-├── 📄 package.json          # 📦 Project dependencies
-├── 📄 .env.example         # 📝 Environment template
-└── 📄 README.md            # 📖 This file
+├── 📄 package.json           # 📦 Project dependencies
+├── 📄 .env.example           # 📝 Environment template
+└── 📄 README.md              # 📖 This file
 ```
 
 ---
