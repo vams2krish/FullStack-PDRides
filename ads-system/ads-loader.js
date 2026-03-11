@@ -30,6 +30,11 @@
                 containerId: 'ad-placement-middle',
                 supportedUnits: ['banner-300x250', 'banner-320x50', 'banner-320x100'],
                 defaultUnit: 'banner-300x250'
+            },
+            'in-feed-bottom-banner': {
+                containerId: 'ad-placement-bottom',
+                supportedUnits: ['banner-320x50', 'banner-300x250', 'banner-728x90', 'banner-320x100'],
+                defaultUnit: 'banner-320x50'
             }
         },
         fallback: {

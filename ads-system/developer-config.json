@@ -43,6 +43,23 @@
         "tablet": { "maxWidth": 768, "adUnit": "banner-300x250" },
         "desktop": { "minWidth": 769, "adUnit": "banner-300x250" }
       }
+    },
+    "in-feed-bottom-banner": {
+      "id": "in-feed-bottom-banner",
+      "name": "In-Feed Bottom Banner Ad",
+      "description": "Banner ad displayed BELOW the Find Rides button on map-view page",
+      "page": "map-view.html",
+      "position": "below-find-rides",
+      "insertBefore": "#ridesList",
+      "priority": 3,
+      "supportedAdUnits": ["banner-320x50", "banner-300x250", "banner-728x90", "banner-320x100"],
+      "defaultAdUnit": "banner-320x50",
+      "responsive": true,
+      "breakpoints": {
+        "mobile": { "maxWidth": 480, "adUnit": "banner-320x50" },
+        "tablet": { "maxWidth": 768, "adUnit": "banner-300x250" },
+        "desktop": { "minWidth": 769, "adUnit": "banner-728x90" }
+      }
     }
   },
   "adUnitTypes": [

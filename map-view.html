@@ -204,6 +204,79 @@
         </div>
     </div>
 
+    <!-- Price Popup Modal -->
+    <div class="price-popup-overlay" id="pricePopupModal" onclick="closePricePopup(event)">
+        <div class="price-popup-content" onclick="event.stopPropagation()">
+            <div class="price-popup-header">
+                <h2>💰 Estimated Price</h2>
+                <button class="price-popup-close" onclick="closePricePopup()">×</button>
+            </div>
+            <div class="price-popup-body">
+                <div class="price-popup-route">
+                    <div class="price-popup-location">
+                        <span class="location-icon">📍</span>
+                        <span id="popupPickup">Pickup Location</span>
+                    </div>
+                    <div class="price-popup-line"></div>
+                    <div class="price-popup-location">
+                        <span class="location-icon">🏁</span>
+                        <span id="popupDestination">Destination</span>
+                    </div>
+                </div>
+                
+                <div class="price-popup-details">
+                    <div class="price-popup-detail">
+                        <span class="detail-label">Distance</span>
+                        <span class="detail-value" id="popupDistance">-</span>
+                    </div>
+                    <div class="price-popup-detail">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value" id="popupDuration">-</span>
+                    </div>
+                    <div class="price-popup-detail">
+                        <span class="detail-label">Adults</span>
+                        <span class="detail-value" id="popupAdults">1</span>
+                    </div>
+                    <div class="price-popup-detail">
+                        <span class="detail-label">Kids</span>
+                        <span class="detail-value" id="popupKids">0</span>
+                    </div>
+                </div>
+                
+                <div class="price-popup-total">
+                    <div class="total-row">
+                        <span>Per Seat:</span>
+                        <span id="popupPricePerSeat">$0.00</span>
+                    </div>
+                    <div class="total-row main-total">
+                        <span>Total Price:</span>
+                        <span id="popupTotalPrice">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="price-popup-share">
+                    <h3>📤 Share This Ride</h3>
+                    <div class="share-buttons">
+                        <button class="share-btn share-whatsapp" onclick="sharePriceToWhatsApp()">
+                            📱 WhatsApp
+                        </button>
+                        <button class="share-btn share-telegram" onclick="sharePriceToTelegram()">
+                            ✈️ Telegram
+                        </button>
+                        <button class="share-btn share-copy" onclick="copyPriceLink()">
+                            🔗 Copy Link
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="price-popup-actions">
+                    <button class="btn btn-primary" onclick="findRidesFromPopup()">🔍 Find Rides</button>
+                    <button class="btn btn-secondary" onclick="closePricePopup()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Booking Confirmation Modal -->
     <div class="booking-modal" id="bookingModal">
         <div class="booking-modal-content">
@@ -609,6 +682,9 @@
                     // Hide loading on success
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('loading').classList.remove('active');
+                    
+                    // Show the price popup with share options
+                    showPricePopup();
                 } else {
                     throw new Error(data.error || 'Failed to calculate route');
                 }
@@ -773,6 +849,259 @@
         
         function showProfileSettings() { window.location.href = '/settings'; }
         function closeSettingsModal() { const m = document.getElementById('settingsModal'); if (m) m.classList.remove('active'); }
+        
+        // Price Popup Functions
+        function showPricePopup() {
+            if (!currentRoute) return;
+            
+            const modal = document.getElementById('pricePopupModal');
+            if (!modal) return;
+            
+            // Update popup content
+            document.getElementById('popupPickup').textContent = currentRoute.pickup?.address || document.getElementById('pickup').value;
+            document.getElementById('popupDestination').textContent = currentRoute.destination?.address || document.getElementById('destination').value;
+            document.getElementById('popupDistance').textContent = currentRoute.distanceFormatted || '-';
+            document.getElementById('popupDuration').textContent = currentRoute.durationFormatted || '-';
+            document.getElementById('popupAdults').textContent = currentRoute.adults || '1';
+            document.getElementById('popupKids').textContent = currentRoute.children || '0';
+            document.getElementById('popupPricePerSeat').textContent = `$${(currentRoute.pricePerSeat || 0).toFixed(2)}`;
+            document.getElementById('popupTotalPrice').textContent = `$${(currentRoute.totalPrice || 0).toFixed(2)}`;
+            
+            // Show modal
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closePricePopup(event) {
+            if (event && event.target !== event.currentTarget) return;
+            const modal = document.getElementById('pricePopupModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // Share functions with Driver mode support
+        function sharePriceToWhatsApp() {
+            if (!currentRoute) return;
+            
+            const pickup = currentRoute.pickup?.address || document.getElementById('pickup').value;
+            const destination = currentRoute.destination?.address || document.getElementById('destination').value;
+            const pricePerSeat = `$${(currentRoute.pricePerSeat || 0).toFixed(2)}`;
+            const totalPrice = `$${(currentRoute.totalPrice || 0).toFixed(2)}`;
+            const adults = currentRoute.adults || 1;
+            const kids = currentRoute.children || 0;
+            const childSeatType = currentRoute.childSeatType || 'none';
+            
+            let message;
+            if (userMode === 'driver') {
+                // Driver mode - Car Rideshare available message
+                let seatsInfo = adults.toString();
+                let seatNote = '';
+                if (kids > 0) {
+                    seatsInfo = `${adults} adult${adults > 1 ? 's' : ''}, ${kids} kid${kids > 1 ? 's' : ''}`;
+                }
+                if (childSeatType !== 'none') {
+                    seatNote = ` + ${childSeatType} seat`;
+                }
+                
+                message = `🚗 Car Rideshare available for the Community people!
+
+📍 From: ${pickup}
+
+🏁 To: ${destination}
+
+💺 Seats Needed: ${seatsInfo}${seatNote}
+
+💰 Price Per seat: ${pricePerSeat}
+
+Total Fare Price: ${totalPrice}
+
+DM Me (Driver) or call in WhatsApp or Telegram to connect for further ride confirmation details.
+
+Book now on PDRides: ${window.location.origin}`;
+            } else {
+                // Passenger mode - I need a Car Ride message
+                let seatsInfo = adults.toString();
+                let seatNote = '';
+                if (kids > 0) {
+                    seatsInfo = `${adults} adult${adults > 1 ? 's' : ''}, ${kids} kid${kids > 1 ? 's' : ''}`;
+                }
+                if (childSeatType !== 'none') {
+                    seatNote = ` + ${childSeatType} seat`;
+                }
+                
+                message = `🚗 I need a Car Ride!
+
+📍 From: ${pickup}
+
+🏁 To: ${destination}
+
+💺 Seats Needed: ${seatsInfo}${seatNote}
+💰 Price Per seat: ${pricePerSeat}
+
+Total Fare Price: ${totalPrice}
+
+DM or call me in the WhatsApp or Telegram to connect for further ride confirmation details.
+
+Book now on PDRides: ${window.location.origin}`;
+            }
+            
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+        
+        function sharePriceToTelegram() {
+            if (!currentRoute) return;
+            
+            const pickup = currentRoute.pickup?.address || document.getElementById('pickup').value;
+            const destination = currentRoute.destination?.address || document.getElementById('destination').value;
+            const pricePerSeat = `$${(currentRoute.pricePerSeat || 0).toFixed(2)}`;
+            const totalPrice = `$${(currentRoute.totalPrice || 0).toFixed(2)}`;
+            const adults = currentRoute.adults || 1;
+            const kids = currentRoute.children || 0;
+            const childSeatType = currentRoute.childSeatType || 'none';
+            
+            let message;
+            if (userMode === 'driver') {
+                // Driver mode - Car Rideshare available message
+                let seatsInfo = adults.toString();
+                let seatNote = '';
+                if (kids > 0) {
+                    seatsInfo = `${adults} adult${adults > 1 ? 's' : ''}, ${kids} kid${kids > 1 ? 's' : ''}`;
+                }
+                if (childSeatType !== 'none') {
+                    seatNote = ` + ${childSeatType} seat`;
+                }
+                
+                message = `🚗 Car Rideshare available for the Community people!
+
+📍 From: ${pickup}
+
+🏁 To: ${destination}
+
+💺 Seats Needed: ${seatsInfo}${seatNote}
+
+💰 Price Per seat: ${pricePerSeat}
+
+Total Fare Price: ${totalPrice}
+
+DM Me (Driver) or call in WhatsApp or Telegram to connect for further ride confirmation details.
+
+Book now on PDRides: ${window.location.origin}`;
+            } else {
+                // Passenger mode - I need a Car Ride message
+                let seatsInfo = adults.toString();
+                let seatNote = '';
+                if (kids > 0) {
+                    seatsInfo = `${adults} adult${adults > 1 ? 's' : ''}, ${kids} kid${kids > 1 ? 's' : ''}`;
+                }
+                if (childSeatType !== 'none') {
+                    seatNote = ` + ${childSeatType} seat`;
+                }
+                
+                message = `🚗 I need a Car Ride!
+
+📍 From: ${pickup}
+
+🏁 To: ${destination}
+
+💺 Seats Needed: ${seatsInfo}${seatNote}
+💰 Price Per seat: ${pricePerSeat}
+
+Total Fare Price: ${totalPrice}
+
+DM or call me in the WhatsApp or Telegram to connect for further ride confirmation details.
+
+Book now on PDRides: ${window.location.origin}`;
+            }
+            
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.origin)}&text=${encodeURIComponent(message)}`;
+            window.open(telegramUrl, '_blank');
+        }
+        
+        function copyPriceLink() {
+            if (!currentRoute) return;
+            
+            const pickup = currentRoute.pickup?.address || document.getElementById('pickup').value;
+            const destination = currentRoute.destination?.address || document.getElementById('destination').value;
+            const adults = currentRoute.adults || 1;
+            const kids = currentRoute.children || 0;
+            const childSeatType = currentRoute.childSeatType || 'none';
+            const pricePerSeat = `$${(currentRoute.pricePerSeat || 0).toFixed(2)}`;
+            const totalPrice = `$${(currentRoute.totalPrice || 0).toFixed(2)}`;
+            
+            const url = new URL(window.location.origin + '/map-view');
+            url.searchParams.set('pickup', pickup);
+            url.searchParams.set('destination', destination);
+            url.searchParams.set('adults', adults.toString());
+            if (kids > 0) url.searchParams.set('kids', kids.toString());
+            
+            let shareText;
+            if (userMode === 'driver') {
+                // Driver mode - Car Rideshare available message
+                let seatsInfo = adults.toString();
+                let seatNote = '';
+                if (kids > 0) {
+                    seatsInfo = `${adults} adult${adults > 1 ? 's' : ''}, ${kids} kid${kids > 1 ? 's' : ''}`;
+                }
+                if (childSeatType !== 'none') {
+                    seatNote = ` + ${childSeatType} seat`;
+                }
+                
+                shareText = `🚗 Car Rideshare available for the Community people!
+
+📍 From: ${pickup}
+
+🏁 To: ${destination}
+
+💺 Seats Needed: ${seatsInfo}${seatNote}
+
+💰 Price Per seat: ${pricePerSeat}
+
+Total Fare Price: ${totalPrice}
+
+DM Me (Driver) or call in WhatsApp or Telegram to connect for further ride confirmation details.
+
+Book now on PDRides: ${url.toString()}`;
+            } else {
+                // Passenger mode - I need a Car Ride message
+                let seatsInfo = adults.toString();
+                let seatNote = '';
+                if (kids > 0) {
+                    seatsInfo = `${adults} adult${adults > 1 ? 's' : ''}, ${kids} kid${kids > 1 ? 's' : ''}`;
+                }
+                if (childSeatType !== 'none') {
+                    seatNote = ` + ${childSeatType} seat`;
+                }
+                
+                shareText = `🚗 I need a Car Ride!
+
+📍 From: ${pickup}
+
+🏁 To: ${destination}
+
+💺 Seats Needed: ${seatsInfo}${seatNote}
+💰 Price Per seat: ${pricePerSeat}
+
+Total Fare Price: ${totalPrice}
+
+DM or call me in the WhatsApp or Telegram to connect for further ride confirmation details.
+
+Book now on PDRides: ${url.toString()}`;
+            }
+            
+            navigator.clipboard.writeText(shareText).then(() => {
+                showAlert('success', 'Ride details copied to clipboard!');
+            }).catch(() => {
+                showAlert('error', 'Failed to copy to clipboard');
+            });
+        }
+        
+        function findRidesFromPopup() {
+            closePricePopup();
+            findRides();
+        }
         
         function logout() {
             localStorage.removeItem('pdrides_token');
