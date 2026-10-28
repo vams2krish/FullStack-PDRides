@@ -1,4 +1,4 @@
-# PDRides
+# PDRides — Full-Stack Ride-Sharing Application
 
 **Public-Demand Ride-share Made Easy**
 
@@ -8,7 +8,7 @@ PDRides is a community ride-sharing web application that connects passengers and
 
 *Actual project home page captured locally. Marketing statements displayed in the interface are product copy, not independently verified usage or service guarantees.*
 
-[Source code](https://github.com/vams2krish/PDRides) · [Report an issue](https://github.com/vams2krish/PDRides/issues)
+[Source code](https://github.com/vams2krish/FullStack-PDRides) · [Report an issue](https://github.com/vams2krish/FullStack-FullStack-PDRides/issues)
 
 ## Project overview
 
@@ -51,8 +51,8 @@ This repository is an application prototype with implemented backend routes and 
 ### Install and configure
 
 ```bash
-git clone https://github.com/vams2krish/PDRides.git
-cd PDRides
+git clone https://github.com/vams2krish/FullStack-PDRides.git
+cd FullStack-PDRides
 npm install
 ```
 
@@ -167,7 +167,7 @@ Consult [the app entry point](src/index.js) and [route modules](src/routes) for 
 ## Repository layout
 
 ```text
-PDRides/
+FullStack-PDRides/
 ├── index.html                 # Landing page
 ├── map-view.html              # Map and trip planning UI
 ├── browse-rides.html           # Ride discovery UI
