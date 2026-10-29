@@ -8,7 +8,41 @@ PDRides is a community ride-sharing web application that connects passengers and
 
 *Actual project home page captured locally. Marketing statements displayed in the interface are product copy, not independently verified usage or service guarantees.*
 
-[Source code](https://github.com/vams2krish/FullStack-PDRides) · [Report an issue](https://github.com/vams2krish/FullStack-FullStack-PDRides/issues)
+[Source code](https://github.com/vams2krish/FullStack-PDRides) · [Report an issue](https://github.com/vams2krish/FullStack-PDRides/issues)
+
+## Product showcase
+
+Actual locally rendered project screens. These show the interface; successful production authentication and bookings have not been verified.
+
+### Passenger and driver login
+
+![Passenger and driver role selection](docs/images/pdrides-login.png)
+
+Role selection before phone verification.
+
+### Registration
+
+![Multi-step passenger and driver registration](docs/images/pdrides-register.png)
+
+Personal information, contact details, and preferences. OTP delivery and persisted registration require a working database.
+
+### Map and trip planning
+
+![OpenStreetMap tiles, pickup and destination, and fare controls](docs/images/pdrides-map.png)
+
+Map tiles render successfully. Location access was unavailable, as shown in the screenshot. Fare calculation and bookings were not verified.
+
+### Help center
+
+![Help center topics and frequently asked questions](docs/images/pdrides-help.png)
+
+Support topics for accounts, rides, payments, safety, and technical questions.
+
+## Live verification status
+
+**Production end-to-end verification is blocked:** the configured MongoDB connection returned `MongooseServerSelectionError`, and no deployed demo homepage URL is configured in GitHub. Six local preview pages returned HTTP 200 and 26 backend JavaScript modules passed syntax checks. Screenshots were visually inspected. The preview returns HTTP 503 for APIs and does not simulate successful accounts, rides, or bookings.
+
+Read the [verification report](docs/verification-2026-10-29.md) for evidence, production blockers, and remaining acceptance steps. No real messages, production bookings, or account changes were performed.
 
 ## Project overview
 
